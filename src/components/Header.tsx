@@ -1,5 +1,5 @@
 import React from 'react';
-import { Share2, ZoomIn, ZoomOut, LayoutList, GanttChart } from 'lucide-react';
+import { Home, Share2, ZoomIn, ZoomOut, LayoutList, GanttChart } from 'lucide-react';
 import { MainViewMode, ViewMode } from '../types';
 
 interface HeaderProps {
@@ -9,6 +9,7 @@ interface HeaderProps {
   onClientNameChange: (name: string) => void;
   onSave: () => void;
   onShare: () => void;
+  onHome: () => void;
   zoom: number;
   onZoomChange: (zoom: number) => void;
   viewMode: ViewMode;
@@ -26,6 +27,7 @@ const Header: React.FC<HeaderProps> = ({
   onClientNameChange,
   onSave,
   onShare,
+  onHome,
   zoom,
   onZoomChange,
   viewMode,
@@ -65,6 +67,15 @@ const Header: React.FC<HeaderProps> = ({
             placeholder="Project Name..."
           />
         </div>
+
+        <button
+          onClick={onHome}
+          disabled={isSaving}
+          className="w-9 h-9 rounded-xl border border-gray-100 bg-gray-50/80 text-gray-400 hover:text-blue-600 hover:bg-white hover:shadow-sm transition-all flex items-center justify-center disabled:opacity-50"
+          title="Save and return home"
+        >
+          <Home size={16} />
+        </button>
 
         <div className="flex items-center gap-0.5 bg-gray-100/50 p-1 rounded-xl border border-gray-100">
           <button

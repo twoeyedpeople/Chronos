@@ -410,6 +410,17 @@ export default function App() {
     }
   };
 
+  const handleHome = async () => {
+    if (!isReadOnly) {
+      await persistProject();
+    }
+
+    window.history.pushState({}, '', `${window.location.origin}${window.location.pathname}`);
+    setProjectId(null);
+    setIsReadOnly(false);
+    setIsShareOpen(false);
+  };
+
   const handleSave = async () => {
     if (isReadOnly) return;
     await persistProject();
@@ -463,6 +474,7 @@ export default function App() {
         onClientNameChange={updateClientName}
         onSave={handleSave}
         onShare={handleShare}
+        onHome={handleHome}
         zoom={zoom}
         onZoomChange={setZoom}
         viewMode={viewMode}
