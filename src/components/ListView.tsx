@@ -172,7 +172,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
           className={`bg-transparent border-none focus:ring-0 text-[13px] w-full truncate p-0 ${isFolder ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-800'}`}
           placeholder={isFolder ? "Folder name..." : "Task name..."}
         />
-        {!isFolder && (
+        {!isFolder && !readOnly && (
           <label className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[9px] font-black text-gray-400 uppercase tracking-widest shrink-0">
             <input
               type="checkbox"
