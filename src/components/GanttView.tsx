@@ -22,6 +22,8 @@ interface DragState {
   initialWidth: number;
 }
 
+const MILESTONE_SIZE = 14;
+
 const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, onUpdateTask, readOnly }) => {
   const [dragState, setDragState] = useState<DragState | null>(null);
   const [previewDelta, setPreviewDelta] = useState(0);
@@ -93,6 +95,10 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
     const start = parseISO(task.startDate);
     const end = parseISO(task.endDate);
     const left = differenceInDays(start, minDate) * dayWidth;
+    if (task.isMilestone) {
+      return { left: left + dayWidth / 2 - MILESTONE_SIZE / 2, width: MILESTONE_SIZE };
+    }
+
     // Task width should be (days + 1) * dayWidth to cover the full end day column
     const width = (differenceInDays(end, start) + 1) * dayWidth;
     return { left, width };
@@ -137,15 +143,15 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
               startDate: format(newStart, 'yyyy-MM-dd'),
               endDate: format(newEnd, 'yyyy-MM-dd')
             });
-          } else if (dragState.type === 'resize-start') {
+          } else if (!task.isMilestone && dragState.type === 'resize-start') {
             const newStart = addBusinessDays(parseISO(task.startDate), daysDelta);
             if (newStart <= parseISO(task.endDate)) {
               onUpdateTask(task.id, { startDate: format(newStart, 'yyyy-MM-dd') });
             }
-          } else if (dragState.type === 'resize-end') {
+          } else if (!task.isMilestone && dragState.type === 'resize-end') {
             const newEnd = addBusinessDays(parseISO(task.endDate), daysDelta);
             if (newEnd >= parseISO(task.startDate)) {
-              onUpdateTask(task.id, { endDate: format(newEnd, 'yyyy-MM-dd') });
+              onUpdateTask(task.id, { endDate: format(newEnd, 'yyyy-MM-dd'), isMilestone: false });
             }
           }
         }
@@ -272,14 +278,15 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
         {tasks.map((task, index) => {
           let { left, width } = getTaskPosition(task);
           const isDraggingThis = dragState?.taskId === task.id;
+          const isMilestone = Boolean(task.isMilestone);
 
           if (isDraggingThis) {
             if (dragState.type === 'move') {
               left += previewDelta;
-            } else if (dragState.type === 'resize-start') {
+            } else if (!isMilestone && dragState.type === 'resize-start') {
               left += previewDelta;
               width -= previewDelta;
-            } else if (dragState.type === 'resize-end') {
+            } else if (!isMilestone && dragState.type === 'resize-end') {
               width += previewDelta;
             }
           }
@@ -287,32 +294,46 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
           return (
             <div key={task.id} className="h-8 flex items-center relative group">
               {!parentIds.has(task.id) && (
-                <motion.div
-                  layoutId={task.id}
-                  onMouseDown={(e) => handleMouseDown(e, task.id, 'move')}
-                  className={`absolute h-4.5 rounded-full flex items-center px-2 shadow-xs select-none ${
-                    readOnly ? 'cursor-default' : 'cursor-move'
-                  } ${
-                    isDraggingThis ? 'bg-blue-600 z-30' : 'bg-blue-500/20 border border-blue-500/30'
-                  }`}
-                  style={{ left, width }}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                >
-                  {/* Resize Handles */}
-                  <div 
-                    onMouseDown={(e) => handleMouseDown(e, task.id, 'resize-start')}
-                    className={`absolute left-0 top-0 bottom-0 w-1.5 rounded-l-full ${
-                      readOnly ? 'cursor-default' : 'cursor-ew-resize hover:bg-blue-500/50'
-                    }`}
+                isMilestone ? (
+                  <motion.div
+                    layoutId={task.id}
+                    onMouseDown={(e) => handleMouseDown(e, task.id, 'move')}
+                    className={`absolute bg-gray-950 shadow-sm select-none rotate-45 ${
+                      readOnly ? 'cursor-default' : 'cursor-move'
+                    } ${isDraggingThis ? 'z-30 ring-4 ring-gray-900/10' : ''}`}
+                    style={{ left, width, height: MILESTONE_SIZE }}
+                    initial={{ opacity: 0, scale: 0.7 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    title={`${task.name} milestone`}
                   />
-                  <div 
-                    onMouseDown={(e) => handleMouseDown(e, task.id, 'resize-end')}
-                    className={`absolute right-0 top-0 bottom-0 w-1.5 rounded-r-full ${
-                      readOnly ? 'cursor-default' : 'cursor-ew-resize hover:bg-blue-500/50'
+                ) : (
+                  <motion.div
+                    layoutId={task.id}
+                    onMouseDown={(e) => handleMouseDown(e, task.id, 'move')}
+                    className={`absolute h-4.5 rounded-full flex items-center px-2 shadow-xs select-none ${
+                      readOnly ? 'cursor-default' : 'cursor-move'
+                    } ${
+                      isDraggingThis ? 'bg-blue-600 z-30' : 'bg-blue-500/20 border border-blue-500/30'
                     }`}
-                  />
-                </motion.div>
+                    style={{ left, width }}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                  >
+                    {/* Resize Handles */}
+                    <div 
+                      onMouseDown={(e) => handleMouseDown(e, task.id, 'resize-start')}
+                      className={`absolute left-0 top-0 bottom-0 w-1.5 rounded-l-full ${
+                        readOnly ? 'cursor-default' : 'cursor-ew-resize hover:bg-blue-500/50'
+                      }`}
+                    />
+                    <div 
+                      onMouseDown={(e) => handleMouseDown(e, task.id, 'resize-end')}
+                      className={`absolute right-0 top-0 bottom-0 w-1.5 rounded-r-full ${
+                        readOnly ? 'cursor-default' : 'cursor-ew-resize hover:bg-blue-500/50'
+                      }`}
+                    />
+                  </motion.div>
+                )
               )}
               {/* Permanent Label to the right as requested */}
               {!isDraggingThis && (

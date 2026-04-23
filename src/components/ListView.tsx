@@ -66,7 +66,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
     transition,
   };
 
-  const days = differenceInBusinessDays(parseISO(task.endDate), parseISO(task.startDate)) + 1;
+  const days = task.isMilestone ? 0 : differenceInBusinessDays(parseISO(task.endDate), parseISO(task.startDate)) + 1;
   const [daysInput, setDaysInput] = useState(String(days));
 
   useEffect(() => {
@@ -90,13 +90,21 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
 
   const commitDaysChange = () => {
     const numDays = parseInt(daysInput, 10);
-    if (Number.isNaN(numDays) || numDays < 1) {
+    if (Number.isNaN(numDays) || numDays < 0) {
       setDaysInput(String(days));
       return;
     }
 
+    if (numDays === 0) {
+      onUpdateTask(task.id, {
+        endDate: task.startDate,
+        isMilestone: true,
+      });
+      return;
+    }
+
     const newEndDate = format(addBusinessDays(parseISO(task.startDate), numDays - 1), 'yyyy-MM-dd');
-    onUpdateTask(task.id, { endDate: newEndDate });
+    onUpdateTask(task.id, { endDate: newEndDate, isMilestone: false });
   };
 
   const handleDependencyChange = (val: string) => {
@@ -179,7 +187,10 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
               <input
                 type="date"
                 value={task.startDate}
-                onChange={(e) => onUpdateTask(task.id, { startDate: e.target.value })}
+                onChange={(e) => onUpdateTask(task.id, {
+                  startDate: e.target.value,
+                  ...(task.isMilestone ? { endDate: e.target.value } : {}),
+                })}
                 disabled={readOnly}
                 className="text-[11px] bg-white border border-gray-100 rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500/10 outline-none text-gray-600 font-bold w-full"
               />
@@ -349,6 +360,7 @@ const ListView: React.FC<ListViewProps> = ({
     const parentIds = new Set(tasks.map(t => t.parentId).filter(Boolean));
     return tasks.reduce((acc, task) => {
       if (parentIds.has(task.id)) return acc;
+      if (task.isMilestone) return acc;
       return acc + (differenceInBusinessDays(parseISO(task.endDate), parseISO(task.startDate)) + 1);
     }, 0);
   }, [tasks]);

@@ -8,6 +8,7 @@ export interface Task {
   parentId?: string | null;
   color?: string;
   isExpanded?: boolean;
+  isMilestone?: boolean;
   dependencyId?: string;
   dependencyType?: DependencyType;
 }

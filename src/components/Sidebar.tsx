@@ -195,6 +195,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     const parentIds = new Set(tasks.map(t => t.parentId).filter(Boolean));
     return tasks.reduce((acc, task) => {
       if (parentIds.has(task.id)) return acc;
+      if (task.isMilestone) return acc;
       return acc + (differenceInBusinessDays(parseISO(task.endDate), parseISO(task.startDate)) + 1);
     }, 0);
   }, [tasks]);
