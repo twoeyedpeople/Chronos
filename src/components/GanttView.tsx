@@ -206,7 +206,7 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
             return (
               <div
                 key={i}
-                className="border-r border-gray-50 flex items-center justify-center text-[10px] font-bold uppercase tracking-widest text-gray-500 shrink-0"
+                className="border-r border-gray-50 flex items-center justify-start px-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 shrink-0"
                 style={{ width }}
               >
                 {format(month, 'MMMM yyyy')}
