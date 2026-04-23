@@ -130,7 +130,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
       ref={setNodeRef}
       style={style}
       className={`group flex items-center h-10 border-b border-gray-100 px-4 transition-all ${
-        isDragging ? 'opacity-50 bg-blue-50/50 z-50' : 'bg-white hover:bg-gray-50/80'
+        isDragging ? 'opacity-50 bg-blue-50/50 z-50' : task.isExternal ? 'bg-[#FFF3FC] hover:bg-[#ffedf9]' : 'bg-white hover:bg-gray-50/80'
       } ${isOver ? 'bg-blue-100/50 ring-2 ring-blue-500/20' : ''}`}
     >
       <div className="w-8 shrink-0 flex items-center justify-center">
@@ -158,8 +158,10 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
             </button>
           </div>
         ) : (
-          <div className="w-6 h-6 rounded-full border border-blue-100 flex items-center justify-center text-blue-500 shrink-0">
-            <div className="w-1 h-1 rounded-full bg-blue-500" />
+          <div className={`w-6 h-6 rounded-full border flex items-center justify-center shrink-0 ${
+            task.isExternal ? 'border-pink-100 text-pink-300' : 'border-blue-100 text-[#5F7CFF]'
+          }`}>
+            <div className={`w-1 h-1 rounded-full ${task.isExternal ? 'bg-[#FFF3FC] ring-2 ring-pink-200' : 'bg-[#5F7CFF]'}`} />
           </div>
         )}
         <input
@@ -170,6 +172,18 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
           className={`bg-transparent border-none focus:ring-0 text-[13px] w-full truncate p-0 ${isFolder ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-800'}`}
           placeholder={isFolder ? "Folder name..." : "Task name..."}
         />
+        {!isFolder && (
+          <label className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[9px] font-black text-gray-400 uppercase tracking-widest shrink-0">
+            <input
+              type="checkbox"
+              checked={Boolean(task.isExternal)}
+              onChange={(e) => onUpdateTask(task.id, { isExternal: e.target.checked })}
+              disabled={readOnly}
+              className="w-3 h-3 rounded border-gray-200 accent-pink-300"
+            />
+            <span>EXT</span>
+          </label>
+        )}
         {!readOnly && (
           <button
             onClick={() => onAddTask(task.id)}

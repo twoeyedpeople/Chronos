@@ -298,9 +298,9 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
                   <motion.div
                     layoutId={task.id}
                     onMouseDown={(e) => handleMouseDown(e, task.id, 'move')}
-                    className={`absolute bg-gray-950 shadow-sm select-none rotate-45 ${
+                    className={`absolute shadow-sm select-none rotate-45 ${
                       readOnly ? 'cursor-default' : 'cursor-move'
-                    } ${isDraggingThis ? 'z-30 ring-4 ring-gray-900/10' : ''}`}
+                    } ${task.isExternal ? 'bg-[#FFF3FC] border border-pink-200' : 'bg-gray-950'} ${isDraggingThis ? 'z-30 ring-4 ring-gray-900/10' : ''}`}
                     style={{ left, width, height: MILESTONE_SIZE }}
                     initial={{ opacity: 0, scale: 0.7 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -313,7 +313,9 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
                     className={`absolute h-4.5 rounded-full flex items-center px-2 shadow-xs select-none ${
                       readOnly ? 'cursor-default' : 'cursor-move'
                     } ${
-                      isDraggingThis ? 'bg-blue-600 z-30' : 'bg-blue-500/20 border border-blue-500/30'
+                      isDraggingThis
+                        ? task.isExternal ? 'bg-[#FFF3FC] border border-pink-200 z-30' : 'bg-[#5F7CFF] z-30'
+                        : task.isExternal ? 'bg-[#FFF3FC] border border-pink-200' : 'bg-[#5F7CFF]/20 border border-[#5F7CFF]/30'
                     }`}
                     style={{ left, width }}
                     initial={{ opacity: 0, x: -20 }}

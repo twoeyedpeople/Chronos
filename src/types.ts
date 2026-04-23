@@ -9,6 +9,7 @@ export interface Task {
   color?: string;
   isExpanded?: boolean;
   isMilestone?: boolean;
+  isExternal?: boolean;
   dependencyId?: string;
   dependencyType?: DependencyType;
 }
