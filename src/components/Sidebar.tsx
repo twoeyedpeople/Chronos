@@ -62,8 +62,9 @@ const SortableSidebarRow: React.FC<SortableSidebarRowProps> = ({
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    paddingLeft: `${depth * 16 + 12}px`,
   };
+  const taskStartDate = format(parseISO(task.startDate), 'dd MMM yyyy');
+  const taskEndDate = format(parseISO(task.endDate), 'dd MMM yyyy');
 
   return (
     <div
@@ -73,19 +74,21 @@ const SortableSidebarRow: React.FC<SortableSidebarRowProps> = ({
         isDragging ? 'opacity-50 bg-blue-50/50 z-50' : 'bg-white hover:bg-gray-50'
       } ${isOver ? 'bg-blue-100/50 ring-1 ring-blue-500/20' : ''}`}
     >
-      <div 
-        {...attributes} 
-        {...listeners}
-        className="p-1 text-gray-300 hover:text-gray-500 cursor-grab active:cursor-grabbing rounded transition-colors shrink-0"
-      >
-        <GripVertical size={10} />
-      </div>
+      {!readOnly && (
+        <div 
+          {...attributes} 
+          {...listeners}
+          className="p-1 text-gray-300 hover:text-gray-500 cursor-grab active:cursor-grabbing rounded transition-colors shrink-0"
+        >
+          <GripVertical size={10} />
+        </div>
+      )}
 
-      <div className="w-5 text-[8px] font-black text-gray-300 shrink-0 text-center">
+      <div className="w-5 text-[8px] font-black text-gray-300 shrink-0 text-center" style={{ marginLeft: readOnly ? 8 : 0 }}>
         {index + 1}
       </div>
 
-      <div className="flex items-center gap-1 flex-1 min-w-0">
+      <div className="flex items-center gap-1 flex-1 min-w-0" style={{ paddingLeft: `${depth * 16 + 4}px` }}>
         {hasSubtasks ? (
           <button
             onClick={() => onToggleExpand(task.id)}
@@ -107,6 +110,17 @@ const SortableSidebarRow: React.FC<SortableSidebarRowProps> = ({
           placeholder={hasSubtasks ? "Folder..." : "Task..."}
         />
       </div>
+
+      {readOnly && (
+        <>
+          <div className="w-24 shrink-0 px-2 text-[9px] font-bold text-gray-500 tabular-nums">
+            {taskStartDate}
+          </div>
+          <div className="w-24 shrink-0 px-2 text-[9px] font-bold text-gray-500 tabular-nums">
+            {taskEndDate}
+          </div>
+        </>
+      )}
 
       {!readOnly && (
         <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity pr-2">
@@ -211,16 +225,25 @@ const Sidebar: React.FC<SidebarProps> = ({
   }, [tasks]);
 
   return (
-    <aside className="w-64 border-r border-gray-100 bg-white flex flex-col shrink-0 z-10 transition-all">
-      <div className="h-16 flex items-center justify-between px-4 border-b border-gray-50 bg-gray-50/30">
-        <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Tasks</span>
-        <button 
-          onClick={() => onAddTask()}
-          disabled={readOnly}
-          className="p-1 hover:bg-white hover:text-blue-500 rounded-lg transition-all text-gray-400 shadow-xs"
-        >
-          <Plus size={12} />
-        </button>
+    <aside className={`${readOnly ? 'w-[440px]' : 'w-64'} border-r border-gray-100 bg-white flex flex-col shrink-0 z-10 transition-all`}>
+      <div className="h-16 flex items-end justify-between px-4 pb-3 border-b border-gray-50 bg-gray-50/30">
+        {readOnly ? (
+          <div className="w-full flex items-center">
+            <span className="flex-1 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Tasks</span>
+            <span className="w-24 px-2 text-[8px] font-black text-gray-400 uppercase tracking-widest">Start</span>
+            <span className="w-24 px-2 text-[8px] font-black text-gray-400 uppercase tracking-widest">End</span>
+          </div>
+        ) : (
+          <>
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Tasks</span>
+            <button 
+              onClick={() => onAddTask()}
+              className="p-1 hover:bg-white hover:text-blue-500 rounded-lg transition-all text-gray-400 shadow-xs"
+            >
+              <Plus size={12} />
+            </button>
+          </>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
