@@ -23,6 +23,8 @@ interface HeaderProps {
   isSaving?: boolean;
   readOnly?: boolean;
   showFiltersButton?: boolean;
+  activeFilterCount?: number;
+  isMobile?: boolean;
 }
 
 const Header: React.FC<HeaderProps> = ({ 
@@ -45,7 +47,8 @@ const Header: React.FC<HeaderProps> = ({
   onMainViewModeChange,
   isSaving,
   readOnly,
-  showFiltersButton
+  showFiltersButton,
+  isMobile
 }) => {
   return (
     <header className="h-20 px-4 md:px-8 bg-white/95 backdrop-blur-2xl border-b border-gray-100 flex items-center justify-between sticky top-0 z-50 shadow-sm gap-4 overflow-x-auto no-scrollbar">
@@ -85,30 +88,32 @@ const Header: React.FC<HeaderProps> = ({
           <Home size={15} />
         </button>
 
-        <div className="flex items-center gap-1 bg-gray-50 border border-gray-100 rounded-2xl p-1 shrink-0">
-          <button
-            onClick={() => onMainViewModeChange('list')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all ${
-              mainViewMode === 'list' 
-                ? 'bg-white text-gray-800 shadow-sm' 
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            <LayoutList size={13} />
-            <span>List</span>
-          </button>
-          <button
-            onClick={() => onMainViewModeChange('gantt')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all ${
-              mainViewMode === 'gantt' 
-                ? 'bg-white text-blue-600 shadow-sm' 
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            <GanttChart size={13} />
-            <span>Gantt</span>
-          </button>
-        </div>
+        {!isMobile && (
+          <div className="flex items-center gap-1 bg-gray-50 border border-gray-100 rounded-2xl p-1 shrink-0">
+            <button
+              onClick={() => onMainViewModeChange('list')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all ${
+                mainViewMode === 'list' 
+                  ? 'bg-white text-gray-800 shadow-sm' 
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <LayoutList size={13} />
+              <span>List</span>
+            </button>
+            <button
+              onClick={() => onMainViewModeChange('gantt')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all ${
+                mainViewMode === 'gantt' 
+                  ? 'bg-white text-blue-600 shadow-sm' 
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <GanttChart size={13} />
+              <span>Gantt</span>
+            </button>
+          </div>
+        )}
 
         {showFiltersButton && (
           <button

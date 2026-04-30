@@ -145,237 +145,471 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
     <div
       ref={setNodeRef}
       style={style}
-      className={`group flex items-center h-10 border-b border-gray-100 px-4 transition-all ${
+      className={`group border-b border-gray-100 transition-all ${
         isDragging ? 'opacity-50 bg-blue-50/50 z-50' : task.isExternal ? 'bg-[#FFF3FC] hover:bg-[#ffedf9]' : 'bg-white hover:bg-gray-50/80'
       } ${isOver ? 'bg-blue-100/50 ring-2 ring-blue-500/20' : ''}`}
     >
-      <div className="w-8 shrink-0 flex items-center justify-center">
-        <div 
-          {...attributes} 
-          {...listeners}
-          className="p-1 text-gray-300 hover:text-gray-500 cursor-grab active:cursor-grabbing rounded transition-colors shrink-0"
-        >
-          <GripVertical size={12} />
+      <div className="hidden md:flex items-center h-10 px-4">
+        <div className="w-8 shrink-0 flex items-center justify-center">
+          <div 
+            {...attributes} 
+            {...listeners}
+            className="p-1 text-gray-300 hover:text-gray-500 cursor-grab active:cursor-grabbing rounded transition-colors shrink-0"
+          >
+            <GripVertical size={12} />
+          </div>
         </div>
-      </div>
 
-      <div className="w-8 text-[9px] font-black text-gray-300 shrink-0 text-center">
-        {index + 1}
-      </div>
+        <div className="w-8 text-[9px] font-black text-gray-300 shrink-0 text-center">
+          {index + 1}
+        </div>
 
-      <div className="flex-1 flex items-center gap-1.5 min-w-0" style={{ paddingLeft: `${depth * 16 + 4}px` }}>
-        {hasSubtasks ? (
-          <div className="w-6 h-6 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500 shrink-0 border border-blue-100">
+        <div className="flex-1 flex items-center gap-1.5 min-w-0" style={{ paddingLeft: `${depth * 16 + 4}px` }}>
+          {hasSubtasks ? (
+            <div className="w-6 h-6 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500 shrink-0 border border-blue-100">
+              <button
+                onClick={() => onToggleExpand(task.id)}
+                className="p-0.5 hover:bg-blue-100 rounded transition-colors"
+              >
+                {isExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+              </button>
+            </div>
+          ) : (
             <button
-              onClick={() => onToggleExpand(task.id)}
-              className="p-0.5 hover:bg-blue-100 rounded transition-colors"
+              type="button"
+              onClick={() => task.parentId && onUnnestTask(task.id)}
+              disabled={readOnly || !task.parentId}
+              className={`w-6 h-6 rounded-full border flex items-center justify-center shrink-0 transition-all group/dot ${
+                task.isExternal ? 'border-pink-100 text-pink-300' : 'border-blue-100 text-[#5F7CFF]'
+              } ${task.parentId && !readOnly ? 'hover:border-blue-200 hover:bg-blue-50/60 cursor-pointer' : 'cursor-default'}`}
+              title={task.parentId && !readOnly ? 'Move task out of parent' : undefined}
             >
-              {isExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+              {task.parentId && !readOnly ? (
+                <>
+                  <div className={`w-1.5 h-1.5 rounded-full group-hover/dot:hidden ${task.isExternal ? 'bg-pink-300' : 'bg-[#5F7CFF]'}`} />
+                  <ArrowLeft size={11} className="hidden group-hover/dot:block text-[#5F7CFF]" />
+                </>
+              ) : (
+                <div className={`w-1.5 h-1.5 rounded-full ${task.isExternal ? 'bg-pink-300' : 'bg-[#5F7CFF]'}`} />
+              )}
             </button>
+          )}
+          <div className="min-w-0 flex-1">
+            <input
+              type="text"
+              value={isGlobalMilestonesView && task.sourceProjectName ? `${task.sourceProjectName} / ${task.name}` : task.name}
+              onChange={(e) => onUpdateTask(task.id, { name: e.target.value })}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  e.currentTarget.blur();
+                }
+              }}
+              readOnly={readOnly}
+              className={`bg-transparent border-none focus:ring-0 text-[13px] w-full truncate p-0 leading-tight ${isFolder ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-800'}`}
+              placeholder={isFolder ? "Folder name..." : "Task name..."}
+            />
           </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => task.parentId && onUnnestTask(task.id)}
-            disabled={readOnly || !task.parentId}
-            className={`w-6 h-6 rounded-full border flex items-center justify-center shrink-0 transition-all group/dot ${
-              task.isExternal ? 'border-pink-100 text-pink-300' : 'border-blue-100 text-[#5F7CFF]'
-            } ${task.parentId && !readOnly ? 'hover:border-blue-200 hover:bg-blue-50/60 cursor-pointer' : 'cursor-default'}`}
-            title={task.parentId && !readOnly ? 'Move task out of parent' : undefined}
-          >
-            {task.parentId && !readOnly ? (
-              <>
-                <div className={`w-1.5 h-1.5 rounded-full group-hover/dot:hidden ${task.isExternal ? 'bg-pink-300' : 'bg-[#5F7CFF]'}`} />
-                <ArrowLeft size={11} className="hidden group-hover/dot:block text-[#5F7CFF]" />
-              </>
-            ) : (
-              <div className={`w-1.5 h-1.5 rounded-full ${task.isExternal ? 'bg-pink-300' : 'bg-[#5F7CFF]'}`} />
-            )}
-          </button>
-        )}
-        <div className="min-w-0 flex-1">
-          <input
-            type="text"
-            value={isGlobalMilestonesView && task.sourceProjectName ? `${task.sourceProjectName} / ${task.name}` : task.name}
-            onChange={(e) => onUpdateTask(task.id, { name: e.target.value })}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                e.currentTarget.blur();
-              }
-            }}
-            readOnly={readOnly}
-            className={`bg-transparent border-none focus:ring-0 text-[13px] w-full truncate p-0 leading-tight ${isFolder ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-800'}`}
-            placeholder={isFolder ? "Folder name..." : "Task name..."}
-          />
+          {!isFolder && !readOnly && (
+            <>
+              <label className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[9px] font-black text-gray-400 uppercase tracking-widest shrink-0">
+                <input
+                  type="checkbox"
+                  checked={Boolean(task.isMilestone)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      onUpdateTask(task.id, {
+                        isMilestone: true,
+                        endDate: task.startDate,
+                      });
+                      setDaysInput('0');
+                    } else {
+                      const newEndDate = format(addBusinessDays(parseISO(task.startDate), 0), 'yyyy-MM-dd');
+                      onUpdateTask(task.id, {
+                        isMilestone: false,
+                        endDate: newEndDate,
+                      });
+                      setDaysInput('1');
+                    }
+                  }}
+                  disabled={readOnly}
+                  className="w-3 h-3 rounded border-gray-200 accent-gray-700"
+                />
+                <span>Milestone</span>
+              </label>
+              <label className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[9px] font-black text-gray-400 uppercase tracking-widest shrink-0">
+                <input
+                  type="checkbox"
+                  checked={Boolean(task.isExternal)}
+                  onChange={(e) => onUpdateTask(task.id, { isExternal: e.target.checked })}
+                  disabled={readOnly}
+                  className="w-3 h-3 rounded border-gray-200 accent-pink-300"
+                />
+                <span>EXT</span>
+              </label>
+            </>
+          )}
+          {!readOnly && (
+            <button
+              onClick={() => onAddTask(task.id)}
+              className="p-1 text-gray-300 hover:text-blue-500 hover:bg-blue-50 rounded transition-all opacity-0 group-hover:opacity-100 shrink-0"
+              title="Add subtask"
+            >
+              <Plus size={14} />
+            </button>
+          )}
         </div>
-        {!isFolder && !readOnly && (
+
+        {!isFolder ? (
           <>
-            <label className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[9px] font-black text-gray-400 uppercase tracking-widest shrink-0">
-              <input
-                type="checkbox"
-                checked={Boolean(task.isMilestone)}
-                onChange={(e) => {
-                  if (e.target.checked) {
-                    onUpdateTask(task.id, {
-                      isMilestone: true,
-                      endDate: task.startDate,
-                    });
-                    setDaysInput('0');
-                  } else {
-                    const newEndDate = format(addBusinessDays(parseISO(task.startDate), 0), 'yyyy-MM-dd');
-                    onUpdateTask(task.id, {
-                      isMilestone: false,
-                      endDate: newEndDate,
-                    });
-                    setDaysInput('1');
-                  }
-                }}
-                disabled={readOnly}
-                className="w-3 h-3 rounded border-gray-200 accent-gray-700"
-              />
-              <span>Milestone</span>
-            </label>
-            <label className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[9px] font-black text-gray-400 uppercase tracking-widest shrink-0">
-              <input
-                type="checkbox"
-                checked={Boolean(task.isExternal)}
-                onChange={(e) => onUpdateTask(task.id, { isExternal: e.target.checked })}
-                disabled={readOnly}
-                className="w-3 h-3 rounded border-gray-200 accent-pink-300"
-              />
-              <span>EXT</span>
-            </label>
-          </>
-        )}
-        {!readOnly && (
-          <button
-            onClick={() => onAddTask(task.id)}
-            className="p-1 text-gray-300 hover:text-blue-500 hover:bg-blue-50 rounded transition-all opacity-0 group-hover:opacity-100 shrink-0"
-            title="Add subtask"
-          >
-            <Plus size={14} />
-          </button>
-        )}
-      </div>
-
-      {!isFolder ? (
-        <>
-          <div className={`${isGlobalMilestonesView ? 'w-32' : 'w-32'} px-2 shrink-0`}>
-            {isGlobalMilestonesView ? (
-              <div className="text-[11px] text-gray-600 font-bold w-full tabular-nums">
-                {format(parseISO(task.startDate), 'dd MMM yyyy')}
-              </div>
-            ) : (
-              <input
-                type="date"
-                value={task.startDate}
-                onChange={(e) => onUpdateTask(task.id, {
-                  startDate: e.target.value,
-                  ...(task.isMilestone ? { endDate: e.target.value } : {}),
-                })}
-                disabled={readOnly}
-                className="text-[11px] bg-white border border-gray-100 rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500/10 outline-none text-gray-600 font-bold w-full"
-              />
-            )}
-          </div>
-
-          {!isGlobalMilestonesView && (
-            <div className="w-20 px-2 shrink-0">
-              {readOnly ? (
-                <div className="h-[30px] w-full rounded-lg border border-gray-100 bg-white flex items-center px-3 text-[11px] font-bold">
-                  {task.isMilestone ? (
-                    <span className="block w-full text-left">
-                      <span
-                        className={`ml-[2px] block h-2.5 w-2.5 rotate-45 rounded-[1px] ${
-                          task.isExternal ? 'bg-pink-300' : 'bg-gray-900'
-                        }`}
-                      />
-                    </span>
-                  ) : (
-                    <span className="block w-full text-left text-gray-600 tabular-nums">
-                      {days}
-                    </span>
-                  )}
+            <div className={`${isGlobalMilestonesView ? 'w-32' : 'w-32'} px-2 shrink-0`}>
+              {isGlobalMilestonesView ? (
+                <div className="text-[11px] text-gray-600 font-bold w-full tabular-nums">
+                  {format(parseISO(task.startDate), 'dd MMM yyyy')}
                 </div>
               ) : (
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={daysInput}
-                    onChange={(e) => handleDaysChange(e.target.value)}
-                    onFocus={(e) => {
-                      if (task.isMilestone && e.currentTarget.value === '◆') {
-                        e.currentTarget.select();
-                      }
-                    }}
-                    onBlur={commitDaysChange}
-                    disabled={readOnly}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.currentTarget.blur();
-                      }
-                    }}
-                    className={`text-[11px] bg-white border border-gray-100 rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500/10 outline-none font-bold w-full ${
-                      task.isMilestone
-                        ? task.isExternal
-                          ? 'text-pink-300 text-center'
-                          : 'text-gray-900 text-center'
-                        : 'text-gray-600 pr-6'
-                    }`}
-                    placeholder="0"
-                  />
-                  {!task.isMilestone && (
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] text-gray-300 font-bold uppercase pointer-events-none">d</span>
-                  )}
-                </div>
+                <input
+                  type="date"
+                  value={task.startDate}
+                  onChange={(e) => onUpdateTask(task.id, {
+                    startDate: e.target.value,
+                    ...(task.isMilestone ? { endDate: e.target.value } : {}),
+                  })}
+                  disabled={readOnly}
+                  className="text-[11px] bg-white border border-gray-100 rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500/10 outline-none text-gray-600 font-bold w-full"
+                />
               )}
+            </div>
+
+            {!isGlobalMilestonesView && (
+              <div className="w-20 px-2 shrink-0">
+                {readOnly ? (
+                  <div className="h-[30px] w-full rounded-lg border border-gray-100 bg-white flex items-center px-3 text-[11px] font-bold">
+                    {task.isMilestone ? (
+                      <span className="block w-full text-left">
+                        <span
+                          className={`ml-[2px] block h-2.5 w-2.5 rotate-45 rounded-[1px] ${
+                            task.isExternal ? 'bg-pink-300' : 'bg-gray-900'
+                          }`}
+                        />
+                      </span>
+                    ) : (
+                      <span className="block w-full text-left text-gray-600 tabular-nums">
+                        {days}
+                      </span>
+                    )}
+                  </div>
+                ) : (
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={daysInput}
+                      onChange={(e) => handleDaysChange(e.target.value)}
+                      onFocus={(e) => {
+                        if (task.isMilestone && e.currentTarget.value === '◆') {
+                          e.currentTarget.select();
+                        }
+                      }}
+                      onBlur={commitDaysChange}
+                      disabled={readOnly}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.currentTarget.blur();
+                        }
+                      }}
+                      className={`text-[11px] bg-white border border-gray-100 rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500/10 outline-none font-bold w-full ${
+                        task.isMilestone
+                          ? task.isExternal
+                            ? 'text-pink-300 text-center'
+                            : 'text-gray-900 text-center'
+                          : 'text-gray-600 pr-6'
+                      }`}
+                      placeholder="0"
+                    />
+                    {!task.isMilestone && (
+                      <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] text-gray-300 font-bold uppercase pointer-events-none">d</span>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {!isGlobalMilestonesView && (
+              <>
+                <div className="w-32 px-2 shrink-0">
+                    <input
+                      type="date"
+                      value={task.endDate}
+                      onChange={(e) => onUpdateTask(task.id, { endDate: e.target.value })}
+                      disabled={readOnly}
+                      className="text-[11px] bg-white border border-gray-100 rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500/10 outline-none text-gray-600 font-bold w-full"
+                    />
+                </div>
+
+                <div className="w-20 px-2 shrink-0">
+                    <input
+                      type="text"
+                      value={dependencyIndex}
+                      onChange={(e) => handleDependencyChange(e.target.value)}
+                      disabled={readOnly}
+                      className="text-[11px] bg-white border border-gray-100 rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500/10 outline-none text-gray-600 font-bold w-full text-center"
+                      placeholder="-"
+                    />
+                </div>
+              </>
+            )}
+          </>
+        ) : (
+          <div className="flex-1 flex items-center justify-center">
+            <span className="text-[9px] font-black text-gray-300 uppercase tracking-[0.2em]">Folder (No Dates)</span>
+          </div>
+        )}
+
+        <div className="w-24 px-2 shrink-0 text-right">
+          {!readOnly && (
+            <div className="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button
+                onClick={() => onDeleteTask(task.id)}
+                className="p-1.5 hover:bg-red-50 hover:text-red-500 rounded-lg transition-all"
+                title="Delete task"
+              >
+                <Trash2 size={14} />
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="md:hidden px-3 py-3">
+        <div className="flex items-start gap-2">
+          {!readOnly && (
+            <div 
+              {...attributes} 
+              {...listeners}
+              className="pt-1 text-gray-300 hover:text-gray-500 cursor-grab active:cursor-grabbing rounded transition-colors shrink-0"
+            >
+              <GripVertical size={12} />
             </div>
           )}
 
-          {!isGlobalMilestonesView && (
-            <>
-              <div className="w-32 px-2 shrink-0">
-                  <input
-                    type="date"
-                    value={task.endDate}
-                    onChange={(e) => onUpdateTask(task.id, { endDate: e.target.value })}
-                    disabled={readOnly}
-                    className="text-[11px] bg-white border border-gray-100 rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500/10 outline-none text-gray-600 font-bold w-full"
-                  />
-              </div>
-
-              <div className="w-20 px-2 shrink-0">
-                  <input
-                    type="text"
-                    value={dependencyIndex}
-                    onChange={(e) => handleDependencyChange(e.target.value)}
-                    disabled={readOnly}
-                    className="text-[11px] bg-white border border-gray-100 rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500/10 outline-none text-gray-600 font-bold w-full text-center"
-                    placeholder="-"
-                  />
-              </div>
-            </>
-          )}
-        </>
-      ) : (
-        <div className="flex-1 flex items-center justify-center">
-          <span className="text-[9px] font-black text-gray-300 uppercase tracking-[0.2em]">Folder (No Dates)</span>
-        </div>
-      )}
-
-      <div className="w-24 px-2 shrink-0 text-right">
-        {!readOnly && (
-          <div className="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button
-              onClick={() => onDeleteTask(task.id)}
-              className="p-1.5 hover:bg-red-50 hover:text-red-500 rounded-lg transition-all"
-              title="Delete task"
-            >
-              <Trash2 size={14} />
-            </button>
+          <div className="pt-0.5 text-[9px] font-black text-gray-300 shrink-0 w-5 text-center">
+            {index + 1}
           </div>
-        )}
+
+          <div className="flex-1 min-w-0" style={{ paddingLeft: `${depth * 12}px` }}>
+            <div className="flex items-start gap-2 min-w-0">
+              {hasSubtasks ? (
+                <div className="w-6 h-6 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500 shrink-0 border border-blue-100">
+                  <button
+                    onClick={() => onToggleExpand(task.id)}
+                    className="p-0.5 hover:bg-blue-100 rounded transition-colors"
+                  >
+                    {isExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => task.parentId && onUnnestTask(task.id)}
+                  disabled={readOnly || !task.parentId}
+                  className={`w-6 h-6 rounded-full border flex items-center justify-center shrink-0 transition-all group/dot ${
+                    task.isExternal ? 'border-pink-100 text-pink-300' : 'border-blue-100 text-[#5F7CFF]'
+                  } ${task.parentId && !readOnly ? 'hover:border-blue-200 hover:bg-blue-50/60 cursor-pointer' : 'cursor-default'}`}
+                >
+                  {task.parentId && !readOnly ? (
+                    <>
+                      <div className={`w-1.5 h-1.5 rounded-full group-hover/dot:hidden ${task.isExternal ? 'bg-pink-300' : 'bg-[#5F7CFF]'}`} />
+                      <ArrowLeft size={11} className="hidden group-hover/dot:block text-[#5F7CFF]" />
+                    </>
+                  ) : (
+                    <div className={`w-1.5 h-1.5 rounded-full ${task.isExternal ? 'bg-pink-300' : 'bg-[#5F7CFF]'}`} />
+                  )}
+                </button>
+              )}
+
+              <div className="min-w-0 flex-1">
+                <input
+                  type="text"
+                  value={isGlobalMilestonesView && task.sourceProjectName ? `${task.sourceProjectName} / ${task.name}` : task.name}
+                  onChange={(e) => onUpdateTask(task.id, { name: e.target.value })}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      e.currentTarget.blur();
+                    }
+                  }}
+                  readOnly={readOnly}
+                  className={`bg-transparent border-none focus:ring-0 text-[14px] w-full p-0 leading-tight ${isFolder ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-800'}`}
+                  placeholder={isFolder ? "Folder name..." : "Task name..."}
+                />
+
+                {!isFolder && !readOnly && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    <label className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[9px] font-black text-gray-400 uppercase tracking-widest shrink-0">
+                      <input
+                        type="checkbox"
+                        checked={Boolean(task.isMilestone)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            onUpdateTask(task.id, {
+                              isMilestone: true,
+                              endDate: task.startDate,
+                            });
+                            setDaysInput('0');
+                          } else {
+                            const newEndDate = format(addBusinessDays(parseISO(task.startDate), 0), 'yyyy-MM-dd');
+                            onUpdateTask(task.id, {
+                              isMilestone: false,
+                              endDate: newEndDate,
+                            });
+                            setDaysInput('1');
+                          }
+                        }}
+                        disabled={readOnly}
+                        className="w-3 h-3 rounded border-gray-200 accent-gray-700"
+                      />
+                      <span>Milestone</span>
+                    </label>
+                    <label className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[9px] font-black text-gray-400 uppercase tracking-widest shrink-0">
+                      <input
+                        type="checkbox"
+                        checked={Boolean(task.isExternal)}
+                        onChange={(e) => onUpdateTask(task.id, { isExternal: e.target.checked })}
+                        disabled={readOnly}
+                        className="w-3 h-3 rounded border-gray-200 accent-pink-300"
+                      />
+                      <span>EXT</span>
+                    </label>
+                  </div>
+                )}
+              </div>
+
+              {!readOnly && (
+                <button
+                  onClick={() => onDeleteTask(task.id)}
+                  className="p-1.5 hover:bg-red-50 hover:text-red-500 rounded-lg transition-all shrink-0"
+                  title="Delete task"
+                >
+                  <Trash2 size={14} />
+                </button>
+              )}
+            </div>
+
+            {!isFolder ? (
+              <div className={`mt-3 ${isGlobalMilestonesView ? 'grid grid-cols-1' : 'grid grid-cols-2'} gap-2`}>
+                {isGlobalMilestonesView ? (
+                  <div className="rounded-xl border border-gray-100 bg-white px-3 py-2">
+                    <div className="text-[8px] font-black uppercase tracking-[0.12em] text-gray-400 mb-1">Date</div>
+                    <div className="text-[12px] font-bold text-gray-600 tabular-nums">
+                      {format(parseISO(task.startDate), 'dd MMM yyyy')}
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="rounded-xl border border-gray-100 bg-white px-3 py-2">
+                      <div className="text-[8px] font-black uppercase tracking-[0.12em] text-gray-400 mb-1">Start</div>
+                      {readOnly ? (
+                        <div className="text-[12px] font-bold text-gray-600 tabular-nums">
+                          {format(parseISO(task.startDate), 'dd MMM yyyy')}
+                        </div>
+                      ) : (
+                        <input
+                          type="date"
+                          value={task.startDate}
+                          onChange={(e) => onUpdateTask(task.id, {
+                            startDate: e.target.value,
+                            ...(task.isMilestone ? { endDate: e.target.value } : {}),
+                          })}
+                          className="text-[12px] bg-transparent border-none p-0 focus:ring-0 outline-none text-gray-600 font-bold w-full"
+                        />
+                      )}
+                    </div>
+                    <div className="rounded-xl border border-gray-100 bg-white px-3 py-2">
+                      <div className="text-[8px] font-black uppercase tracking-[0.12em] text-gray-400 mb-1">Due</div>
+                      {readOnly ? (
+                        <div className="text-[12px] font-bold text-gray-600 tabular-nums">
+                          {format(parseISO(task.endDate), 'dd MMM yyyy')}
+                        </div>
+                      ) : (
+                        <input
+                          type="date"
+                          value={task.endDate}
+                          onChange={(e) => onUpdateTask(task.id, { endDate: e.target.value })}
+                          className="text-[12px] bg-transparent border-none p-0 focus:ring-0 outline-none text-gray-600 font-bold w-full"
+                        />
+                      )}
+                    </div>
+                    <div className="rounded-xl border border-gray-100 bg-white px-3 py-2">
+                      <div className="text-[8px] font-black uppercase tracking-[0.12em] text-gray-400 mb-1">Days</div>
+                      {readOnly ? (
+                        <div className="text-[12px] font-bold text-gray-600">
+                          {task.isMilestone ? (
+                            <span className="inline-flex items-center h-4">
+                              <span
+                                className={`block h-2.5 w-2.5 rotate-45 rounded-[1px] ${
+                                  task.isExternal ? 'bg-pink-300' : 'bg-gray-900'
+                                }`}
+                              />
+                            </span>
+                          ) : (
+                            <span className="tabular-nums">{days}</span>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="relative">
+                          <input
+                            type="text"
+                            value={daysInput}
+                            onChange={(e) => handleDaysChange(e.target.value)}
+                            onFocus={(e) => {
+                              if (task.isMilestone && e.currentTarget.value === '◆') {
+                                e.currentTarget.select();
+                              }
+                            }}
+                            onBlur={commitDaysChange}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.currentTarget.blur();
+                              }
+                            }}
+                            className={`text-[12px] bg-transparent border-none p-0 focus:ring-0 outline-none font-bold w-full ${
+                              task.isMilestone
+                                ? task.isExternal
+                                  ? 'text-pink-300'
+                                  : 'text-gray-900'
+                                : 'text-gray-600'
+                            }`}
+                          />
+                          {!task.isMilestone && (
+                            <span className="absolute right-0 top-1/2 -translate-y-1/2 text-[9px] text-gray-300 font-bold uppercase pointer-events-none">d</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    <div className="rounded-xl border border-gray-100 bg-white px-3 py-2">
+                      <div className="text-[8px] font-black uppercase tracking-[0.12em] text-gray-400 mb-1">Dep</div>
+                      {readOnly ? (
+                        <div className="text-[12px] font-bold text-gray-600">{dependencyIndex || '-'}</div>
+                      ) : (
+                        <input
+                          type="text"
+                          value={dependencyIndex}
+                          onChange={(e) => handleDependencyChange(e.target.value)}
+                          className="text-[12px] bg-transparent border-none p-0 focus:ring-0 outline-none text-gray-600 font-bold w-full"
+                          placeholder="-"
+                        />
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              <div className="mt-2 text-[9px] font-black text-gray-300 uppercase tracking-[0.14em]">
+                Folder
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -392,6 +626,7 @@ interface ListViewProps {
   onMoveTask: (id: string, newParentId: string | undefined, insertBeforeId?: string) => void;
   readOnly?: boolean;
   showProjectName?: boolean;
+  isMobile?: boolean;
 }
 
 const ListView: React.FC<ListViewProps> = ({
@@ -503,8 +738,8 @@ const ListView: React.FC<ListViewProps> = ({
 
   return (
     <div className="flex-1 flex flex-col bg-white overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center h-10 border-b border-gray-100 bg-gray-50/50 px-4 sticky top-0 z-20">
+      {/* Desktop Header */}
+      <div className="hidden md:flex items-center h-10 border-b border-gray-100 bg-gray-50/50 px-4 sticky top-0 z-20">
         <div className="w-8 shrink-0 flex items-center justify-center" />
         <div className="w-8 shrink-0 text-[9px] font-black text-gray-400 uppercase tracking-widest text-center">ID</div>
         <div className="flex-1 flex items-center gap-2 text-[9px] font-black text-gray-400 uppercase tracking-widest pl-2">
@@ -530,6 +765,21 @@ const ListView: React.FC<ListViewProps> = ({
           </>
         )}
         <div className="w-24 px-2 text-right text-[9px] font-black text-gray-400 uppercase tracking-widest">Actions</div>
+      </div>
+
+      <div className="md:hidden flex items-center justify-between border-b border-gray-100 bg-gray-50/50 px-4 py-3 sticky top-0 z-20">
+        <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.18em]">
+          {isGlobalMilestonesView ? 'Project Milestones' : 'Tasks'}
+        </span>
+        {!readOnly && (
+          <button
+            onClick={() => onAddTask()}
+            className="p-2 text-gray-400 hover:text-blue-500 hover:bg-white rounded-lg transition-all shadow-sm"
+            title="Add root task"
+          >
+            <Plus size={14} />
+          </button>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">

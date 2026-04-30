@@ -199,6 +199,7 @@ export default function App() {
   const [project, setProject] = useState<Project>(DEFAULT_PROJECT);
   const [viewMode, setViewMode] = useState<ViewMode>('day');
   const [mainViewMode, setMainViewMode] = useState<MainViewMode>('list');
+  const [isMobile, setIsMobile] = useState(false);
   const [zoom, setZoom] = useState(1);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -217,6 +218,19 @@ export default function App() {
   useEffect(() => {
     projectRef.current = project;
   }, [project]);
+
+  useEffect(() => {
+    const updateIsMobile = () => setIsMobile(window.innerWidth < 768);
+    updateIsMobile();
+    window.addEventListener('resize', updateIsMobile);
+    return () => window.removeEventListener('resize', updateIsMobile);
+  }, []);
+
+  useEffect(() => {
+    if (isMobile && mainViewMode === 'gantt') {
+      setMainViewMode('list');
+    }
+  }, [isMobile, mainViewMode]);
 
   // Expand all parents when changing main view mode or zoom/view settings
   useEffect(() => {
@@ -939,10 +953,11 @@ export default function App() {
         readOnly={isReadOnly}
         showFiltersButton={isGlobalMilestonesView}
         activeFilterCount={activeMilestoneFilterCount}
+        isMobile={isMobile}
       />
 
       <main className="flex-1 flex overflow-hidden">
-        {mainViewMode === 'gantt' ? (
+        {!isMobile && mainViewMode === 'gantt' ? (
           <>
             <Sidebar 
               tasks={visibleTasks}
@@ -976,6 +991,7 @@ export default function App() {
             onMoveTask={moveTask}
             readOnly={isReadOnly}
             showProjectName={isGlobalMilestonesView}
+            isMobile={isMobile}
           />
         )}
       </main>
