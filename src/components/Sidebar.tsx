@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Task } from '../types';
-import { Plus, Trash2, ChevronRight, ChevronDown, GripVertical, Calendar } from 'lucide-react';
+import { Plus, Trash2, ChevronRight, ChevronDown, GripVertical, Calendar, ArrowLeft } from 'lucide-react';
 import { format, parseISO, isWeekend, startOfDay, addDays, differenceInBusinessDays } from 'date-fns';
 import {
   DndContext,
@@ -33,6 +33,7 @@ interface SortableSidebarRowProps {
   onAddTask: (parentId?: string) => void;
   onUpdateTask: (id: string, updates: Partial<Task>) => void;
   onDeleteTask: (id: string) => void;
+  onUnnestTask: (id: string) => void;
   isOver?: boolean;
   readOnly?: boolean;
   showProjectName?: boolean;
@@ -48,6 +49,7 @@ const SortableSidebarRow: React.FC<SortableSidebarRowProps> = ({
   onAddTask,
   onUpdateTask,
   onDeleteTask,
+  onUnnestTask,
   isOver,
   readOnly,
   showProjectName
@@ -100,9 +102,24 @@ const SortableSidebarRow: React.FC<SortableSidebarRowProps> = ({
             {isExpanded ? <ChevronDown size={10} /> : <ChevronRight size={10} />}
           </button>
         ) : (
-          <div className="w-3 h-3 flex items-center justify-center shrink-0">
-            <div className={`w-1 h-1 rounded-full ${task.isExternal ? 'bg-[#FFF3FC] ring-2 ring-pink-200' : 'bg-[#5F7CFF]'}`} />
-          </div>
+          <button
+            type="button"
+            onClick={() => task.parentId && onUnnestTask(task.id)}
+            disabled={readOnly || !task.parentId}
+            className={`w-3 h-3 flex items-center justify-center shrink-0 rounded-full transition-all group/dot ${
+              task.parentId && !readOnly ? 'hover:bg-blue-50 cursor-pointer' : 'cursor-default'
+            }`}
+            title={task.parentId && !readOnly ? 'Move task out of parent' : undefined}
+          >
+            {task.parentId && !readOnly ? (
+              <>
+                <div className={`w-1 h-1 rounded-full group-hover/dot:hidden ${task.isExternal ? 'bg-[#FFF3FC] ring-2 ring-pink-200' : 'bg-[#5F7CFF]'}`} />
+                <ArrowLeft size={9} className="hidden group-hover/dot:block text-[#5F7CFF]" />
+              </>
+            ) : (
+              <div className={`w-1 h-1 rounded-full ${task.isExternal ? 'bg-[#FFF3FC] ring-2 ring-pink-200' : 'bg-[#5F7CFF]'}`} />
+            )}
+          </button>
         )}
         <div className="min-w-0 flex-1">
           <input
@@ -239,6 +256,9 @@ const Sidebar: React.FC<SidebarProps> = ({
     };
   }, [tasks]);
   const isGlobalMilestonesView = Boolean(readOnly && showProjectName);
+  const unnestTask = (id: string) => {
+    onMoveTask(id, undefined);
+  };
 
   return (
     <aside className={`${readOnly ? (showProjectName ? 'w-[420px]' : 'w-[440px]') : 'w-64'} border-r border-gray-100 bg-white flex flex-col shrink-0 z-10 transition-all`}>
@@ -292,6 +312,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   onAddTask={onAddTask}
                   onUpdateTask={onUpdateTask}
                   onDeleteTask={onDeleteTask}
+                  onUnnestTask={unnestTask}
                   isOver={overId === task.id && activeId !== task.id}
                   readOnly={readOnly}
                   showProjectName={showProjectName}

@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Task } from '../types';
 import { format, parseISO, addBusinessDays, differenceInBusinessDays, isWeekend, startOfDay, addDays } from 'date-fns';
-import { Calendar, Trash2, Plus, ChevronRight, ChevronDown, GripVertical, FolderMinus } from 'lucide-react';
+import { Calendar, Trash2, Plus, ChevronRight, ChevronDown, GripVertical, FolderMinus, ArrowLeft } from 'lucide-react';
 import {
   DndContext,
   rectIntersection,
@@ -33,6 +33,7 @@ interface SortableTaskRowProps {
   onAddTask: (parentId?: string) => void;
   onUpdateTask: (id: string, updates: Partial<Task>) => void;
   onDeleteTask: (id: string) => void;
+  onUnnestTask: (id: string) => void;
   isOver?: boolean;
   tasks: Task[];
   readOnly?: boolean;
@@ -49,6 +50,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
   onAddTask,
   onUpdateTask,
   onDeleteTask,
+  onUnnestTask,
   isOver,
   tasks,
   readOnly,
@@ -161,11 +163,24 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
             </button>
           </div>
         ) : (
-          <div className={`w-6 h-6 rounded-full border flex items-center justify-center shrink-0 ${
-            task.isExternal ? 'border-pink-100 text-pink-300' : 'border-blue-100 text-[#5F7CFF]'
-          }`}>
-            <div className={`w-1 h-1 rounded-full ${task.isExternal ? 'bg-[#FFF3FC] ring-2 ring-pink-200' : 'bg-[#5F7CFF]'}`} />
-          </div>
+          <button
+            type="button"
+            onClick={() => task.parentId && onUnnestTask(task.id)}
+            disabled={readOnly || !task.parentId}
+            className={`w-6 h-6 rounded-full border flex items-center justify-center shrink-0 transition-all group/dot ${
+              task.isExternal ? 'border-pink-100 text-pink-300' : 'border-blue-100 text-[#5F7CFF]'
+            } ${task.parentId && !readOnly ? 'hover:border-blue-200 hover:bg-blue-50/60 cursor-pointer' : 'cursor-default'}`}
+            title={task.parentId && !readOnly ? 'Move task out of parent' : undefined}
+          >
+            {task.parentId && !readOnly ? (
+              <>
+                <div className={`w-1 h-1 rounded-full group-hover/dot:hidden ${task.isExternal ? 'bg-[#FFF3FC] ring-2 ring-pink-200' : 'bg-[#5F7CFF]'}`} />
+                <ArrowLeft size={11} className="hidden group-hover/dot:block text-[#5F7CFF]" />
+              </>
+            ) : (
+              <div className={`w-1 h-1 rounded-full ${task.isExternal ? 'bg-[#FFF3FC] ring-2 ring-pink-200' : 'bg-[#5F7CFF]'}`} />
+            )}
+          </button>
         )}
         <div className="min-w-0 flex-1">
           <input
@@ -426,6 +441,10 @@ const ListView: React.FC<ListViewProps> = ({
     }, 0);
   }, [tasks]);
 
+  const unnestTask = (id: string) => {
+    onMoveTask(id, undefined);
+  };
+
   return (
     <div className="flex-1 flex flex-col bg-white overflow-hidden">
       {/* Header */}
@@ -492,6 +511,7 @@ const ListView: React.FC<ListViewProps> = ({
                       onAddTask={onAddTask}
                       onUpdateTask={onUpdateTask}
                       onDeleteTask={onDeleteTask}
+                      onUnnestTask={unnestTask}
                       isOver={overId === task.id && activeId !== task.id}
                       tasks={orderedTasks}
                       readOnly={readOnly}
