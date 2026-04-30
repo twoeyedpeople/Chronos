@@ -176,22 +176,23 @@ const AdminDashboard: React.FC = () => {
             >
               <div className="flex flex-col gap-2 relative z-10 h-full">
                 <div className="flex items-start justify-between">
-                  <div className="w-9 h-9 rounded-2xl bg-white/80 flex items-center justify-center text-pink-500 group-hover:scale-110 transition-transform border border-pink-100">
-                    <Calendar size={18} />
+                  <div className="flex items-start gap-3 min-w-0 flex-1 pr-3">
+                    <div className="w-9 h-9 rounded-2xl bg-white/80 flex items-center justify-center text-pink-500 group-hover:scale-110 transition-transform border border-pink-100 shrink-0">
+                      <Calendar size={18} />
+                    </div>
+                    <div className="min-w-0 pt-0.5">
+                      <h3 className="text-[16px] font-black text-gray-900 tracking-tight leading-tight mb-1 group-hover:text-pink-600 transition-colors truncate">
+                        Global Milestones
+                      </h3>
+                      <div className="flex items-center gap-2 text-pink-300">
+                        <User size={12} />
+                        <span className="text-[10px] font-black uppercase tracking-[0.18em] truncate">Agency Overview</span>
+                      </div>
+                    </div>
                   </div>
-                  <span className="px-3 py-1 rounded-full bg-white/80 border border-pink-100 text-[12px] leading-none font-black uppercase tracking-[0.14em] text-pink-500">
+                  <span className="px-2.5 py-0.5 rounded-full bg-white/80 border border-pink-100 text-[8px] leading-none font-black uppercase tracking-[0.12em] text-pink-500">
                     Read Only
                   </span>
-                </div>
-
-                <div className="pt-0">
-                  <h3 className="text-[16px] font-black text-gray-900 tracking-tight leading-tight mb-1 group-hover:text-pink-600 transition-colors">
-                    Global Milestones
-                  </h3>
-                  <div className="flex items-center gap-2 text-pink-300">
-                    <User size={12} />
-                    <span className="text-[9px] font-black uppercase tracking-[0.18em]">Agency Overview</span>
-                  </div>
                 </div>
 
                 <div className="mt-auto flex items-end justify-between pt-2 border-t border-pink-100/70">

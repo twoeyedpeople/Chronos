@@ -586,19 +586,22 @@ const ListView: React.FC<ListViewProps> = ({
                 <div className="relative z-10 flex flex-col items-start gap-3 w-full">
                   <span className="text-[14px] font-black text-gray-500 uppercase tracking-[0.08em] leading-none text-left">Project Details</span>
 
-                  <div className="flex items-end gap-8 w-full">
-                    <div className="flex flex-col gap-1 min-w-[156px]">
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-[10px] font-medium text-gray-500 uppercase tracking-[0.06em]">Working Days:</span>
-                        <span className="text-[18px] font-black text-gray-900 tracking-tight leading-none">{totalBusinessDays}</span>
+                  <div className="flex items-end gap-6 w-full">
+                    <div className="flex flex-col gap-2 min-w-[132px]">
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-[0.06em]">Working Days</span>
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-[18px] font-black text-gray-900 tracking-tighter leading-none">{totalBusinessDays}</span>
+                          <span className="text-[8px] font-black text-gray-400 uppercase tracking-tight">Days</span>
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="flex flex-col gap-1 min-w-[88px]">
-                      <span className="text-[9px] font-black text-gray-400 uppercase tracking-[0.06em]">Total Tasks</span>
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-[18px] font-black text-gray-900 tracking-tighter leading-none">{tasks.length}</span>
-                        <span className="text-[8px] font-black text-gray-400 uppercase tracking-tight">Items</span>
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-[0.06em]">Total Tasks</span>
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-[18px] font-black text-gray-900 tracking-tighter leading-none">{tasks.length}</span>
+                          <span className="text-[8px] font-black text-gray-400 uppercase tracking-tight">Items</span>
+                        </div>
                       </div>
                     </div>
 
