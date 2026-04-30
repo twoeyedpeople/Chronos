@@ -579,56 +579,55 @@ const ListView: React.FC<ListViewProps> = ({
 
           {flattenedTasks.length > 0 && (
             <div className="mt-6 mx-8 pb-20">
-              <div className="flex items-center bg-white border border-gray-100 rounded-[32px] px-10 py-6 shadow-sm overflow-hidden relative min-h-[120px]">
+              <div className="bg-white border border-gray-100 rounded-[32px] px-10 py-6 shadow-sm overflow-hidden relative min-h-[120px]">
                 {/* Subtle background pattern/gradient */}
                 <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 via-white to-blue-50/10 pointer-events-none" />
-                
-                <div className="flex flex-col gap-1.5 w-48 relative z-10">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Total Project Days</span>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-lg font-black text-gray-900 tracking-tighter leading-none">{totalBusinessDays}</span>
-                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-tight">Working Days</span>
-                  </div>
-                </div>
-                
-                <div className="h-16 w-px bg-gray-100 mx-8" />
-                
-                <div className="flex flex-col gap-1.5 w-40 relative z-10">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Total Tasks</span>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-lg font-black text-gray-900 tracking-tighter leading-none">{tasks.length}</span>
-                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-tight">Items</span>
-                  </div>
-                </div>
 
-                <div className="h-16 w-px bg-gray-100 mx-8" />
-
-                <div className="flex flex-col items-start gap-2 relative z-10 flex-1 text-left self-stretch">
+                <div className="relative z-10 flex flex-col items-start gap-5 w-full">
                   <span className="text-[15px] font-black text-gray-500 uppercase tracking-[0.12em] leading-none text-left">Project Details</span>
-                  <div className="flex items-center gap-4 mt-2 justify-start">
-                    {tasks.length > 0 ? (
-                      <>
-                        <div className="flex flex-col gap-1">
-                          <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest leading-none">Start Date</span>
-                          <div className="bg-gray-50/80 px-4 py-2 rounded-2xl border border-gray-100 text-xs font-black text-gray-700 shadow-sm flex items-center gap-2">
-                            <Calendar size={12} className="text-blue-400" />
-                            {format(new Date(Math.min(...tasks.map(t => parseISO(t.startDate).getTime()))), 'MMM dd, yyyy')}
+
+                  <div className="flex items-start gap-12 w-full">
+                    <div className="flex flex-col gap-1.5 w-44">
+                      <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Total Project Days</span>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-lg font-black text-gray-900 tracking-tighter leading-none">{totalBusinessDays}</span>
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-tight">Working Days</span>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-1.5 w-28">
+                      <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Total Tasks</span>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-lg font-black text-gray-900 tracking-tighter leading-none">{tasks.length}</span>
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-tight">Items</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-4">
+                      {tasks.length > 0 ? (
+                        <>
+                          <div className="flex flex-col gap-1">
+                            <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest leading-none">Start Date</span>
+                            <div className="bg-gray-50/80 px-4 py-2 rounded-2xl border border-gray-100 text-xs font-black text-gray-700 shadow-sm flex items-center gap-2">
+                              <Calendar size={12} className="text-blue-400" />
+                              {format(new Date(Math.min(...tasks.map(t => parseISO(t.startDate).getTime()))), 'MMM dd, yyyy')}
+                            </div>
                           </div>
-                        </div>
-                        <div className="mt-4 flex items-center justify-center w-8 h-8 rounded-full bg-gray-50 border border-gray-100">
-                          <ChevronRight size={16} className="text-gray-300" />
-                        </div>
-                        <div className="flex flex-col gap-1">
-                          <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest leading-none">End Date</span>
-                          <div className="bg-gray-50/80 px-4 py-2 rounded-2xl border border-gray-100 text-xs font-black text-gray-700 shadow-sm flex items-center gap-2">
-                            <Calendar size={12} className="text-red-400" />
-                            {format(new Date(Math.max(...tasks.map(t => parseISO(t.endDate).getTime()))), 'MMM dd, yyyy')}
+                          <div className="mt-4 flex items-center justify-center w-8 h-8 rounded-full bg-gray-50 border border-gray-100">
+                            <ChevronRight size={16} className="text-gray-300" />
                           </div>
-                        </div>
-                      </>
-                    ) : (
-                      <span className="text-sm font-bold text-gray-300 italic">No timeline data available</span>
-                    )}
+                          <div className="flex flex-col gap-1">
+                            <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest leading-none">End Date</span>
+                            <div className="bg-gray-50/80 px-4 py-2 rounded-2xl border border-gray-100 text-xs font-black text-gray-700 shadow-sm flex items-center gap-2">
+                              <Calendar size={12} className="text-red-400" />
+                              {format(new Date(Math.max(...tasks.map(t => parseISO(t.endDate).getTime()))), 'MMM dd, yyyy')}
+                            </div>
+                          </div>
+                        </>
+                      ) : (
+                        <span className="text-sm font-bold text-gray-300 italic">No timeline data available</span>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
