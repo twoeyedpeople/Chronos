@@ -75,7 +75,7 @@ const SortableSidebarRow: React.FC<SortableSidebarRowProps> = ({
     <div
       ref={setNodeRef}
       style={style}
-      className={`group flex items-center h-8 transition-all border-b border-gray-50/50 ${
+      className={`group flex items-center ${hasSubtasks && !isGlobalMilestonesView ? 'min-h-11 py-1.5' : 'h-8'} transition-all border-b border-gray-50/50 ${
         isDragging ? 'opacity-50 bg-blue-50/50 z-50' : 'bg-white hover:bg-gray-50'
       } ${isOver ? 'bg-blue-100/50 ring-1 ring-blue-500/20' : ''}`}
     >
@@ -130,6 +130,11 @@ const SortableSidebarRow: React.FC<SortableSidebarRowProps> = ({
             className={`bg-transparent border-none focus:ring-0 text-[10px] w-full truncate p-0 leading-tight ${hasSubtasks ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-700'}`}
             placeholder={hasSubtasks ? "Folder..." : "Task..."}
           />
+          {hasSubtasks && !isGlobalMilestonesView && (
+            <div className="text-[8px] font-bold text-gray-400 tabular-nums leading-tight mt-0.5">
+              {taskStartDate} - {taskEndDate}
+            </div>
+          )}
         </div>
       </div>
 
