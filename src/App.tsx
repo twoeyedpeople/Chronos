@@ -6,7 +6,7 @@ import GanttView from './components/GanttView';
 import ListView from './components/ListView';
 import ShareModal from './components/ShareModal';
 import { v4 as uuidv4 } from 'uuid';
-import { format, parseISO, addBusinessDays, differenceInBusinessDays } from 'date-fns';
+import { format, parseISO, addBusinessDays, differenceInBusinessDays, differenceInDays, addDays, eachDayOfInterval, startOfDay } from 'date-fns';
 import AdminDashboard from './components/AdminDashboard';
 import { collection, doc, setDoc, onSnapshot, getDocFromServer, query, updateDoc, orderBy } from 'firebase/firestore';
 import { db, auth } from './firebase';
@@ -168,6 +168,15 @@ function buildGlobalMilestonesProject(projects: Project[]): Project {
     createdAt: updatedAt,
     updatedAt,
   };
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 const isFirebaseConfigured = firebaseConfig.apiKey && firebaseConfig.apiKey !== 'MOCK_API_KEY';
@@ -648,6 +657,266 @@ export default function App() {
 
   const flattenedTasks = getFlattenedTasks();
 
+  const handleDownloadPdf = () => {
+    const printWindow = window.open('', '_blank', 'noopener,noreferrer,width=1400,height=1000');
+    if (!printWindow) {
+      window.alert('Please allow pop-ups to generate the PDF export.');
+      return;
+    }
+
+    const timelineTasks = flattenedTasks.map(({ task, depth }, index) => ({ task, depth, index }));
+    const datedTasks = project.tasks.length > 0 ? project.tasks : DEFAULT_PROJECT.tasks;
+    const minTaskTime = Math.min(...datedTasks.map((task) => parseISO(task.startDate).getTime()));
+    const maxTaskTime = Math.max(...datedTasks.map((task) => parseISO(task.endDate).getTime()));
+    const minDate = startOfDay(addDays(new Date(minTaskTime), -2));
+    const maxDate = startOfDay(addDays(new Date(maxTaskTime), 2));
+    const ganttDays = eachDayOfInterval({ start: minDate, end: maxDate });
+
+    const listRows = timelineTasks.map(({ task, depth, index }) => {
+      const days = task.isMilestone ? '◆' : String(differenceInBusinessDays(parseISO(task.endDate), parseISO(task.startDate)) + 1);
+      return `
+        <tr>
+          <td class="id">${index + 1}</td>
+          <td class="task" style="padding-left:${depth * 18 + 12}px">${escapeHtml(task.name)}</td>
+          <td>${format(parseISO(task.startDate), 'dd MMM yyyy')}</td>
+          <td class="days-cell ${task.isMilestone ? 'milestone-cell' : ''}">${days}</td>
+          <td>${format(parseISO(task.endDate), 'dd MMM yyyy')}</td>
+        </tr>
+      `;
+    }).join('');
+
+    const ganttHeader = ganttDays.map((day) => `<div class="day-cell">${format(day, 'dd')}</div>`).join('');
+
+    const ganttRows = timelineTasks.map(({ task, depth }) => {
+      const startOffset = differenceInDays(parseISO(task.startDate), minDate);
+      const duration = task.isMilestone ? 1 : differenceInDays(parseISO(task.endDate), parseISO(task.startDate)) + 1;
+      const left = startOffset * 32;
+      const width = duration * 32;
+      const barClass = task.isMilestone
+        ? (task.isExternal ? 'milestone external' : 'milestone')
+        : (task.isExternal ? 'bar external' : 'bar');
+
+      const shape = task.isMilestone
+        ? `<div class="${barClass}" style="left:${left + 9}px;"></div>`
+        : `<div class="${barClass}" style="left:${left}px; width:${Math.max(width - 6, 20)}px;"></div>`;
+
+      return `
+        <div class="gantt-row">
+          <div class="gantt-task" style="padding-left:${depth * 18 + 12}px">${escapeHtml(task.name)}</div>
+          <div class="gantt-track">
+            ${shape}
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    const html = `
+      <!doctype html>
+      <html>
+        <head>
+          <meta charset="utf-8" />
+          <title>${escapeHtml(project.name)} Timeline Export</title>
+          <style>
+            :root {
+              --blue: #5F7CFF;
+              --pink: #FFF3FC;
+              --text: #1f2937;
+              --muted: #6b7280;
+              --line: #e5e7eb;
+            }
+            * { box-sizing: border-box; }
+            body {
+              margin: 0;
+              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+              color: var(--text);
+              background: white;
+            }
+            .page {
+              width: 100%;
+              min-height: 100vh;
+              padding: 28px 32px;
+              page-break-after: always;
+            }
+            .page:last-child { page-break-after: auto; }
+            h1 {
+              margin: 0;
+              font-size: 24px;
+              font-weight: 800;
+            }
+            .subhead {
+              margin-top: 6px;
+              color: var(--muted);
+              font-size: 12px;
+              text-transform: uppercase;
+              letter-spacing: 0.18em;
+              font-weight: 800;
+            }
+            .section-title {
+              margin: 22px 0 16px;
+              font-size: 13px;
+              text-transform: uppercase;
+              letter-spacing: 0.18em;
+              color: var(--muted);
+              font-weight: 800;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+            }
+            th, td {
+              padding: 10px 12px;
+              border-bottom: 1px solid var(--line);
+              font-size: 12px;
+              text-align: left;
+              vertical-align: middle;
+            }
+            th {
+              color: var(--muted);
+              text-transform: uppercase;
+              letter-spacing: 0.14em;
+              font-size: 10px;
+              font-weight: 800;
+            }
+            td.id {
+              width: 48px;
+              color: #9ca3af;
+              font-weight: 700;
+            }
+            td.task {
+              font-weight: 700;
+            }
+            td.days-cell {
+              width: 72px;
+              font-weight: 700;
+            }
+            td.milestone-cell {
+              font-size: 14px;
+            }
+            .gantt-wrapper {
+              border: 1px solid var(--line);
+              border-radius: 16px;
+              overflow: hidden;
+            }
+            .gantt-top {
+              display: grid;
+              grid-template-columns: 280px 1fr;
+              border-bottom: 1px solid var(--line);
+              background: #fafafa;
+            }
+            .gantt-label {
+              padding: 12px;
+              color: var(--muted);
+              text-transform: uppercase;
+              letter-spacing: 0.14em;
+              font-size: 10px;
+              font-weight: 800;
+            }
+            .gantt-header {
+              display: grid;
+              grid-auto-flow: column;
+              grid-auto-columns: 32px;
+            }
+            .day-cell {
+              padding: 12px 0;
+              text-align: center;
+              color: var(--muted);
+              font-size: 10px;
+              font-weight: 800;
+              border-left: 1px solid #f3f4f6;
+            }
+            .gantt-row {
+              display: grid;
+              grid-template-columns: 280px 1fr;
+              min-height: 42px;
+              border-bottom: 1px solid #f9fafb;
+            }
+            .gantt-task {
+              padding: 12px;
+              font-size: 12px;
+              font-weight: 700;
+              border-right: 1px solid var(--line);
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+            .gantt-track {
+              position: relative;
+              background-image: linear-gradient(to right, #f3f4f6 1px, transparent 1px);
+              background-size: 32px 100%;
+            }
+            .bar {
+              position: absolute;
+              top: 11px;
+              height: 20px;
+              border-radius: 999px;
+              background: rgba(95, 124, 255, 0.18);
+              border: 1px solid rgba(95, 124, 255, 0.45);
+            }
+            .bar.external {
+              background: var(--pink);
+              border: 1px solid #f9c2e8;
+            }
+            .milestone {
+              position: absolute;
+              top: 14px;
+              width: 14px;
+              height: 14px;
+              transform: rotate(45deg);
+              background: #111827;
+            }
+            .milestone.external {
+              background: var(--pink);
+              border: 1px solid #f9c2e8;
+            }
+            @media print {
+              body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            }
+          </style>
+        </head>
+        <body>
+          <section class="page">
+            <h1>${escapeHtml(project.name)}</h1>
+            <div class="subhead">${escapeHtml(project.clientName)} / List View</div>
+            <div class="section-title">Timeline Tasks</div>
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Task</th>
+                  <th>Start</th>
+                  <th>Days</th>
+                  <th>End</th>
+                </tr>
+              </thead>
+              <tbody>${listRows}</tbody>
+            </table>
+          </section>
+          <section class="page">
+            <h1>${escapeHtml(project.name)}</h1>
+            <div class="subhead">${escapeHtml(project.clientName)} / Gantt View</div>
+            <div class="section-title">Timeline</div>
+            <div class="gantt-wrapper">
+              <div class="gantt-top">
+                <div class="gantt-label">Task</div>
+                <div class="gantt-header">${ganttHeader}</div>
+              </div>
+              ${ganttRows}
+            </div>
+          </section>
+          <script>
+            window.onload = () => {
+              window.print();
+            };
+          </script>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.open();
+    printWindow.document.write(html);
+    printWindow.document.close();
+  };
+
   if (isLoading) {
     return (
       <div className="h-screen flex items-center justify-center bg-gray-50">
@@ -676,6 +945,7 @@ export default function App() {
         onShare={handleShare}
         onHome={handleHome}
         onUndo={handleUndo}
+        onDownloadPdf={handleDownloadPdf}
         canUndo={undoStack.length > 0}
         zoom={zoom}
         onZoomChange={setZoom}

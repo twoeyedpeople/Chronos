@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, RotateCcw, Share2, ZoomIn, ZoomOut, LayoutList, GanttChart } from 'lucide-react';
+import { Home, RotateCcw, Share2, ZoomIn, ZoomOut, LayoutList, GanttChart, Download } from 'lucide-react';
 import { MainViewMode, ViewMode } from '../types';
 
 interface HeaderProps {
@@ -11,6 +11,7 @@ interface HeaderProps {
   onShare: () => void;
   onHome: () => void;
   onUndo: () => void;
+  onDownloadPdf: () => void;
   canUndo: boolean;
   zoom: number;
   onZoomChange: (zoom: number) => void;
@@ -31,6 +32,7 @@ const Header: React.FC<HeaderProps> = ({
   onShare,
   onHome,
   onUndo,
+  onDownloadPdf,
   canUndo,
   zoom,
   onZoomChange,
@@ -148,9 +150,18 @@ const Header: React.FC<HeaderProps> = ({
 
         <div className="flex items-center gap-2">
           {readOnly && (
-            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">
-              View Only
-            </span>
+            <>
+              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">
+                View Only
+              </span>
+              <button
+                onClick={onDownloadPdf}
+                className="flex items-center gap-2 px-4 py-2 bg-gray-900 hover:bg-black text-white rounded-xl text-xs font-bold transition-all shadow-lg hover:shadow-xl active:scale-95 whitespace-nowrap"
+              >
+                <Download size={14} />
+                <span>Download PDF</span>
+              </button>
+            </>
           )}
           {!readOnly && (
             <>
