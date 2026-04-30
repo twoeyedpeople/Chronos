@@ -7,8 +7,25 @@ import { format } from 'date-fns';
 
 const GLOBAL_MILESTONES_SEARCH_TEXT = 'global milestones agency overview milestone tracker';
 
+function getLocalProjects(): Project[] {
+  if (typeof window === 'undefined') return [];
+
+  return Object.keys(window.localStorage)
+    .filter((key) => key.startsWith('project_'))
+    .map((key) => {
+      try {
+        return JSON.parse(window.localStorage.getItem(key) || '') as Project;
+      } catch (error) {
+        console.error('Failed to parse local project draft', error);
+        return null;
+      }
+    })
+    .filter((project): project is Project => Boolean(project?.id));
+}
+
 const AdminDashboard: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [localProjects, setLocalProjects] = useState<Project[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newProjectName, setNewProjectName] = useState('');
   const [newClientName, setNewClientName] = useState('');
@@ -26,8 +43,16 @@ const AdminDashboard: React.FC = () => {
         id: doc.id
       })) as Project[];
       setProjects(projectsData);
+      setLocalProjects(getLocalProjects());
     });
     return () => unsub();
+  }, []);
+
+  useEffect(() => {
+    const handleStorage = () => setLocalProjects(getLocalProjects());
+    handleStorage();
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
   }, []);
 
   const navigateToProject = (url: string) => {
@@ -111,7 +136,15 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
-  const filteredProjects = projects.filter(p => 
+  const mergedProjects = Array.from(
+    new Map(
+      [...projects, ...localProjects]
+        .sort((a, b) => b.updatedAt - a.updatedAt)
+        .map((project) => [project.id, project]),
+    ).values(),
+  );
+
+  const filteredProjects = mergedProjects.filter(p => 
     p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.clientName.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -196,6 +229,9 @@ const AdminDashboard: React.FC = () => {
           )}
 
           {filteredProjects.map((project) => (
+            (() => {
+              const isLocalOnly = !projects.some((remoteProject) => remoteProject.id === project.id);
+              return (
             <div
               key={project.id}
               onClick={() => navigateToProject(`${window.location.origin}${window.location.pathname}?p=${project.id}&edit=1`)}
@@ -207,20 +243,29 @@ const AdminDashboard: React.FC = () => {
                     <Folder size={24} />
                   </div>
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
-                    <button
-                      onClick={(e) => openEditModal(e, project)}
-                      className="p-2 text-gray-300 hover:text-blue-500 hover:bg-blue-50 rounded-xl transition-all"
-                      title="Edit project"
-                    >
-                      <Pencil size={16} />
-                    </button>
-                    <button
-                      onClick={(e) => confirmDelete(e, project.id, project.name)}
-                      className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
-                      title="Delete project"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    {isLocalOnly && (
+                      <span className="px-2 py-1 rounded-full bg-amber-50 border border-amber-100 text-[8px] font-black uppercase tracking-[0.2em] text-amber-500">
+                        Local Draft
+                      </span>
+                    )}
+                    {!isLocalOnly && (
+                      <>
+                        <button
+                          onClick={(e) => openEditModal(e, project)}
+                          className="p-2 text-gray-300 hover:text-blue-500 hover:bg-blue-50 rounded-xl transition-all"
+                          title="Edit project"
+                        >
+                          <Pencil size={16} />
+                        </button>
+                        <button
+                          onClick={(e) => confirmDelete(e, project.id, project.name)}
+                          className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                          title="Delete project"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -249,6 +294,8 @@ const AdminDashboard: React.FC = () => {
               {/* Decorative background */}
               <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl group-hover:bg-blue-500/10 transition-colors" />
             </div>
+              );
+            })()
           ))}
 
           {filteredProjects.length === 0 && !showGlobalMilestonesCard && (

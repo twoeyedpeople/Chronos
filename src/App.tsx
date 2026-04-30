@@ -289,7 +289,16 @@ export default function App() {
           setUndoStack([]);
           setHasUnsavedChanges(Boolean(localDraft && localDraft.updatedAt > remoteProject.updatedAt));
         } else {
-          console.error(`Project ${pId} not found. Loading default project.`);
+          const localDraft = getLocalProjectDraft(pId);
+          if (localDraft) {
+            const restoredProject = withProjectId(localDraft, pId);
+            setProject(restoredProject);
+            setUndoStack([]);
+            setHasUnsavedChanges(true);
+            console.warn(`Project ${pId} missing in Firebase. Restored local draft.`);
+          } else {
+            console.error(`Project ${pId} not found. Loading default project.`);
+          }
         }
         setIsLoading(false);
       }, (err) => {
