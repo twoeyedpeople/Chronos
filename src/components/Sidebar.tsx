@@ -67,9 +67,9 @@ const SortableSidebarRow: React.FC<SortableSidebarRowProps> = ({
     transform: CSS.Transform.toString(transform),
     transition,
   };
-  const taskStartDate = format(parseISO(task.startDate), 'dd MMM yyyy');
-  const taskEndDate = format(parseISO(task.endDate), 'dd MMM yyyy');
   const isGlobalMilestonesView = Boolean(readOnly && showProjectName);
+  const taskStartDate = format(parseISO(task.startDate), isGlobalMilestonesView ? 'EEE, dd MMM yy' : 'dd MMM yyyy');
+  const taskEndDate = format(parseISO(task.endDate), 'dd MMM yyyy');
 
   return (
     <div

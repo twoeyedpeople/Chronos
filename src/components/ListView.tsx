@@ -73,6 +73,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
   const days = task.isMilestone ? 0 : differenceInBusinessDays(parseISO(task.endDate), parseISO(task.startDate)) + 1;
   const [daysInput, setDaysInput] = useState(task.isMilestone ? '◆' : String(days));
   const isGlobalMilestonesView = Boolean(readOnly && showProjectName);
+  const globalMilestoneDateText = format(parseISO(task.startDate), 'EEE, dd MMM yy');
 
   useEffect(() => {
     setDaysInput(task.isMilestone ? '◆' : String(days));
@@ -265,7 +266,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
             <div className={`${isGlobalMilestonesView ? 'w-32' : 'w-32'} px-2 shrink-0`}>
               {isGlobalMilestonesView ? (
                 <div className="text-[11px] text-gray-600 font-bold w-full tabular-nums">
-                  {format(parseISO(task.startDate), 'dd MMM yyyy')}
+                  {globalMilestoneDateText}
                 </div>
               ) : (
                 <input
@@ -501,7 +502,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                   <div className="rounded-xl border border-gray-100 bg-white px-3 py-2">
                     <div className="text-[8px] font-black uppercase tracking-[0.12em] text-gray-400 mb-1">Date</div>
                     <div className="text-[12px] font-bold text-gray-600 tabular-nums">
-                      {format(parseISO(task.startDate), 'dd MMM yyyy')}
+                      {globalMilestoneDateText}
                     </div>
                   </div>
                 ) : (
