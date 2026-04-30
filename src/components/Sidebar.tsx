@@ -67,12 +67,13 @@ const SortableSidebarRow: React.FC<SortableSidebarRowProps> = ({
   };
   const taskStartDate = format(parseISO(task.startDate), 'dd MMM yyyy');
   const taskEndDate = format(parseISO(task.endDate), 'dd MMM yyyy');
+  const isGlobalMilestonesView = Boolean(readOnly && showProjectName);
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`group flex items-center ${showProjectName ? 'min-h-12 py-1.5' : 'h-8'} transition-all border-b border-gray-50/50 ${
+      className={`group flex items-center h-8 transition-all border-b border-gray-50/50 ${
         isDragging ? 'opacity-50 bg-blue-50/50 z-50' : 'bg-white hover:bg-gray-50'
       } ${isOver ? 'bg-blue-100/50 ring-1 ring-blue-500/20' : ''}`}
     >
@@ -104,14 +105,9 @@ const SortableSidebarRow: React.FC<SortableSidebarRowProps> = ({
           </div>
         )}
         <div className="min-w-0 flex-1">
-          {showProjectName && task.sourceProjectName && (
-            <div className="text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] truncate mb-0.5">
-              {task.sourceProjectName}
-            </div>
-          )}
           <input
             type="text"
-            value={task.name}
+            value={isGlobalMilestonesView && task.sourceProjectName ? `${task.sourceProjectName} / ${task.name}` : task.name}
             onChange={(e) => onUpdateTask(task.id, { name: e.target.value })}
             readOnly={readOnly}
             className={`bg-transparent border-none focus:ring-0 text-[10px] w-full truncate p-0 leading-tight ${hasSubtasks ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-700'}`}
@@ -122,12 +118,20 @@ const SortableSidebarRow: React.FC<SortableSidebarRowProps> = ({
 
       {readOnly && (
         <>
-          <div className="w-24 shrink-0 px-2 text-[9px] font-bold text-gray-500 tabular-nums">
-            {taskStartDate}
-          </div>
-          <div className="w-24 shrink-0 px-2 text-[9px] font-bold text-gray-500 tabular-nums">
-            {taskEndDate}
-          </div>
+          {isGlobalMilestonesView ? (
+            <div className="w-28 shrink-0 px-2 text-[9px] font-bold text-gray-500 tabular-nums">
+              {taskStartDate}
+            </div>
+          ) : (
+            <>
+              <div className="w-24 shrink-0 px-2 text-[9px] font-bold text-gray-500 tabular-nums">
+                {taskStartDate}
+              </div>
+              <div className="w-24 shrink-0 px-2 text-[9px] font-bold text-gray-500 tabular-nums">
+                {taskEndDate}
+              </div>
+            </>
+          )}
         </>
       )}
 
@@ -234,17 +238,24 @@ const Sidebar: React.FC<SidebarProps> = ({
       end: new Date(Math.max(...endDates))
     };
   }, [tasks]);
+  const isGlobalMilestonesView = Boolean(readOnly && showProjectName);
 
   return (
-    <aside className={`${readOnly ? (showProjectName ? 'w-[520px]' : 'w-[440px]') : 'w-64'} border-r border-gray-100 bg-white flex flex-col shrink-0 z-10 transition-all`}>
+    <aside className={`${readOnly ? (showProjectName ? 'w-[420px]' : 'w-[440px]') : 'w-64'} border-r border-gray-100 bg-white flex flex-col shrink-0 z-10 transition-all`}>
       <div className="h-16 flex items-end justify-between px-4 pb-3 border-b border-gray-50 bg-gray-50/30">
         {readOnly ? (
           <div className="w-full flex items-center">
             <span className="flex-1 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
               {showProjectName ? 'Project / Milestone' : 'Tasks'}
             </span>
-            <span className="w-24 px-2 text-[8px] font-black text-gray-400 uppercase tracking-widest">Start</span>
-            <span className="w-24 px-2 text-[8px] font-black text-gray-400 uppercase tracking-widest">End</span>
+            {isGlobalMilestonesView ? (
+              <span className="w-28 px-2 text-[8px] font-black text-gray-400 uppercase tracking-widest">Date</span>
+            ) : (
+              <>
+                <span className="w-24 px-2 text-[8px] font-black text-gray-400 uppercase tracking-widest">Start</span>
+                <span className="w-24 px-2 text-[8px] font-black text-gray-400 uppercase tracking-widest">End</span>
+              </>
+            )}
           </div>
         ) : (
           <>
