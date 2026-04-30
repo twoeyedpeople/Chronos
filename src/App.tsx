@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Project, Task, ViewMode, MainViewMode } from './types';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
@@ -11,6 +11,8 @@ import AdminDashboard from './components/AdminDashboard';
 import { collection, doc, setDoc, onSnapshot, getDocFromServer, query, updateDoc, orderBy } from 'firebase/firestore';
 import { db, auth } from './firebase';
 import firebaseConfig from '../firebase-applet-config.json';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 
 const MAX_UNDO_STEPS = 100;
 const GLOBAL_MILESTONES_ROUTE = 'milestones';
@@ -170,15 +172,6 @@ function buildGlobalMilestonesProject(projects: Project[]): Project {
   };
 }
 
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
 const isFirebaseConfigured = firebaseConfig.apiKey && firebaseConfig.apiKey !== 'MOCK_API_KEY';
 
 const DEFAULT_PROJECT: Project = {
@@ -218,7 +211,10 @@ export default function App() {
   const [undoStack, setUndoStack] = useState<Project[]>([]);
   const [isGlobalMilestonesView, setIsGlobalMilestonesView] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
   const projectRef = useRef(project);
+  const listExportRef = useRef<HTMLDivElement>(null);
+  const ganttExportRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     projectRef.current = project;
@@ -656,265 +652,88 @@ export default function App() {
   };
 
   const flattenedTasks = getFlattenedTasks();
+  const exportTasks = flattenedTasks.map(({ task, depth }, index) => ({ task, depth, index }));
+  const exportRange = useMemo(() => {
+    if (project.tasks.length === 0) return null;
 
-  const handleDownloadPdf = () => {
-    const printWindow = window.open('', '_blank', 'noopener,noreferrer,width=1400,height=1000');
-    if (!printWindow) {
-      window.alert('Please allow pop-ups to generate the PDF export.');
+    const taskTimes = project.tasks.flatMap((task) => [
+      parseISO(task.startDate).getTime(),
+      parseISO(task.endDate).getTime(),
+    ]);
+    const minDate = startOfDay(addDays(new Date(Math.min(...taskTimes)), -2));
+    const maxDate = startOfDay(addDays(new Date(Math.max(...taskTimes)), 2));
+
+    return {
+      minDate,
+      maxDate,
+      days: eachDayOfInterval({ start: minDate, end: maxDate }),
+    };
+  }, [project.tasks]);
+
+  const handleDownloadPdf = async () => {
+    if (!listExportRef.current || !ganttExportRef.current || !exportRange) {
+      window.alert('The PDF export is still getting ready. Please try again in a moment.');
       return;
     }
 
-    const timelineTasks = flattenedTasks.map(({ task, depth }, index) => ({ task, depth, index }));
-    const datedTasks = project.tasks.length > 0 ? project.tasks : DEFAULT_PROJECT.tasks;
-    const minTaskTime = Math.min(...datedTasks.map((task) => parseISO(task.startDate).getTime()));
-    const maxTaskTime = Math.max(...datedTasks.map((task) => parseISO(task.endDate).getTime()));
-    const minDate = startOfDay(addDays(new Date(minTaskTime), -2));
-    const maxDate = startOfDay(addDays(new Date(maxTaskTime), 2));
-    const ganttDays = eachDayOfInterval({ start: minDate, end: maxDate });
+    setIsExportingPdf(true);
 
-    const listRows = timelineTasks.map(({ task, depth, index }) => {
-      const days = task.isMilestone ? '◆' : String(differenceInBusinessDays(parseISO(task.endDate), parseISO(task.startDate)) + 1);
-      return `
-        <tr>
-          <td class="id">${index + 1}</td>
-          <td class="task" style="padding-left:${depth * 18 + 12}px">${escapeHtml(task.name)}</td>
-          <td>${format(parseISO(task.startDate), 'dd MMM yyyy')}</td>
-          <td class="days-cell ${task.isMilestone ? 'milestone-cell' : ''}">${days}</td>
-          <td>${format(parseISO(task.endDate), 'dd MMM yyyy')}</td>
-        </tr>
-      `;
-    }).join('');
+    try {
+      await new Promise((resolve) => window.setTimeout(resolve, 150));
 
-    const ganttHeader = ganttDays.map((day) => `<div class="day-cell">${format(day, 'dd')}</div>`).join('');
+      const captureOptions = {
+        backgroundColor: '#ffffff',
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      } as const;
 
-    const ganttRows = timelineTasks.map(({ task, depth }) => {
-      const startOffset = differenceInDays(parseISO(task.startDate), minDate);
-      const duration = task.isMilestone ? 1 : differenceInDays(parseISO(task.endDate), parseISO(task.startDate)) + 1;
-      const left = startOffset * 32;
-      const width = duration * 32;
-      const barClass = task.isMilestone
-        ? (task.isExternal ? 'milestone external' : 'milestone')
-        : (task.isExternal ? 'bar external' : 'bar');
+      const [listCanvas, ganttCanvas] = await Promise.all([
+        html2canvas(listExportRef.current, captureOptions),
+        html2canvas(ganttExportRef.current, captureOptions),
+      ]);
 
-      const shape = task.isMilestone
-        ? `<div class="${barClass}" style="left:${left + 9}px;"></div>`
-        : `<div class="${barClass}" style="left:${left}px; width:${Math.max(width - 6, 20)}px;"></div>`;
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'pt',
+        format: 'a4',
+      });
 
-      return `
-        <div class="gantt-row">
-          <div class="gantt-task" style="padding-left:${depth * 18 + 12}px">${escapeHtml(task.name)}</div>
-          <div class="gantt-track">
-            ${shape}
-          </div>
-        </div>
-      `;
-    }).join('');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 20;
+      const contentWidth = pageWidth - margin * 2;
+      const contentHeight = pageHeight - margin * 2;
 
-    const html = `
-      <!doctype html>
-      <html>
-        <head>
-          <meta charset="utf-8" />
-          <title>${escapeHtml(project.name)} Timeline Export</title>
-          <style>
-            :root {
-              --blue: #5F7CFF;
-              --pink: #FFF3FC;
-              --text: #1f2937;
-              --muted: #6b7280;
-              --line: #e5e7eb;
-            }
-            * { box-sizing: border-box; }
-            body {
-              margin: 0;
-              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-              color: var(--text);
-              background: white;
-            }
-            .page {
-              width: 100%;
-              min-height: 100vh;
-              padding: 28px 32px;
-              page-break-after: always;
-            }
-            .page:last-child { page-break-after: auto; }
-            h1 {
-              margin: 0;
-              font-size: 24px;
-              font-weight: 800;
-            }
-            .subhead {
-              margin-top: 6px;
-              color: var(--muted);
-              font-size: 12px;
-              text-transform: uppercase;
-              letter-spacing: 0.18em;
-              font-weight: 800;
-            }
-            .section-title {
-              margin: 22px 0 16px;
-              font-size: 13px;
-              text-transform: uppercase;
-              letter-spacing: 0.18em;
-              color: var(--muted);
-              font-weight: 800;
-            }
-            table {
-              width: 100%;
-              border-collapse: collapse;
-            }
-            th, td {
-              padding: 10px 12px;
-              border-bottom: 1px solid var(--line);
-              font-size: 12px;
-              text-align: left;
-              vertical-align: middle;
-            }
-            th {
-              color: var(--muted);
-              text-transform: uppercase;
-              letter-spacing: 0.14em;
-              font-size: 10px;
-              font-weight: 800;
-            }
-            td.id {
-              width: 48px;
-              color: #9ca3af;
-              font-weight: 700;
-            }
-            td.task {
-              font-weight: 700;
-            }
-            td.days-cell {
-              width: 72px;
-              font-weight: 700;
-            }
-            td.milestone-cell {
-              font-size: 14px;
-            }
-            .gantt-wrapper {
-              border: 1px solid var(--line);
-              border-radius: 16px;
-              overflow: hidden;
-            }
-            .gantt-top {
-              display: grid;
-              grid-template-columns: 280px 1fr;
-              border-bottom: 1px solid var(--line);
-              background: #fafafa;
-            }
-            .gantt-label {
-              padding: 12px;
-              color: var(--muted);
-              text-transform: uppercase;
-              letter-spacing: 0.14em;
-              font-size: 10px;
-              font-weight: 800;
-            }
-            .gantt-header {
-              display: grid;
-              grid-auto-flow: column;
-              grid-auto-columns: 32px;
-            }
-            .day-cell {
-              padding: 12px 0;
-              text-align: center;
-              color: var(--muted);
-              font-size: 10px;
-              font-weight: 800;
-              border-left: 1px solid #f3f4f6;
-            }
-            .gantt-row {
-              display: grid;
-              grid-template-columns: 280px 1fr;
-              min-height: 42px;
-              border-bottom: 1px solid #f9fafb;
-            }
-            .gantt-task {
-              padding: 12px;
-              font-size: 12px;
-              font-weight: 700;
-              border-right: 1px solid var(--line);
-              white-space: nowrap;
-              overflow: hidden;
-              text-overflow: ellipsis;
-            }
-            .gantt-track {
-              position: relative;
-              background-image: linear-gradient(to right, #f3f4f6 1px, transparent 1px);
-              background-size: 32px 100%;
-            }
-            .bar {
-              position: absolute;
-              top: 11px;
-              height: 20px;
-              border-radius: 999px;
-              background: rgba(95, 124, 255, 0.18);
-              border: 1px solid rgba(95, 124, 255, 0.45);
-            }
-            .bar.external {
-              background: var(--pink);
-              border: 1px solid #f9c2e8;
-            }
-            .milestone {
-              position: absolute;
-              top: 14px;
-              width: 14px;
-              height: 14px;
-              transform: rotate(45deg);
-              background: #111827;
-            }
-            .milestone.external {
-              background: var(--pink);
-              border: 1px solid #f9c2e8;
-            }
-            @media print {
-              body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            }
-          </style>
-        </head>
-        <body>
-          <section class="page">
-            <h1>${escapeHtml(project.name)}</h1>
-            <div class="subhead">${escapeHtml(project.clientName)} / List View</div>
-            <div class="section-title">Timeline Tasks</div>
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Task</th>
-                  <th>Start</th>
-                  <th>Days</th>
-                  <th>End</th>
-                </tr>
-              </thead>
-              <tbody>${listRows}</tbody>
-            </table>
-          </section>
-          <section class="page">
-            <h1>${escapeHtml(project.name)}</h1>
-            <div class="subhead">${escapeHtml(project.clientName)} / Gantt View</div>
-            <div class="section-title">Timeline</div>
-            <div class="gantt-wrapper">
-              <div class="gantt-top">
-                <div class="gantt-label">Task</div>
-                <div class="gantt-header">${ganttHeader}</div>
-              </div>
-              ${ganttRows}
-            </div>
-          </section>
-          <script>
-            window.onload = () => {
-              window.print();
-            };
-          </script>
-        </body>
-      </html>
-    `;
+      const addCanvasPage = (canvas: HTMLCanvasElement, addPageFirst: boolean) => {
+        if (addPageFirst) {
+          pdf.addPage();
+        }
 
-    printWindow.document.open();
-    printWindow.document.write(html);
-    printWindow.document.close();
+        const imgData = canvas.toDataURL('image/png');
+        const ratio = Math.min(contentWidth / canvas.width, contentHeight / canvas.height);
+        const renderWidth = canvas.width * ratio;
+        const renderHeight = canvas.height * ratio;
+        const x = (pageWidth - renderWidth) / 2;
+        const y = (pageHeight - renderHeight) / 2;
+        pdf.addImage(imgData, 'PNG', x, y, renderWidth, renderHeight);
+      };
+
+      addCanvasPage(listCanvas, false);
+      addCanvasPage(ganttCanvas, true);
+
+      const slug = `${project.clientName}-${project.name}`
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '') || 'timeline';
+
+      pdf.save(`${slug}-timeline.pdf`);
+    } catch (error) {
+      console.error('PDF export failed', error);
+      window.alert('The PDF export failed. Please try again.');
+    } finally {
+      setIsExportingPdf(false);
+    }
   };
 
   if (isLoading) {
@@ -1001,6 +820,152 @@ export default function App() {
         onClose={() => setIsShareOpen(false)}
         projectUrl={shareUrl}
       />
+
+      {isReadOnly && exportRange && (
+        <div className="fixed -left-[20000px] top-0 pointer-events-none opacity-100" aria-hidden="true">
+          <div
+            ref={listExportRef}
+            className="w-[1120px] bg-white text-gray-900 px-8 py-8"
+          >
+            <div className="flex flex-col gap-2">
+              <h1 className="text-[28px] font-black tracking-tight">{project.name}</h1>
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-gray-400">
+                {project.clientName} / List View
+              </p>
+            </div>
+
+            <div className="mt-6 overflow-hidden rounded-3xl border border-gray-200">
+              <div className="grid bg-gray-50/70 text-[10px] font-black uppercase tracking-[0.18em] text-gray-400" style={{ gridTemplateColumns: isGlobalMilestonesView ? '64px minmax(0,1fr) 160px' : '64px minmax(0,1fr) 150px 110px 150px' }}>
+                <div className="px-4 py-4">ID</div>
+                <div className="px-4 py-4">{isGlobalMilestonesView ? 'Project / Milestone' : 'Task'}</div>
+                {isGlobalMilestonesView ? (
+                  <div className="px-4 py-4">Date</div>
+                ) : (
+                  <>
+                    <div className="px-4 py-4">Start</div>
+                    <div className="px-4 py-4">Days</div>
+                    <div className="px-4 py-4">End</div>
+                  </>
+                )}
+              </div>
+
+              {exportTasks.map(({ task, depth, index }) => {
+                const dayCount = task.isMilestone ? '◆' : String(differenceInBusinessDays(parseISO(task.endDate), parseISO(task.startDate)) + 1);
+                const rowBg = task.isExternal ? '#FFF3FC' : '#FFFFFF';
+                const taskLabel = isGlobalMilestonesView && task.sourceProjectName
+                  ? `${task.sourceProjectName} / ${task.name}`
+                  : task.name;
+
+                return (
+                  <div
+                    key={`list-export-${task.id}`}
+                    className="grid border-t border-gray-100 text-[14px] text-gray-800"
+                    style={{
+                      gridTemplateColumns: isGlobalMilestonesView ? '64px minmax(0,1fr) 160px' : '64px minmax(0,1fr) 150px 110px 150px',
+                      backgroundColor: rowBg,
+                    }}
+                  >
+                    <div className="px-4 py-3 font-black text-gray-300">{index + 1}</div>
+                    <div className="px-4 py-3 font-bold" style={{ paddingLeft: `${depth * 18 + 16}px` }}>
+                      {taskLabel}
+                    </div>
+                    {isGlobalMilestonesView ? (
+                      <div className="px-4 py-3 font-bold text-gray-500 tabular-nums">
+                        {format(parseISO(task.startDate), 'dd MMM yyyy')}
+                      </div>
+                    ) : (
+                      <>
+                        <div className="px-4 py-3 font-bold text-gray-500 tabular-nums">
+                          {format(parseISO(task.startDate), 'dd MMM yyyy')}
+                        </div>
+                        <div className="px-4 py-3 font-bold text-gray-500 tabular-nums">
+                          {dayCount}
+                        </div>
+                        <div className="px-4 py-3 font-bold text-gray-500 tabular-nums">
+                          {format(parseISO(task.endDate), 'dd MMM yyyy')}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div
+            ref={ganttExportRef}
+            className="w-[1120px] bg-white text-gray-900 px-8 py-8"
+          >
+            <div className="flex flex-col gap-2">
+              <h1 className="text-[28px] font-black tracking-tight">{project.name}</h1>
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-gray-400">
+                {project.clientName} / Gantt View
+              </p>
+            </div>
+
+            <div className="mt-6 overflow-hidden rounded-3xl border border-gray-200">
+              <div className="flex border-b border-gray-200 bg-gray-50/70">
+                <div className={`shrink-0 px-4 py-4 text-[10px] font-black uppercase tracking-[0.18em] text-gray-400 ${isGlobalMilestonesView ? 'w-[380px]' : 'w-[300px]'}`}>
+                  {isGlobalMilestonesView ? 'Project / Milestone' : 'Task'}
+                </div>
+                <div className="flex-1 flex">
+                  {exportRange.days.map((day) => (
+                    <div
+                      key={`gantt-export-header-${day.toISOString()}`}
+                      className="w-8 shrink-0 border-l border-gray-100 py-4 text-center text-[10px] font-black uppercase tracking-wider text-gray-400"
+                    >
+                      {format(day, 'dd')}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {exportTasks.map(({ task, depth, index }) => {
+                const startOffset = differenceInDays(parseISO(task.startDate), exportRange.minDate);
+                const duration = task.isMilestone ? 1 : differenceInDays(parseISO(task.endDate), parseISO(task.startDate)) + 1;
+                const barLeft = startOffset * 32;
+                const barWidth = duration * 32;
+                const taskLabel = isGlobalMilestonesView && task.sourceProjectName
+                  ? `${task.sourceProjectName} / ${task.name}`
+                  : task.name;
+
+                return (
+                  <div key={`gantt-export-row-${task.id}`} className="flex border-t border-gray-100">
+                    <div className={`shrink-0 px-4 py-3 text-[14px] font-bold text-gray-800 ${isGlobalMilestonesView ? 'w-[380px]' : 'w-[300px]'}`} style={{ paddingLeft: `${depth * 18 + 16}px` }}>
+                      <span className="mr-3 text-[10px] font-black text-gray-300">{index + 1}</span>
+                      {taskLabel}
+                    </div>
+                    <div className="relative flex-1 overflow-hidden">
+                      <div className="absolute inset-0 flex">
+                        {exportRange.days.map((day) => (
+                          <div
+                            key={`gantt-export-grid-${task.id}-${day.toISOString()}`}
+                            className="w-8 shrink-0 border-l border-gray-100"
+                          />
+                        ))}
+                      </div>
+
+                      {task.isMilestone ? (
+                        <div
+                          className={`absolute top-1/2 -translate-y-1/2 h-[14px] w-[14px] rotate-45 ${task.isExternal ? 'bg-[#FFF3FC] border border-pink-200' : 'bg-gray-950'}`}
+                          style={{ left: `${barLeft + 9}px` }}
+                        />
+                      ) : (
+                        <div
+                          className={`absolute top-1/2 -translate-y-1/2 h-[18px] rounded-full ${task.isExternal ? 'bg-[#FFF3FC] border border-pink-200' : 'bg-[#5F7CFF]/20 border border-[#5F7CFF]/30'}`}
+                          style={{ left: `${barLeft}px`, width: `${Math.max(barWidth - 6, 20)}px` }}
+                        />
+                      )}
+
+                      <div className="h-[44px]" />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Subtle Background Accents */}
       <div className="fixed top-0 right-0 -z-10 w-[500px] h-[500px] bg-blue-500/5 blur-[120px] rounded-full pointer-events-none" />
