@@ -165,7 +165,7 @@ const AdminDashboard: React.FC = () => {
                   <div className="w-9 h-9 rounded-2xl bg-white/80 flex items-center justify-center text-pink-500 group-hover:scale-110 transition-transform border border-pink-100">
                     <Calendar size={18} />
                   </div>
-                  <span className="px-2.5 py-1 rounded-full bg-white/80 border border-pink-100 text-[7px] font-black uppercase tracking-[0.16em] text-pink-500">
+                  <span className="px-2 py-0.5 rounded-full bg-white/80 border border-pink-100 text-[6px] leading-none font-black uppercase tracking-[0.14em] text-pink-500">
                     Read Only
                   </span>
                 </div>
