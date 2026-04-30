@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Task } from '../types';
-import { format, parseISO, addBusinessDays, differenceInBusinessDays, isWeekend, startOfDay, addDays } from 'date-fns';
+import { format, parseISO, addBusinessDays, differenceInBusinessDays, isWeekend, startOfDay, addDays, startOfWeek, endOfWeek, addWeeks } from 'date-fns';
 import { Calendar, Trash2, Plus, ChevronRight, ChevronDown, GripVertical, FolderMinus, ArrowLeft } from 'lucide-react';
 import {
   DndContext,
@@ -630,6 +630,7 @@ interface ListViewProps {
   readOnly?: boolean;
   showProjectName?: boolean;
   isMobile?: boolean;
+  refreshTick?: number;
 }
 
 const ListView: React.FC<ListViewProps> = ({
@@ -642,6 +643,7 @@ const ListView: React.FC<ListViewProps> = ({
   onMoveTask,
   readOnly,
   showProjectName,
+  refreshTick,
 }) => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
@@ -678,6 +680,38 @@ const ListView: React.FC<ListViewProps> = ({
 
   const flattenedTasks = getFlattenedTasks();
   const orderedTasks = useMemo(() => flattenedTasks.map(t => t.task), [flattenedTasks]);
+  const globalMilestoneSections = useMemo(() => {
+    if (!isGlobalMilestonesView) return null;
+
+    const now = startOfDay(new Date());
+    const thisWeekEnd = endOfWeek(now, { weekStartsOn: 1 });
+    const nextWeekStart = startOfWeek(addWeeks(now, 1), { weekStartsOn: 1 });
+    const nextWeekEnd = endOfWeek(addWeeks(now, 1), { weekStartsOn: 1 });
+
+    const buckets: Array<{
+      id: 'this-week' | 'next-week' | 'future';
+      label: string;
+      items: { task: Task; depth: number }[];
+    }> = [
+      { id: 'this-week', label: 'This week', items: [] },
+      { id: 'next-week', label: 'Next week', items: [] },
+      { id: 'future', label: 'Future', items: [] },
+    ];
+
+    flattenedTasks.forEach((entry) => {
+      const taskDate = startOfDay(parseISO(entry.task.startDate));
+
+      if (taskDate <= thisWeekEnd) {
+        buckets[0].items.push(entry);
+      } else if (taskDate >= nextWeekStart && taskDate <= nextWeekEnd) {
+        buckets[1].items.push(entry);
+      } else {
+        buckets[2].items.push(entry);
+      }
+    });
+
+    return buckets.filter((section) => section.items.length > 0);
+  }, [flattenedTasks, isGlobalMilestonesView, refreshTick]);
 
   const handleDragStart = (event: DragStartEvent) => {
     if (readOnly) return;
@@ -810,25 +844,59 @@ const ListView: React.FC<ListViewProps> = ({
                 </div>
               ) : (
                 <>
-                  {flattenedTasks.map(({ task, depth }, index) => (
-                    <SortableTaskRow
-                      key={task.id}
-                      task={task}
-                      index={index}
-                      depth={depth}
-                      hasSubtasks={tasks.some((t) => t.parentId === task.id)}
-                      isExpanded={expandedTasks.has(task.id)}
-                      onToggleExpand={toggleExpand}
-                      onAddTask={onAddTask}
-                      onUpdateTask={onUpdateTask}
-                      onDeleteTask={onDeleteTask}
-                      onUnnestTask={unnestTask}
-                      isOver={overId === task.id && activeId !== task.id}
-                      tasks={orderedTasks}
-                      readOnly={readOnly}
-                      showProjectName={showProjectName}
-                    />
-                  ))}
+                  {isGlobalMilestonesView && globalMilestoneSections ? (
+                    globalMilestoneSections.map((section) => (
+                      <div key={section.id} className="flex flex-col">
+                        <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-y border-gray-100 px-4 py-2">
+                          <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.18em]">
+                            {section.label}
+                          </span>
+                        </div>
+                        {section.items.map(({ task, depth }) => {
+                          const index = flattenedTasks.findIndex((entry) => entry.task.id === task.id);
+                          return (
+                            <SortableTaskRow
+                              key={task.id}
+                              task={task}
+                              index={index}
+                              depth={depth}
+                              hasSubtasks={tasks.some((t) => t.parentId === task.id)}
+                              isExpanded={expandedTasks.has(task.id)}
+                              onToggleExpand={toggleExpand}
+                              onAddTask={onAddTask}
+                              onUpdateTask={onUpdateTask}
+                              onDeleteTask={onDeleteTask}
+                              onUnnestTask={unnestTask}
+                              isOver={overId === task.id && activeId !== task.id}
+                              tasks={orderedTasks}
+                              readOnly={readOnly}
+                              showProjectName={showProjectName}
+                            />
+                          );
+                        })}
+                      </div>
+                    ))
+                  ) : (
+                    flattenedTasks.map(({ task, depth }, index) => (
+                      <SortableTaskRow
+                        key={task.id}
+                        task={task}
+                        index={index}
+                        depth={depth}
+                        hasSubtasks={tasks.some((t) => t.parentId === task.id)}
+                        isExpanded={expandedTasks.has(task.id)}
+                        onToggleExpand={toggleExpand}
+                        onAddTask={onAddTask}
+                        onUpdateTask={onUpdateTask}
+                        onDeleteTask={onDeleteTask}
+                        onUnnestTask={unnestTask}
+                        isOver={overId === task.id && activeId !== task.id}
+                        tasks={orderedTasks}
+                        readOnly={readOnly}
+                        showProjectName={showProjectName}
+                      />
+                    ))
+                  )}
                 </>
               )}
             </div>

@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { Task, ViewMode } from '../types';
-import { format, addDays, differenceInDays, startOfDay, isWithinInterval, parseISO, startOfWeek, endOfWeek, eachDayOfInterval, eachWeekOfInterval, startOfMonth, endOfMonth, eachMonthOfInterval, isWeekend, addBusinessDays, differenceInBusinessDays } from 'date-fns';
+import { format, addDays, differenceInDays, startOfDay, isWithinInterval, parseISO, startOfWeek, endOfWeek, eachDayOfInterval, eachWeekOfInterval, startOfMonth, endOfMonth, eachMonthOfInterval, isWeekend, addBusinessDays, differenceInBusinessDays, addWeeks } from 'date-fns';
 import { motion } from 'motion/react';
 
 interface GanttViewProps {
@@ -10,6 +10,8 @@ interface GanttViewProps {
   zoom: number;
   onUpdateTask: (id: string, updates: Partial<Task>) => void;
   readOnly?: boolean;
+  showProjectName?: boolean;
+  refreshTick?: number;
 }
 
 type DragType = 'move' | 'resize-start' | 'resize-end';
@@ -24,7 +26,7 @@ interface DragState {
 
 const MILESTONE_SIZE = 14;
 
-const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, onUpdateTask, readOnly }) => {
+const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, onUpdateTask, readOnly, showProjectName, refreshTick }) => {
   const [dragState, setDragState] = useState<DragState | null>(null);
   const [previewDelta, setPreviewDelta] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -32,6 +34,39 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
   const parentIds = useMemo(() => {
     return new Set(allTasks.map(t => t.parentId).filter(Boolean));
   }, [allTasks]);
+  const isGlobalMilestonesView = Boolean(readOnly && showProjectName);
+  const globalMilestoneSections = useMemo(() => {
+    if (!isGlobalMilestonesView) return null;
+
+    const now = startOfDay(new Date());
+    const thisWeekEnd = endOfWeek(now, { weekStartsOn: 1 });
+    const nextWeekStart = startOfWeek(addWeeks(now, 1), { weekStartsOn: 1 });
+    const nextWeekEnd = endOfWeek(addWeeks(now, 1), { weekStartsOn: 1 });
+
+    const buckets: Array<{
+      id: 'this-week' | 'next-week' | 'future';
+      label: string;
+      items: Task[];
+    }> = [
+      { id: 'this-week', label: 'This week', items: [] },
+      { id: 'next-week', label: 'Next week', items: [] },
+      { id: 'future', label: 'Future', items: [] },
+    ];
+
+    tasks.forEach((task) => {
+      const taskDate = startOfDay(parseISO(task.startDate));
+
+      if (taskDate <= thisWeekEnd) {
+        buckets[0].items.push(task);
+      } else if (taskDate >= nextWeekStart && taskDate <= nextWeekEnd) {
+        buckets[1].items.push(task);
+      } else {
+        buckets[2].items.push(task);
+      }
+    });
+
+    return buckets.filter((section) => section.items.length > 0);
+  }, [isGlobalMilestonesView, tasks, refreshTick]);
 
   const { minDate, maxDate } = useMemo(() => {
     const today = startOfDay(new Date());
@@ -297,7 +332,21 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
 
       {/* Tasks */}
       <div className="relative pt-2 pb-20" style={{ width: totalWidth }}>
-        {tasks.map((task, index) => {
+        {(isGlobalMilestonesView && globalMilestoneSections
+          ? globalMilestoneSections.flatMap((section) => [{ kind: 'divider' as const, id: section.id, label: section.label }, ...section.items.map((task) => ({ kind: 'task' as const, task }))])
+          : tasks.map((task) => ({ kind: 'task' as const, task }))
+        ).map((row) => {
+          if (row.kind === 'divider') {
+            return (
+              <div key={row.id} className="h-8 flex items-center border-y border-gray-100 bg-white/95 backdrop-blur-sm">
+                <span className="px-3 text-[10px] font-black text-gray-400 uppercase tracking-[0.18em]">
+                  {row.label}
+                </span>
+              </div>
+            );
+          }
+
+          const task = row.task;
           let { left, width } = getTaskPosition(task);
           const isDraggingThis = dragState?.taskId === task.id;
           const isMilestone = Boolean(task.isMilestone);

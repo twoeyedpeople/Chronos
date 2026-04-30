@@ -214,6 +214,7 @@ export default function App() {
   const [isReadOnly, setIsReadOnly] = useState(false);
   const [undoStack, setUndoStack] = useState<Project[]>([]);
   const [isGlobalMilestonesView, setIsGlobalMilestonesView] = useState(false);
+  const [globalMilestonesRefreshTick, setGlobalMilestonesRefreshTick] = useState(() => Date.now());
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [selectedMilestoneProjectIds, setSelectedMilestoneProjectIds] = useState<string[] | null>(null);
@@ -241,6 +242,17 @@ export default function App() {
       setMainViewMode('list');
     }
   }, [isMobile, mainViewMode]);
+
+  useEffect(() => {
+    if (!isGlobalMilestonesView) return;
+
+    setGlobalMilestonesRefreshTick(Date.now());
+    const interval = window.setInterval(() => {
+      setGlobalMilestonesRefreshTick(Date.now());
+    }, 60_000);
+
+    return () => window.clearInterval(interval);
+  }, [isGlobalMilestonesView]);
 
   // Expand all parents when changing main view mode or zoom/view settings
   useEffect(() => {
@@ -1045,6 +1057,7 @@ export default function App() {
               onMoveTask={moveTask}
               readOnly={isReadOnly}
               showProjectName={isGlobalMilestonesView}
+              refreshTick={globalMilestonesRefreshTick}
             />
             <GanttView 
               tasks={visibleFlattenedTasks.map(t => t.task)}
@@ -1053,6 +1066,8 @@ export default function App() {
               zoom={zoom}
               onUpdateTask={updateTask}
               readOnly={isReadOnly}
+              showProjectName={isGlobalMilestonesView}
+              refreshTick={globalMilestonesRefreshTick}
             />
           </>
         ) : (
@@ -1067,6 +1082,7 @@ export default function App() {
             readOnly={isReadOnly}
             showProjectName={isGlobalMilestonesView}
             isMobile={isMobile}
+            refreshTick={globalMilestonesRefreshTick}
           />
         )}
       </main>
