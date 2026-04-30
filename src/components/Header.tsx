@@ -23,7 +23,6 @@ interface HeaderProps {
   isSaving?: boolean;
   readOnly?: boolean;
   showFiltersButton?: boolean;
-  activeFilterCount?: number;
 }
 
 const Header: React.FC<HeaderProps> = ({ 
@@ -46,8 +45,7 @@ const Header: React.FC<HeaderProps> = ({
   onMainViewModeChange,
   isSaving,
   readOnly,
-  showFiltersButton,
-  activeFilterCount
+  showFiltersButton
 }) => {
   return (
     <header className="h-20 px-4 md:px-8 bg-white/95 backdrop-blur-2xl border-b border-gray-100 flex items-center justify-between sticky top-0 z-50 shadow-sm gap-4 overflow-x-auto no-scrollbar">
@@ -119,11 +117,6 @@ const Header: React.FC<HeaderProps> = ({
             title="Filters"
           >
             <SlidersHorizontal size={15} />
-            {typeof activeFilterCount === 'number' && (
-              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-blue-600 text-white text-[9px] font-black flex items-center justify-center">
-                {activeFilterCount}
-              </span>
-            )}
           </button>
         )}
       </div>
@@ -170,9 +163,6 @@ const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center gap-2">
           {readOnly && (
             <>
-              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">
-                View Only
-              </span>
               <button
                 onClick={onDownloadPdf}
                 className="flex items-center gap-2 px-4 py-2 bg-gray-950 hover:bg-black text-white rounded-xl text-xs font-bold transition-all shadow-lg hover:shadow-xl active:scale-95 whitespace-nowrap"

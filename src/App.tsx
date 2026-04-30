@@ -988,11 +988,11 @@ export default function App() {
 
       {isGlobalMilestonesView && isFiltersOpen && (
         <div
-          className="fixed inset-0 z-[60] bg-gray-950/18 backdrop-blur-[2px]"
+          className="fixed inset-0 z-[60] bg-gray-950/10 backdrop-blur-[1px]"
           onClick={() => setIsFiltersOpen(false)}
         >
           <div
-            className="absolute right-4 top-24 md:right-8 w-[min(560px,calc(100vw-2rem))] rounded-[28px] border border-gray-200/80 bg-white/97 shadow-[0_24px_80px_rgba(15,23,42,0.16)] overflow-hidden"
+            className="absolute right-4 top-[5.25rem] md:right-8 w-[min(560px,calc(100vw-2rem))] rounded-[28px] border border-gray-200/80 bg-white/98 shadow-[0_24px_80px_rgba(15,23,42,0.14)] overflow-hidden"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="px-5 py-4 border-b border-gray-100 flex items-start justify-between gap-4">
