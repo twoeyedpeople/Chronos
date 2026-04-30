@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Project, Task, ViewMode, MainViewMode } from './types';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
@@ -82,6 +82,18 @@ function cloneProject(project: Project): Project {
     ...project,
     tasks: project.tasks.map((task) => ({ ...task })),
   };
+}
+
+function getLocalProjectDraft(projectId: string): Project | null {
+  const raw = localStorage.getItem(`project_${projectId}`);
+  if (!raw) return null;
+
+  try {
+    return JSON.parse(raw) as Project;
+  } catch (error) {
+    console.error('Failed to parse local project draft', error);
+    return null;
+  }
 }
 
 function rollupTaskDates(tasks: Task[], parentId: string | null | undefined): Task[] {
@@ -196,6 +208,12 @@ export default function App() {
   const [isReadOnly, setIsReadOnly] = useState(false);
   const [undoStack, setUndoStack] = useState<Project[]>([]);
   const [isGlobalMilestonesView, setIsGlobalMilestonesView] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const projectRef = useRef(project);
+
+  useEffect(() => {
+    projectRef.current = project;
+  }, [project]);
 
   // Expand all parents when changing main view mode or zoom/view settings
   useEffect(() => {
@@ -247,9 +265,11 @@ export default function App() {
         setProject(buildGlobalMilestonesProject(projects));
         setExpandedTasks(new Set());
         setUndoStack([]);
+        setHasUnsavedChanges(false);
         setIsLoading(false);
       }, () => {
         setProject(buildGlobalMilestonesProject([]));
+        setHasUnsavedChanges(false);
         setIsLoading(false);
       });
       return () => unsub();
@@ -258,8 +278,16 @@ export default function App() {
     if (pId && isFirebaseConfigured) {
       const unsub = onSnapshot(doc(db, 'projects', pId), (docSnap) => {
         if (docSnap.exists()) {
-          setProject(withProjectId(docSnap.data() as Partial<Project>, docSnap.id));
+          const remoteProject = withProjectId(docSnap.data() as Partial<Project>, docSnap.id);
+          const localDraft = getLocalProjectDraft(docSnap.id);
+          const effectiveProject =
+            localDraft && localDraft.updatedAt > remoteProject.updatedAt
+              ? withProjectId(localDraft, docSnap.id)
+              : remoteProject;
+
+          setProject(effectiveProject);
           setUndoStack([]);
+          setHasUnsavedChanges(Boolean(localDraft && localDraft.updatedAt > remoteProject.updatedAt));
         } else {
           console.error(`Project ${pId} not found. Loading default project.`);
         }
@@ -284,24 +312,37 @@ export default function App() {
     }
   }, [project, projectId, isReadOnly]);
 
-  // Autosave to Firestore every 2 minutes
+  // Autosave unsaved changes to Firestore quickly so new projects survive refreshes.
   useEffect(() => {
-    if (!projectId || !isFirebaseConfigured || isReadOnly) return;
+    if (!projectId || !isFirebaseConfigured || isReadOnly || !hasUnsavedChanges) return;
 
-    const interval = setInterval(async () => {
-      console.log("Autosaving to Firestore...");
+    const timeout = window.setTimeout(async () => {
       try {
         await updateDoc(doc(db, 'projects', projectId), {
-          ...project,
+          ...projectRef.current,
+          id: projectId,
           updatedAt: Date.now()
         });
+        setHasUnsavedChanges(false);
       } catch (error) {
         handleFirestoreError(error, OperationType.UPDATE, `projects/${projectId}`);
       }
-    }, 2 * 60 * 1000); // 2 minutes
+    }, 1500);
 
-    return () => clearInterval(interval);
-  }, [project, projectId, isReadOnly]);
+    return () => clearTimeout(timeout);
+  }, [project, projectId, isReadOnly, hasUnsavedChanges]);
+
+  useEffect(() => {
+    if (!hasUnsavedChanges || isReadOnly) return;
+
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = '';
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [hasUnsavedChanges, isReadOnly]);
 
   const applyProjectChange = (updater: (prev: Project) => Project) => {
     if (isReadOnly) return;
@@ -311,6 +352,7 @@ export default function App() {
       if (next === prev) return prev;
 
       setUndoStack((stack) => [cloneProject(prev), ...stack].slice(0, MAX_UNDO_STEPS));
+      setHasUnsavedChanges(true);
       return next;
     });
   };
@@ -494,21 +536,40 @@ export default function App() {
       const [previous, ...rest] = stack;
       if (!previous) return stack;
       setProject(cloneProject(previous));
+      setHasUnsavedChanges(true);
       return rest;
     });
   };
 
   const persistProject = async () => {
+    if (!projectId) {
+      console.error('Cannot save project without a project id.');
+      window.alert('This timeline could not be saved because the project ID is missing.');
+      return false;
+    }
+
     if (!isFirebaseConfigured) {
       console.error("Firebase is not yet configured. Please set up Firebase to save your timeline.");
+      window.alert('Firebase is not configured, so this timeline cannot be saved yet.');
       return false;
     }
     setIsSaving(true);
     try {
-      await setDoc(doc(db, 'projects', projectId), { ...project, id: projectId });
+      const projectToPersist = {
+        ...projectRef.current,
+        id: projectId,
+        updatedAt: Date.now(),
+      };
+
+      await setDoc(doc(db, 'projects', projectId), projectToPersist);
+      projectRef.current = projectToPersist;
+      setProject(projectToPersist);
+      setHasUnsavedChanges(false);
+      localStorage.setItem(`project_${projectId}`, JSON.stringify(projectToPersist));
       return true;
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, `projects/${projectId}`);
+      window.alert('Save failed. Your latest edits are still stored locally in this browser, but they did not reach the cloud.');
       return false;
     } finally {
       setIsSaving(false);

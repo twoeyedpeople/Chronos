@@ -30,6 +30,10 @@ const AdminDashboard: React.FC = () => {
     return () => unsub();
   }, []);
 
+  const navigateToProject = (url: string) => {
+    window.location.assign(url);
+  };
+
   const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newProjectName || !newClientName) return;
@@ -47,8 +51,7 @@ const AdminDashboard: React.FC = () => {
       };
 
       await setDoc(projectRef, newProject);
-      // Open in new tab
-      window.open(`${window.location.origin}${window.location.pathname}?p=${projectRef.id}&edit=1`, '_blank');
+      navigateToProject(`${window.location.origin}${window.location.pathname}?p=${projectRef.id}&edit=1`);
       
       setIsModalOpen(false);
       setNewProjectName('');
@@ -153,7 +156,7 @@ const AdminDashboard: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {showGlobalMilestonesCard && (
             <div
-              onClick={() => window.open(`${window.location.origin}${window.location.pathname}?global=milestones`, '_blank')}
+              onClick={() => navigateToProject(`${window.location.origin}${window.location.pathname}?global=milestones`)}
               className="group bg-[#FFF3FC] border border-pink-100 rounded-3xl p-6 hover:shadow-2xl hover:shadow-pink-200/40 transition-all cursor-pointer relative overflow-hidden"
             >
               <div className="flex flex-col gap-4 relative z-10">
@@ -195,7 +198,7 @@ const AdminDashboard: React.FC = () => {
           {filteredProjects.map((project) => (
             <div
               key={project.id}
-              onClick={() => window.open(`${window.location.origin}${window.location.pathname}?p=${project.id}&edit=1`, '_blank')}
+              onClick={() => navigateToProject(`${window.location.origin}${window.location.pathname}?p=${project.id}&edit=1`)}
               className="group bg-white border border-gray-100 rounded-3xl p-6 hover:shadow-2xl hover:shadow-blue-500/5 transition-all cursor-pointer relative overflow-hidden"
             >
               <div className="flex flex-col gap-4 relative z-10">
