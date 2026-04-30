@@ -50,75 +50,88 @@ const Header: React.FC<HeaderProps> = ({
   activeFilterCount
 }) => {
   return (
-    <header className="h-20 px-4 md:px-8 bg-white/90 backdrop-blur-2xl border-b border-gray-100 flex items-center justify-between sticky top-0 z-50 shadow-sm gap-4 overflow-x-auto no-scrollbar">
-      <div className="flex items-center gap-4 md:gap-8 shrink-0">
-        <div className="flex flex-col items-start gap-0.5">
-          <div className="flex items-center gap-2">
-            <img 
-              src="https://twoeyedpeople.com/img/2EP_Logotype.svg" 
-              alt="Two-Eyed People" 
-              className="h-4.5 object-contain opacity-50"
-              referrerPolicy="no-referrer"
-            />
-            <span className="text-[8px] font-black text-gray-300 uppercase tracking-[0.2em] mt-0.5">/</span>
-            <input
-              type="text"
-              value={clientName}
-              onChange={(e) => onClientNameChange(e.target.value)}
-              readOnly={readOnly}
-              className="text-[10px] font-black text-gray-400 bg-transparent border-none focus:ring-0 placeholder-gray-200 uppercase tracking-widest p-0 w-auto min-w-[60px]"
-              placeholder="Client..."
-            />
-          </div>
+    <header className="h-20 px-4 md:px-8 bg-white/95 backdrop-blur-2xl border-b border-gray-100 flex items-center justify-between sticky top-0 z-50 shadow-sm gap-4 overflow-x-auto no-scrollbar">
+      <div className="flex items-center gap-4 md:gap-6 shrink-0">
+        <img 
+          src="https://twoeyedpeople.com/img/2EP_Logotype.svg" 
+          alt="Two-Eyed People" 
+          className="h-4 object-contain opacity-70 shrink-0"
+          referrerPolicy="no-referrer"
+        />
+
+        <div className="flex flex-col items-start gap-1 min-w-[170px]">
           <input
             type="text"
             value={projectName}
             onChange={(e) => onProjectNameChange(e.target.value)}
             readOnly={readOnly}
-            className="text-lg font-bold text-gray-900 bg-transparent border-none focus:ring-0 placeholder-gray-300 min-w-[150px] max-w-[200px] md:max-w-[300px] tracking-tight p-0"
+            className="text-[15px] md:text-[16px] font-black text-gray-900 bg-transparent border-none focus:ring-0 placeholder-gray-300 tracking-tight p-0 leading-none min-w-[150px] max-w-[240px] md:max-w-[320px]"
             placeholder="Project Name..."
+          />
+          <input
+            type="text"
+            value={clientName}
+            onChange={(e) => onClientNameChange(e.target.value)}
+            readOnly={readOnly}
+            className="text-[9px] font-black text-gray-400 bg-transparent border-none focus:ring-0 placeholder-gray-200 uppercase tracking-[0.18em] p-0 leading-none min-w-[80px] max-w-[220px]"
+            placeholder="Client..."
           />
         </div>
 
         <button
           onClick={onHome}
           disabled={isSaving}
-          className="w-9 h-9 rounded-xl border border-gray-100 bg-gray-50/80 text-gray-400 hover:text-blue-600 hover:bg-white hover:shadow-sm transition-all flex items-center justify-center disabled:opacity-50"
+          className="w-9 h-9 rounded-full border border-gray-100 bg-gray-50/80 text-gray-400 hover:text-blue-600 hover:bg-white hover:shadow-sm transition-all flex items-center justify-center disabled:opacity-50 shrink-0"
           title="Save and return home"
         >
-          <Home size={16} />
+          <Home size={15} />
         </button>
 
-        <div className="flex items-center gap-0.5 bg-gray-100/50 p-1 rounded-xl border border-gray-100">
+        <div className="flex items-center gap-1 bg-gray-50 border border-gray-100 rounded-2xl p-1 shrink-0">
           <button
             onClick={() => onMainViewModeChange('list')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all ${
               mainViewMode === 'list' 
-                ? 'bg-white text-blue-600 shadow-sm' 
+                ? 'bg-white text-gray-800 shadow-sm' 
                 : 'text-gray-500 hover:text-gray-700'
             }`}
           >
-            <LayoutList size={14} />
+            <LayoutList size={13} />
             <span>List</span>
           </button>
           <button
             onClick={() => onMainViewModeChange('gantt')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all ${
               mainViewMode === 'gantt' 
                 ? 'bg-white text-blue-600 shadow-sm' 
                 : 'text-gray-500 hover:text-gray-700'
             }`}
           >
-            <GanttChart size={14} />
+            <GanttChart size={13} />
             <span>Gantt</span>
           </button>
         </div>
+
+        {showFiltersButton && (
+          <button
+            onClick={onOpenFilters}
+            className="w-9 h-9 rounded-xl border border-gray-100 bg-gray-50 text-gray-500 hover:text-gray-800 hover:bg-white hover:shadow-sm transition-all flex items-center justify-center relative shrink-0"
+            title="Filters"
+          >
+            <SlidersHorizontal size={15} />
+            {typeof activeFilterCount === 'number' && (
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-blue-600 text-white text-[9px] font-black flex items-center justify-center">
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
+        )}
       </div>
 
-      <div className="flex items-center gap-3 md:gap-6 shrink-0">
+      <div className="flex items-center gap-3 md:gap-5 shrink-0">
         {mainViewMode === 'gantt' && (
           <>
-            <div className="flex items-center gap-0.5 bg-gray-100/50 p-0.5 rounded-full border border-gray-100">
+            <div className="flex items-center gap-0.5 bg-gray-50 p-0.5 rounded-full border border-gray-100">
               {(['day', 'week', 'month'] as const).map((mode) => (
                 <button
                   key={mode}
@@ -134,7 +147,7 @@ const Header: React.FC<HeaderProps> = ({
               ))}
             </div>
 
-            <div className="flex items-center gap-1 bg-gray-100/50 p-0.5 rounded-full border border-gray-100">
+            <div className="flex items-center gap-1 bg-gray-50 p-0.5 rounded-full border border-gray-100">
               <button 
                 onClick={() => onZoomChange(Math.max(0.5, zoom - 0.1))}
                 className="p-1.5 hover:bg-white hover:text-blue-500 rounded-full transition-all text-gray-400"
@@ -157,26 +170,12 @@ const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center gap-2">
           {readOnly && (
             <>
-              {showFiltersButton && (
-                <button
-                  onClick={onOpenFilters}
-                  className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 hover:border-gray-300 text-gray-700 rounded-xl text-xs font-bold transition-all shadow-sm hover:shadow-md whitespace-nowrap"
-                >
-                  <SlidersHorizontal size={14} />
-                  <span>Filters</span>
-                  {typeof activeFilterCount === 'number' && (
-                    <span className="px-1.5 py-0.5 rounded-full bg-gray-100 text-[10px] font-black text-gray-500">
-                      {activeFilterCount}
-                    </span>
-                  )}
-                </button>
-              )}
               <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">
                 View Only
               </span>
               <button
                 onClick={onDownloadPdf}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-900 hover:bg-black text-white rounded-xl text-xs font-bold transition-all shadow-lg hover:shadow-xl active:scale-95 whitespace-nowrap"
+                className="flex items-center gap-2 px-4 py-2 bg-gray-950 hover:bg-black text-white rounded-xl text-xs font-bold transition-all shadow-lg hover:shadow-xl active:scale-95 whitespace-nowrap"
               >
                 <Download size={14} />
                 <span>Download PDF</span>
