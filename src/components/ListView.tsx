@@ -284,9 +284,17 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
             <div className="w-20 px-2 shrink-0">
               {readOnly ? (
                 <div className="h-[30px] w-full rounded-lg border border-gray-100 bg-white flex items-center px-3 text-[11px] font-bold">
-                  <span className={`block w-full text-left ${task.isMilestone ? (task.isExternal ? 'text-pink-300' : 'text-gray-900') : 'text-gray-600'}`}>
-                    {task.isMilestone ? '◆' : days}
-                  </span>
+                  {task.isMilestone ? (
+                    <span
+                      className={`block h-2.5 w-2.5 rotate-45 rounded-[1px] ${
+                        task.isExternal ? 'bg-[#FFF3FC]' : 'bg-gray-900'
+                      }`}
+                    />
+                  ) : (
+                    <span className="block w-full text-left text-gray-600 tabular-nums">
+                      {days}
+                    </span>
+                  )}
                 </div>
               ) : (
                 <div className="relative">
@@ -595,8 +603,8 @@ const ListView: React.FC<ListViewProps> = ({
 
                 <div className="h-16 w-px bg-gray-100 mx-8" />
 
-                <div className="flex flex-col gap-1.5 relative z-10 flex-1">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Project Span</span>
+                <div className="flex flex-col items-start gap-2 relative z-10 flex-1 text-left">
+                  <span className="text-[20px] font-black text-gray-500 uppercase tracking-[0.12em] leading-none">Project Details</span>
                   <div className="flex items-center gap-4 mt-2">
                     {tasks.length > 0 ? (
                       <>

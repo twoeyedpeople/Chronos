@@ -686,7 +686,6 @@ export default function App() {
       const contentHeight = pageHeight - margin * 2;
       const softBlue = [95, 124, 255] as const;
       const softPink = [255, 243, 252] as const;
-      const softPinkBorder = [249, 194, 232] as const;
       const softBlueFill = [233, 238, 255] as const;
 
       const drawDiamond = (
@@ -694,7 +693,6 @@ export default function App() {
         centerY: number,
         size: number,
         fill: readonly [number, number, number],
-        stroke?: readonly [number, number, number],
       ) => {
         const half = size / 2;
         const points = [
@@ -704,11 +702,7 @@ export default function App() {
           [centerX - half, centerY],
         ];
 
-        if (stroke) {
-          pdf.setDrawColor(...stroke);
-        } else {
-          pdf.setDrawColor(...fill);
-        }
+        pdf.setDrawColor(...fill);
         pdf.setFillColor(...fill);
         pdf.lines(
           [
@@ -720,7 +714,7 @@ export default function App() {
           points[0][0],
           points[0][1],
           [1, 1],
-          stroke ? 'FD' : 'F',
+          'F',
           true,
         );
       };
@@ -817,7 +811,6 @@ export default function App() {
                 y + listRowHeight / 2 + 0.5,
                 Math.max(8, Math.min(11, listRowHeight - 5)),
                 task.isExternal ? softPink : ([17, 24, 39] as const),
-                task.isExternal ? softPinkBorder : undefined,
               );
             } else {
               pdf.text(value, colX + col.width / 2, textY, { align: 'center' });
@@ -830,113 +823,6 @@ export default function App() {
           }
           colX += col.width;
         });
-      });
-
-      pdf.addPage();
-
-      drawPageHeading('Gantt View');
-      const ganttTop = margin + 48;
-      const ganttLeftWidth = isGlobalMilestonesView ? 290 : 240;
-      const ganttWidth = contentWidth - ganttLeftWidth;
-      const ganttHeaderMonthHeight = 14;
-      const ganttHeaderDayHeight = 16;
-      const ganttHeaderHeight = ganttHeaderMonthHeight + ganttHeaderDayHeight;
-      const ganttRowHeight = Math.max(12, Math.min(22, Math.floor((contentHeight - 42 - ganttHeaderHeight) / Math.max(rowCount, 1))));
-      const ganttFontSize = Math.max(7, Math.min(10, ganttRowHeight - 4));
-      const ganttDays = exportRange.days;
-      const dayCellWidth = ganttWidth / Math.max(ganttDays.length, 1);
-      const monthSegments = ganttDays.reduce<{ label: string; count: number }[]>((segments, day) => {
-        const label = format(day, 'MMM yyyy');
-        const last = segments[segments.length - 1];
-        if (last && last.label === label) {
-          last.count += 1;
-        } else {
-          segments.push({ label, count: 1 });
-        }
-        return segments;
-      }, []);
-
-      pdf.setDrawColor(229, 231, 235);
-      pdf.setFillColor(255, 255, 255);
-      pdf.roundedRect(margin, ganttTop, contentWidth, ganttHeaderHeight + ganttRowHeight * rowCount, 12, 12, 'FD');
-
-      pdf.setFillColor(249, 250, 251);
-      pdf.roundedRect(margin, ganttTop, contentWidth, ganttHeaderHeight, 12, 12, 'F');
-      pdf.rect(margin, ganttTop + ganttHeaderMonthHeight, contentWidth, ganttHeaderDayHeight, 'F');
-
-      pdf.setFont('helvetica', 'bold');
-      pdf.setFontSize(8);
-      pdf.setTextColor(156, 163, 175);
-      pdf.text(isGlobalMilestonesView ? 'PROJECT / MILESTONE' : 'TASK', margin + 8, ganttTop + ganttHeaderMonthHeight + ganttHeaderDayHeight * 0.72);
-
-      let monthX = margin + ganttLeftWidth;
-      monthSegments.forEach((segment) => {
-        const segmentWidth = segment.count * dayCellWidth;
-        pdf.text(segment.label.toUpperCase(), monthX + 4, ganttTop + ganttHeaderMonthHeight * 0.72);
-        monthX += segmentWidth;
-      });
-
-      ganttDays.forEach((day, index) => {
-        const dayX = margin + ganttLeftWidth + index * dayCellWidth;
-        pdf.text(format(day, 'dd'), dayX + dayCellWidth / 2, ganttTop + ganttHeaderMonthHeight + ganttHeaderDayHeight * 0.72, { align: 'center' });
-        pdf.setDrawColor(243, 244, 246);
-        pdf.line(dayX, ganttTop, dayX, ganttTop + ganttHeaderHeight + ganttRowHeight * rowCount);
-      });
-
-      pdf.line(margin, ganttTop + ganttHeaderMonthHeight, margin + contentWidth, ganttTop + ganttHeaderMonthHeight);
-      pdf.line(margin, ganttTop + ganttHeaderHeight, margin + contentWidth, ganttTop + ganttHeaderHeight);
-      pdf.line(margin + ganttLeftWidth, ganttTop, margin + ganttLeftWidth, ganttTop + ganttHeaderHeight + ganttRowHeight * rowCount);
-
-      exportTasks.forEach(({ task, depth, index }, rowIndex) => {
-        const y = ganttTop + ganttHeaderHeight + ganttRowHeight * rowIndex;
-        if (task.isExternal) {
-          pdf.setFillColor(...softPink);
-          pdf.roundedRect(margin + 1, y, contentWidth - 2, ganttRowHeight, 0, 0, 'F');
-        } else {
-          pdf.setFillColor(255, 255, 255);
-          pdf.rect(margin + 1, y, contentWidth - 2, ganttRowHeight, 'F');
-        }
-
-        pdf.setDrawColor(243, 244, 246);
-        pdf.line(margin, y, margin + contentWidth, y);
-
-        const taskLabel = isGlobalMilestonesView && task.sourceProjectName
-          ? `${task.sourceProjectName} / ${task.name}`
-          : task.name;
-        const indent = isGlobalMilestonesView ? 0 : depth * 10;
-        pdf.setFont('helvetica', 'bold');
-        pdf.setFontSize(ganttFontSize);
-        pdf.setTextColor(55, 65, 81);
-        pdf.text(`${index + 1}`, margin + 6, y + ganttRowHeight * 0.66);
-        pdf.text(pdf.splitTextToSize(taskLabel, ganttLeftWidth - 28 - indent), margin + 22 + indent, y + ganttRowHeight * 0.66);
-
-        const startOffset = differenceInDays(parseISO(task.startDate), exportRange.minDate);
-        const duration = task.isMilestone ? 1 : differenceInDays(parseISO(task.endDate), parseISO(task.startDate)) + 1;
-        const barLeft = margin + ganttLeftWidth + startOffset * dayCellWidth;
-        const barWidth = duration * dayCellWidth;
-        const midY = y + ganttRowHeight / 2;
-
-        if (task.isMilestone) {
-          const size = Math.max(7, Math.min(12, ganttRowHeight - 4));
-          const cx = barLeft + dayCellWidth / 2;
-          const cy = midY;
-          drawDiamond(
-            cx,
-            cy,
-            size,
-            task.isExternal ? softPink : ([17, 24, 39] as const),
-            task.isExternal ? softPinkBorder : undefined,
-          );
-        } else {
-          if (task.isExternal) {
-            pdf.setFillColor(...softPink);
-            pdf.setDrawColor(...softPinkBorder);
-          } else {
-            pdf.setFillColor(...softBlueFill);
-            pdf.setDrawColor(...softBlue);
-          }
-          pdf.roundedRect(barLeft + 1, y + 3, Math.max(barWidth - 2, 10), Math.max(ganttRowHeight - 6, 8), 6, 6, 'FD');
-        }
       });
 
       const slug = `${project.clientName}-${project.name}`
