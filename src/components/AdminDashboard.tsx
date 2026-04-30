@@ -136,7 +136,7 @@ const AdminDashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 font-sans p-8">
       <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
           <div>
             <img 
               src="https://twoeyedpeople.com/img/2EP_Logotype.svg" 
@@ -179,7 +179,7 @@ const AdminDashboard: React.FC = () => {
                   <div className="w-9 h-9 rounded-2xl bg-white/80 flex items-center justify-center text-pink-500 group-hover:scale-110 transition-transform border border-pink-100">
                     <Calendar size={18} />
                   </div>
-                  <span className="px-2 py-0.5 rounded-full bg-white/80 border border-pink-100 text-[6px] leading-none font-black uppercase tracking-[0.14em] text-pink-500">
+                  <span className="px-3 py-1 rounded-full bg-white/80 border border-pink-100 text-[12px] leading-none font-black uppercase tracking-[0.14em] text-pink-500">
                     Read Only
                   </span>
                 </div>
@@ -199,10 +199,6 @@ const AdminDashboard: React.FC = () => {
                     <div className="flex items-center gap-2">
                       <Calendar size={11} />
                       <span className="text-[9px] font-bold">All active project milestones</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Calendar size={11} />
-                      <span className="text-[9px] font-bold">Live agency overview</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-1 text-pink-500 font-black text-[9px] uppercase tracking-[0.16em] opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
@@ -224,8 +220,19 @@ const AdminDashboard: React.FC = () => {
             >
               <div className="flex flex-col gap-2 relative z-10 h-full">
                 <div className="flex items-start justify-between">
-                  <div className="w-9 h-9 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform">
-                    <Folder size={18} />
+                  <div className="flex items-start gap-3 min-w-0 flex-1 pr-3">
+                    <div className="w-9 h-9 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform shrink-0">
+                      <Folder size={18} />
+                    </div>
+                    <div className="min-w-0 pt-0.5">
+                      <h3 className="text-[16px] font-black text-gray-900 tracking-tight leading-tight mb-1 group-hover:text-blue-600 transition-colors truncate">
+                        {project.name}
+                      </h3>
+                      <div className="flex items-center gap-2 text-gray-400">
+                        <User size={12} />
+                        <span className="text-[10px] font-black uppercase tracking-[0.18em] truncate">{project.clientName}</span>
+                      </div>
+                    </div>
                   </div>
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
                     <button
@@ -242,16 +249,6 @@ const AdminDashboard: React.FC = () => {
                     >
                       <Trash2 size={14} />
                     </button>
-                  </div>
-                </div>
-
-                <div className="pt-0">
-                  <h3 className="text-[16px] font-black text-gray-900 tracking-tight leading-tight mb-1 group-hover:text-blue-600 transition-colors">
-                    {project.name}
-                  </h3>
-                  <div className="flex items-center gap-2 text-gray-400">
-                    <User size={12} />
-                    <span className="text-[9px] font-black uppercase tracking-[0.18em]">{project.clientName}</span>
                   </div>
                 </div>
 
