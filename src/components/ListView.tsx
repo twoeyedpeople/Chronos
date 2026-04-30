@@ -271,23 +271,34 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
 
           {!isGlobalMilestonesView && (
             <div className="w-20 px-2 shrink-0">
-              <div className="relative">
-                <input
-                  type="text"
-                  value={daysInput}
-                  onChange={(e) => handleDaysChange(e.target.value)}
-                  onBlur={commitDaysChange}
-                  disabled={readOnly}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.currentTarget.blur();
-                    }
-                  }}
-                  className="text-[11px] bg-white border border-gray-100 rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500/10 outline-none text-gray-600 font-bold w-full pr-6"
-                  placeholder="0"
-                />
-                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] text-gray-300 font-bold uppercase pointer-events-none">d</span>
-              </div>
+              {task.isMilestone ? (
+                <div className="h-full flex items-center justify-center">
+                  <div
+                    className={`w-3.5 h-3.5 rotate-45 shadow-sm ${
+                      task.isExternal ? 'bg-[#FFF3FC] border border-pink-200' : 'bg-gray-950'
+                    }`}
+                    title="Milestone"
+                  />
+                </div>
+              ) : (
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={daysInput}
+                    onChange={(e) => handleDaysChange(e.target.value)}
+                    onBlur={commitDaysChange}
+                    disabled={readOnly}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.currentTarget.blur();
+                      }
+                    }}
+                    className="text-[11px] bg-white border border-gray-100 rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500/10 outline-none text-gray-600 font-bold w-full pr-6"
+                    placeholder="0"
+                  />
+                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] text-gray-300 font-bold uppercase pointer-events-none">d</span>
+                </div>
+              )}
             </div>
           )}
 
