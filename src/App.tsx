@@ -686,6 +686,7 @@ export default function App() {
       const contentHeight = pageHeight - margin * 2;
       const softBlue = [95, 124, 255] as const;
       const softPink = [255, 243, 252] as const;
+      const softPinkAccent = [249, 168, 212] as const;
       const softBlueFill = [233, 238, 255] as const;
 
       const drawDiamond = (
@@ -810,7 +811,7 @@ export default function App() {
                 colX + col.width / 2,
                 y + listRowHeight / 2 + 0.5,
                 Math.max(8, Math.min(11, listRowHeight - 5)),
-                task.isExternal ? softPink : ([17, 24, 39] as const),
+                task.isExternal ? softPinkAccent : ([17, 24, 39] as const),
               );
             } else {
               pdf.text(value, colX + col.width / 2, textY, { align: 'center' });

@@ -113,11 +113,11 @@ const SortableSidebarRow: React.FC<SortableSidebarRowProps> = ({
           >
             {task.parentId && !readOnly ? (
               <>
-                <div className={`w-1 h-1 rounded-full group-hover/dot:hidden ${task.isExternal ? 'bg-[#FFF3FC] ring-2 ring-pink-200' : 'bg-[#5F7CFF]'}`} />
+                <div className={`w-1.5 h-1.5 rounded-full group-hover/dot:hidden ${task.isExternal ? 'bg-pink-300' : 'bg-[#5F7CFF]'}`} />
                 <ArrowLeft size={9} className="hidden group-hover/dot:block text-[#5F7CFF]" />
               </>
             ) : (
-              <div className={`w-1 h-1 rounded-full ${task.isExternal ? 'bg-[#FFF3FC] ring-2 ring-pink-200' : 'bg-[#5F7CFF]'}`} />
+              <div className={`w-1.5 h-1.5 rounded-full ${task.isExternal ? 'bg-pink-300' : 'bg-[#5F7CFF]'}`} />
             )}
           </button>
         )}

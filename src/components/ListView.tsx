@@ -185,11 +185,11 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
           >
             {task.parentId && !readOnly ? (
               <>
-                <div className={`w-1 h-1 rounded-full group-hover/dot:hidden ${task.isExternal ? 'bg-[#FFF3FC] ring-2 ring-pink-200' : 'bg-[#5F7CFF]'}`} />
+                <div className={`w-1.5 h-1.5 rounded-full group-hover/dot:hidden ${task.isExternal ? 'bg-pink-300' : 'bg-[#5F7CFF]'}`} />
                 <ArrowLeft size={11} className="hidden group-hover/dot:block text-[#5F7CFF]" />
               </>
             ) : (
-              <div className={`w-1 h-1 rounded-full ${task.isExternal ? 'bg-[#FFF3FC] ring-2 ring-pink-200' : 'bg-[#5F7CFF]'}`} />
+              <div className={`w-1.5 h-1.5 rounded-full ${task.isExternal ? 'bg-pink-300' : 'bg-[#5F7CFF]'}`} />
             )}
           </button>
         )}
@@ -287,7 +287,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                   {task.isMilestone ? (
                     <span
                       className={`block h-2.5 w-2.5 rotate-45 rounded-[1px] ${
-                        task.isExternal ? 'bg-[#FFF3FC]' : 'bg-gray-900'
+                        task.isExternal ? 'bg-pink-300' : 'bg-gray-900'
                       }`}
                     />
                   ) : (
@@ -603,9 +603,9 @@ const ListView: React.FC<ListViewProps> = ({
 
                 <div className="h-16 w-px bg-gray-100 mx-8" />
 
-                <div className="flex flex-col items-start gap-2 relative z-10 flex-1 text-left">
-                  <span className="text-[20px] font-black text-gray-500 uppercase tracking-[0.12em] leading-none">Project Details</span>
-                  <div className="flex items-center gap-4 mt-2">
+                <div className="flex flex-col items-start gap-2 relative z-10 flex-1 text-left self-stretch">
+                  <span className="text-[15px] font-black text-gray-500 uppercase tracking-[0.12em] leading-none text-left">Project Details</span>
+                  <div className="flex items-center gap-4 mt-2 justify-start">
                     {tasks.length > 0 ? (
                       <>
                         <div className="flex flex-col gap-1">
