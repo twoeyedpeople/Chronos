@@ -74,6 +74,8 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
   const [daysInput, setDaysInput] = useState(task.isMilestone ? '◆' : String(days));
   const isGlobalMilestonesView = Boolean(readOnly && showProjectName);
   const globalMilestoneDateText = format(parseISO(task.startDate), 'EEE, dd MMM yy');
+  const mobileStartDateText = format(parseISO(task.startDate), 'dd MMM yy');
+  const mobileEndDateText = format(parseISO(task.endDate), 'dd MMM yy');
 
   useEffect(() => {
     setDaysInput(task.isMilestone ? '◆' : String(days));
@@ -338,6 +340,11 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
             {!isGlobalMilestonesView && (
               <>
                 <div className="w-32 px-2 shrink-0">
+                  {readOnly ? (
+                    <div className="text-[11px] text-gray-600 font-bold w-full tabular-nums">
+                      {format(parseISO(task.endDate), 'dd MMM yyyy')}
+                    </div>
+                  ) : (
                     <input
                       type="date"
                       value={task.endDate}
@@ -345,18 +352,21 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                       disabled={readOnly}
                       className="text-[11px] bg-white border border-gray-100 rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500/10 outline-none text-gray-600 font-bold w-full"
                     />
+                  )}
                 </div>
 
-                <div className="w-20 px-2 shrink-0">
-                    <input
-                      type="text"
-                      value={dependencyIndex}
-                      onChange={(e) => handleDependencyChange(e.target.value)}
-                      disabled={readOnly}
-                      className="text-[11px] bg-white border border-gray-100 rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500/10 outline-none text-gray-600 font-bold w-full text-center"
-                      placeholder="-"
-                    />
-                </div>
+                {!readOnly && (
+                  <div className="w-20 px-2 shrink-0">
+                      <input
+                        type="text"
+                        value={dependencyIndex}
+                        onChange={(e) => handleDependencyChange(e.target.value)}
+                        disabled={readOnly}
+                        className="text-[11px] bg-white border border-gray-100 rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500/10 outline-none text-gray-600 font-bold w-full text-center"
+                        placeholder="-"
+                      />
+                  </div>
+                )}
               </>
             )}
           </>
@@ -497,8 +507,32 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
             </div>
 
             {!isFolder ? (
-              <div className={`mt-3 ${isGlobalMilestonesView ? 'grid grid-cols-1' : 'grid grid-cols-2'} gap-2`}>
-                {isGlobalMilestonesView ? (
+              <div className={`mt-3 ${readOnly ? '' : isGlobalMilestonesView ? 'grid grid-cols-1' : 'grid grid-cols-2'} ${readOnly ? '' : 'gap-2'}`}>
+                {readOnly ? (
+                  isGlobalMilestonesView ? (
+                    <div className="text-[12px] font-bold text-gray-600 tabular-nums leading-tight">
+                      {globalMilestoneDateText}
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 text-[12px] font-bold text-gray-600 tabular-nums leading-tight whitespace-nowrap overflow-x-auto no-scrollbar">
+                      <span className="shrink-0">{mobileStartDateText}</span>
+                      <span className="text-gray-300">•</span>
+                      {task.isMilestone ? (
+                        <span className="inline-flex items-center h-3.5 shrink-0">
+                          <span
+                            className={`block h-2.5 w-2.5 rotate-45 rounded-[1px] ${
+                              task.isExternal ? 'bg-pink-300' : 'bg-gray-900'
+                            }`}
+                          />
+                        </span>
+                      ) : (
+                        <span className="shrink-0">{days}d</span>
+                      )}
+                      <span className="text-gray-300">•</span>
+                      <span className="shrink-0">{mobileEndDateText}</span>
+                    </div>
+                  )
+                ) : isGlobalMilestonesView ? (
                   <div className="rounded-xl border border-gray-100 bg-white px-3 py-2">
                     <div className="text-[8px] font-black uppercase tracking-[0.12em] text-gray-400 mb-1">Date</div>
                     <div className="text-[12px] font-bold text-gray-600 tabular-nums">
@@ -509,97 +543,65 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                   <>
                     <div className="rounded-xl border border-gray-100 bg-white px-3 py-2">
                       <div className="text-[8px] font-black uppercase tracking-[0.12em] text-gray-400 mb-1">Start</div>
-                      {readOnly ? (
-                        <div className="text-[12px] font-bold text-gray-600 tabular-nums">
-                          {format(parseISO(task.startDate), 'dd MMM yyyy')}
-                        </div>
-                      ) : (
-                        <input
-                          type="date"
-                          value={task.startDate}
-                          onChange={(e) => onUpdateTask(task.id, {
-                            startDate: e.target.value,
-                            ...(task.isMilestone ? { endDate: e.target.value } : {}),
-                          })}
-                          className="text-[12px] bg-transparent border-none p-0 focus:ring-0 outline-none text-gray-600 font-bold w-full"
-                        />
-                      )}
+                      <input
+                        type="date"
+                        value={task.startDate}
+                        onChange={(e) => onUpdateTask(task.id, {
+                          startDate: e.target.value,
+                          ...(task.isMilestone ? { endDate: e.target.value } : {}),
+                        })}
+                        className="text-[12px] bg-transparent border-none p-0 focus:ring-0 outline-none text-gray-600 font-bold w-full"
+                      />
                     </div>
                     <div className="rounded-xl border border-gray-100 bg-white px-3 py-2">
                       <div className="text-[8px] font-black uppercase tracking-[0.12em] text-gray-400 mb-1">Due</div>
-                      {readOnly ? (
-                        <div className="text-[12px] font-bold text-gray-600 tabular-nums">
-                          {format(parseISO(task.endDate), 'dd MMM yyyy')}
-                        </div>
-                      ) : (
-                        <input
-                          type="date"
-                          value={task.endDate}
-                          onChange={(e) => onUpdateTask(task.id, { endDate: e.target.value })}
-                          className="text-[12px] bg-transparent border-none p-0 focus:ring-0 outline-none text-gray-600 font-bold w-full"
-                        />
-                      )}
+                      <input
+                        type="date"
+                        value={task.endDate}
+                        onChange={(e) => onUpdateTask(task.id, { endDate: e.target.value })}
+                        className="text-[12px] bg-transparent border-none p-0 focus:ring-0 outline-none text-gray-600 font-bold w-full"
+                      />
                     </div>
                     <div className="rounded-xl border border-gray-100 bg-white px-3 py-2">
                       <div className="text-[8px] font-black uppercase tracking-[0.12em] text-gray-400 mb-1">Days</div>
-                      {readOnly ? (
-                        <div className="text-[12px] font-bold text-gray-600">
-                          {task.isMilestone ? (
-                            <span className="inline-flex items-center h-4">
-                              <span
-                                className={`block h-2.5 w-2.5 rotate-45 rounded-[1px] ${
-                                  task.isExternal ? 'bg-pink-300' : 'bg-gray-900'
-                                }`}
-                              />
-                            </span>
-                          ) : (
-                            <span className="tabular-nums">{days}</span>
-                          )}
-                        </div>
-                      ) : (
-                        <div className="relative">
-                          <input
-                            type="text"
-                            value={daysInput}
-                            onChange={(e) => handleDaysChange(e.target.value)}
-                            onFocus={(e) => {
-                              if (task.isMilestone && e.currentTarget.value === '◆') {
-                                e.currentTarget.select();
-                              }
-                            }}
-                            onBlur={commitDaysChange}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') {
-                                e.currentTarget.blur();
-                              }
-                            }}
-                            className={`text-[12px] bg-transparent border-none p-0 focus:ring-0 outline-none font-bold w-full ${
-                              task.isMilestone
-                                ? task.isExternal
-                                  ? 'text-pink-300'
-                                  : 'text-gray-900'
-                                : 'text-gray-600'
-                            }`}
-                          />
-                          {!task.isMilestone && (
-                            <span className="absolute right-0 top-1/2 -translate-y-1/2 text-[9px] text-gray-300 font-bold uppercase pointer-events-none">d</span>
-                          )}
-                        </div>
-                      )}
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={daysInput}
+                          onChange={(e) => handleDaysChange(e.target.value)}
+                          onFocus={(e) => {
+                            if (task.isMilestone && e.currentTarget.value === '◆') {
+                              e.currentTarget.select();
+                            }
+                          }}
+                          onBlur={commitDaysChange}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.currentTarget.blur();
+                            }
+                          }}
+                          className={`text-[12px] bg-transparent border-none p-0 focus:ring-0 outline-none font-bold w-full ${
+                            task.isMilestone
+                              ? task.isExternal
+                                ? 'text-pink-300'
+                                : 'text-gray-900'
+                              : 'text-gray-600'
+                          }`}
+                        />
+                        {!task.isMilestone && (
+                          <span className="absolute right-0 top-1/2 -translate-y-1/2 text-[9px] text-gray-300 font-bold uppercase pointer-events-none">d</span>
+                        )}
+                      </div>
                     </div>
                     <div className="rounded-xl border border-gray-100 bg-white px-3 py-2">
                       <div className="text-[8px] font-black uppercase tracking-[0.12em] text-gray-400 mb-1">Dep</div>
-                      {readOnly ? (
-                        <div className="text-[12px] font-bold text-gray-600">{dependencyIndex || '-'}</div>
-                      ) : (
-                        <input
-                          type="text"
-                          value={dependencyIndex}
-                          onChange={(e) => handleDependencyChange(e.target.value)}
-                          className="text-[12px] bg-transparent border-none p-0 focus:ring-0 outline-none text-gray-600 font-bold w-full"
-                          placeholder="-"
-                        />
-                      )}
+                      <input
+                        type="text"
+                        value={dependencyIndex}
+                        onChange={(e) => handleDependencyChange(e.target.value)}
+                        className="text-[12px] bg-transparent border-none p-0 focus:ring-0 outline-none text-gray-600 font-bold w-full"
+                        placeholder="-"
+                      />
                     </div>
                   </>
                 )}
@@ -762,7 +764,9 @@ const ListView: React.FC<ListViewProps> = ({
           <>
             <div className="w-20 px-2 text-[9px] font-black text-gray-400 uppercase tracking-widest">Days</div>
             <div className="w-32 px-2 text-[9px] font-black text-gray-400 uppercase tracking-widest">Due Date</div>
-            <div className="w-20 px-2 text-[9px] font-black text-gray-400 uppercase tracking-widest text-center">Dep</div>
+            {!readOnly && (
+              <div className="w-20 px-2 text-[9px] font-black text-gray-400 uppercase tracking-widest text-center">Dep</div>
+            )}
           </>
         )}
         <div className="w-24 px-2 text-right text-[9px] font-black text-gray-400 uppercase tracking-widest">Actions</div>
