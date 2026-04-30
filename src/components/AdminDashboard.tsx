@@ -119,6 +119,20 @@ const AdminDashboard: React.FC = () => {
   const showGlobalMilestonesCard =
     searchQuery.trim() === '' || GLOBAL_MILESTONES_SEARCH_TEXT.includes(searchQuery.trim().toLowerCase());
 
+  const getProjectTimeline = (project: Project) => {
+    if (!project.tasks || project.tasks.length === 0) {
+      return null;
+    }
+
+    const startTimes = project.tasks.map((task) => new Date(task.startDate).getTime());
+    const endTimes = project.tasks.map((task) => new Date(task.endDate).getTime());
+
+    return {
+      start: new Date(Math.min(...startTimes)),
+      end: new Date(Math.max(...endTimes)),
+    };
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 font-sans p-8">
       <div className="max-w-6xl mx-auto">
@@ -158,7 +172,7 @@ const AdminDashboard: React.FC = () => {
           {showGlobalMilestonesCard && (
             <div
               onClick={() => navigateToProject(`${window.location.origin}${window.location.pathname}?global=milestones`)}
-              className="group bg-[#FFF3FC] border border-pink-100 rounded-[24px] p-4 hover:shadow-2xl hover:shadow-pink-200/40 transition-all cursor-pointer relative overflow-hidden min-h-[132px]"
+              className="group bg-[#FFF3FC] border border-pink-100 rounded-[24px] p-4 hover:shadow-2xl hover:shadow-pink-200/40 transition-all cursor-pointer relative overflow-hidden min-h-[146px]"
             >
               <div className="flex flex-col gap-2 relative z-10 h-full">
                 <div className="flex items-start justify-between">
@@ -180,10 +194,16 @@ const AdminDashboard: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="mt-auto flex items-center justify-between pt-2 border-t border-pink-100/70">
-                  <div className="flex items-center gap-2 text-pink-300">
-                    <Calendar size={12} />
-                    <span className="text-[9px] font-bold">All active project milestones</span>
+                <div className="mt-auto flex items-end justify-between pt-2 border-t border-pink-100/70">
+                  <div className="flex flex-col gap-1.5 text-pink-300">
+                    <div className="flex items-center gap-2">
+                      <Calendar size={11} />
+                      <span className="text-[9px] font-bold">All active project milestones</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Calendar size={11} />
+                      <span className="text-[9px] font-bold">Live agency overview</span>
+                    </div>
                   </div>
                   <div className="flex items-center gap-1 text-pink-500 font-black text-[9px] uppercase tracking-[0.16em] opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
                     <span>Open</span>
@@ -200,7 +220,7 @@ const AdminDashboard: React.FC = () => {
             <div
               key={project.id}
               onClick={() => navigateToProject(`${window.location.origin}${window.location.pathname}?p=${project.id}&edit=1`)}
-              className="group bg-white border border-gray-100 rounded-[24px] p-4 hover:shadow-2xl hover:shadow-blue-500/5 transition-all cursor-pointer relative overflow-hidden min-h-[132px]"
+              className="group bg-white border border-gray-100 rounded-[24px] p-4 hover:shadow-2xl hover:shadow-blue-500/5 transition-all cursor-pointer relative overflow-hidden min-h-[146px]"
             >
               <div className="flex flex-col gap-2 relative z-10 h-full">
                 <div className="flex items-start justify-between">
@@ -235,10 +255,28 @@ const AdminDashboard: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="mt-auto flex items-center justify-between pt-2 border-t border-gray-50">
-                  <div className="flex items-center gap-2 text-gray-400">
-                    <Calendar size={12} />
-                    <span className="text-[9px] font-bold">{format(project.updatedAt, 'MMM dd, yyyy')}</span>
+                <div className="mt-auto flex items-end justify-between pt-2 border-t border-gray-50">
+                  <div className="flex flex-col gap-1.5 text-gray-400">
+                    {(() => {
+                      const timeline = getProjectTimeline(project);
+                      return timeline ? (
+                        <>
+                          <div className="flex items-center gap-2">
+                            <Calendar size={11} className="text-blue-400" />
+                            <span className="text-[9px] font-bold">{format(timeline.start, 'MMM dd, yyyy')}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Calendar size={11} className="text-red-400" />
+                            <span className="text-[9px] font-bold">{format(timeline.end, 'MMM dd, yyyy')}</span>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <Calendar size={11} />
+                          <span className="text-[9px] font-bold">No timeline yet</span>
+                        </div>
+                      );
+                    })()}
                   </div>
                   <div className="flex items-center gap-1 text-blue-500 font-black text-[9px] uppercase tracking-[0.16em] opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
                     <span>Open</span>
