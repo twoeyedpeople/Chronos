@@ -987,39 +987,50 @@ export default function App() {
       />
 
       {isGlobalMilestonesView && isFiltersOpen && (
-        <div className="fixed inset-0 z-[60] flex items-start justify-end bg-gray-950/25 backdrop-blur-sm p-4 md:p-6">
-          <div className="w-full max-w-xl rounded-[32px] border border-gray-200 bg-white shadow-2xl overflow-hidden">
-            <div className="flex items-start justify-between gap-4 px-6 py-5 border-b border-gray-100">
+        <div
+          className="fixed inset-0 z-[60] bg-gray-950/18 backdrop-blur-[2px]"
+          onClick={() => setIsFiltersOpen(false)}
+        >
+          <div
+            className="absolute right-4 top-24 md:right-8 w-[min(560px,calc(100vw-2rem))] rounded-[28px] border border-gray-200/80 bg-white/97 shadow-[0_24px_80px_rgba(15,23,42,0.16)] overflow-hidden"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="px-5 py-4 border-b border-gray-100 flex items-start justify-between gap-4">
               <div className="flex flex-col gap-1">
-                <span className="text-[11px] font-black text-gray-400 uppercase tracking-[0.18em]">Global Milestones</span>
-                <h2 className="text-2xl font-black text-gray-900 tracking-tight">Filters</h2>
-                <p className="text-sm text-gray-500">Choose which projects are visible in this milestone view.</p>
+                <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.18em]">Global Milestones</span>
+                <h2 className="text-lg font-black text-gray-900 tracking-tight">Filters</h2>
+                <p className="text-[12px] text-gray-500">Show or hide projects in this view.</p>
               </div>
               <button
                 onClick={() => setIsFiltersOpen(false)}
-                className="px-4 py-2 rounded-xl border border-gray-200 text-sm font-bold text-gray-500 hover:text-gray-700 hover:border-gray-300 transition-all"
+                className="h-9 px-3 rounded-xl border border-gray-200 text-[12px] font-bold text-gray-500 hover:text-gray-700 hover:border-gray-300 transition-all"
               >
                 Done
               </button>
             </div>
 
-            <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
-              <button
-                onClick={() => setSelectedMilestoneProjectIds(milestoneFilterProjects.map((project) => project.id))}
-                className="px-4 py-2 rounded-xl bg-gray-900 text-white text-sm font-bold hover:bg-black transition-all"
-              >
-                All On
-              </button>
-              <button
-                onClick={() => setSelectedMilestoneProjectIds([])}
-                className="px-4 py-2 rounded-xl border border-gray-200 text-sm font-bold text-gray-600 hover:border-gray-300 hover:text-gray-800 transition-all"
-              >
-                All Off
-              </button>
+            <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between gap-4">
+              <div className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.14em]">
+                {activeMilestoneFilterCount} of {milestoneFilterProjects.length} visible
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setSelectedMilestoneProjectIds([])}
+                  className="px-3 py-1.5 rounded-lg text-[12px] font-bold text-gray-500 hover:text-gray-800 hover:bg-gray-50 transition-all"
+                >
+                  Clear
+                </button>
+                <button
+                  onClick={() => setSelectedMilestoneProjectIds(milestoneFilterProjects.map((project) => project.id))}
+                  className="px-3 py-1.5 rounded-lg bg-gray-950 text-white text-[12px] font-bold hover:bg-black transition-all"
+                >
+                  Select All
+                </button>
+              </div>
             </div>
 
-            <div className="max-h-[60vh] overflow-y-auto px-6 py-4">
-              <div className="grid grid-cols-1 gap-3">
+            <div className="max-h-[60vh] overflow-y-auto px-5 py-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                 {milestoneFilterProjects.map((filterProject) => {
                   const checked = selectedMilestoneProjectIds?.includes(filterProject.id) ?? true;
                   const milestoneCount = project.tasks.filter((task) => task.sourceProjectId === filterProject.id).length;
@@ -1027,8 +1038,10 @@ export default function App() {
                   return (
                     <label
                       key={filterProject.id}
-                      className={`flex items-center justify-between gap-4 rounded-2xl border px-4 py-4 transition-all cursor-pointer ${
-                        checked ? 'border-blue-200 bg-blue-50/50' : 'border-gray-200 bg-white hover:border-gray-300'
+                      className={`flex items-center justify-between gap-3 rounded-2xl border px-3.5 py-3 transition-all cursor-pointer ${
+                        checked
+                          ? 'border-blue-200 bg-blue-50/60 shadow-[inset_0_0_0_1px_rgba(191,219,254,0.35)]'
+                          : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50/40'
                       }`}
                     >
                       <div className="flex items-center gap-3 min-w-0">
@@ -1044,14 +1057,14 @@ export default function App() {
                               return current.filter((id) => id !== filterProject.id);
                             });
                           }}
-                          className="h-4 w-4 rounded border-gray-300 accent-blue-600 shrink-0"
+                          className="h-3.5 w-3.5 rounded border-gray-300 accent-blue-600 shrink-0"
                         />
                         <div className="min-w-0">
-                          <div className="text-sm font-bold text-gray-900 truncate">{filterProject.name}</div>
-                          <div className="text-xs font-bold uppercase tracking-[0.14em] text-gray-400">{milestoneCount} milestones</div>
+                          <div className="text-[13px] font-bold text-gray-900 truncate leading-tight">{filterProject.name}</div>
+                          <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-gray-400 mt-1">{milestoneCount} milestones</div>
                         </div>
                       </div>
-                      <div className={`h-3 w-3 rounded-full shrink-0 ${checked ? 'bg-blue-500' : 'bg-gray-200'}`} />
+                      <div className={`h-2.5 w-2.5 rounded-full shrink-0 transition-colors ${checked ? 'bg-blue-500' : 'bg-gray-200'}`} />
                     </label>
                   );
                 })}
