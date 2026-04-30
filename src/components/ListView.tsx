@@ -580,36 +580,34 @@ const ListView: React.FC<ListViewProps> = ({
           </SortableContext>
 
           {flattenedTasks.length > 0 && (
-            <div className="mt-5 mx-8 pb-20">
-              <div className="bg-white border border-gray-100 rounded-[28px] px-7 py-4 shadow-sm overflow-hidden relative min-h-[88px]">
+            <div className="mt-4 mx-8 pb-20">
+              <div className="bg-white border border-gray-100 rounded-[24px] px-6 py-3 shadow-sm overflow-hidden relative min-h-[66px]">
                 {/* Subtle background pattern/gradient */}
                 <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 via-white to-blue-50/10 pointer-events-none" />
 
-                <div className="relative z-10 flex flex-col items-start gap-3 w-full">
-                  <span className="text-[14px] font-black text-gray-500 uppercase tracking-[0.06em] leading-none text-left">Project Details</span>
+                <div className="relative z-10 flex flex-col items-start gap-2 w-full">
+                  <span className="text-[10px] font-black text-gray-500 uppercase tracking-[0.06em] leading-none text-left">Project Details</span>
 
-                  <div className="flex items-end gap-6 w-full">
-                    <div className="flex items-baseline gap-2 min-w-[154px]">
-                      <span className="text-[14px] font-medium text-gray-500">Working days:</span>
-                      <span className="text-[14px] font-black text-gray-900">{totalBusinessDays}</span>
+                  <div className="flex items-center gap-4 w-full">
+                    <div className="flex items-baseline gap-1.5 min-w-[102px]">
+                      <span className="text-[10px] font-medium text-gray-500">Working days:</span>
+                      <span className="text-[10px] font-black text-gray-900">{totalBusinessDays}</span>
                     </div>
 
-                    <div className="flex items-start gap-4 min-w-0">
+                    <div className="flex items-center gap-3 min-w-0">
                       {tasks.length > 0 ? (
                         <>
-                          <div className="flex flex-col gap-1 min-w-[154px]">
-                            <span className="text-[14px] font-medium text-gray-500">Start</span>
-                            <div className="bg-gray-50/80 px-3 py-1.5 rounded-xl border border-gray-100 text-[14px] font-black text-gray-700 shadow-sm flex items-center gap-2 leading-none">
+                          <div className="min-w-[122px]">
+                            <div className="bg-gray-50/80 px-2.5 py-1.5 rounded-xl border border-gray-100 text-[10px] font-black text-gray-700 shadow-sm flex items-center gap-1.5 leading-none">
                               <Calendar size={10} className="text-blue-400" />
                               {format(new Date(Math.min(...tasks.map(t => parseISO(t.startDate).getTime()))), 'MMM dd, yyyy')}
                             </div>
                           </div>
-                          <div className="mt-4 flex items-center justify-center w-6 h-6 rounded-full bg-gray-50 border border-gray-100 shrink-0">
-                            <ChevronRight size={12} className="text-gray-300" />
+                          <div className="flex items-center justify-center w-5 h-5 rounded-full bg-gray-50 border border-gray-100 shrink-0">
+                            <ChevronRight size={10} className="text-gray-300" />
                           </div>
-                          <div className="flex flex-col gap-1 min-w-[154px]">
-                            <span className="text-[14px] font-medium text-gray-500">End</span>
-                            <div className="bg-gray-50/80 px-3 py-1.5 rounded-xl border border-gray-100 text-[14px] font-black text-gray-700 shadow-sm flex items-center gap-2 leading-none">
+                          <div className="min-w-[122px]">
+                            <div className="bg-gray-50/80 px-2.5 py-1.5 rounded-xl border border-gray-100 text-[10px] font-black text-gray-700 shadow-sm flex items-center gap-1.5 leading-none">
                               <Calendar size={10} className="text-red-400" />
                               {format(new Date(Math.max(...tasks.map(t => parseISO(t.endDate).getTime()))), 'MMM dd, yyyy')}
                             </div>
