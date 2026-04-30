@@ -11,7 +11,6 @@ import AdminDashboard from './components/AdminDashboard';
 import { collection, doc, setDoc, onSnapshot, getDocFromServer, query, updateDoc, orderBy } from 'firebase/firestore';
 import { db, auth } from './firebase';
 import firebaseConfig from '../firebase-applet-config.json';
-import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 
 const MAX_UNDO_STEPS = 100;
@@ -211,10 +210,7 @@ export default function App() {
   const [undoStack, setUndoStack] = useState<Project[]>([]);
   const [isGlobalMilestonesView, setIsGlobalMilestonesView] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [isExportingPdf, setIsExportingPdf] = useState(false);
   const projectRef = useRef(project);
-  const listExportRef = useRef<HTMLDivElement>(null);
-  const ganttExportRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     projectRef.current = project;
@@ -671,28 +667,12 @@ export default function App() {
   }, [project.tasks]);
 
   const handleDownloadPdf = async () => {
-    if (!listExportRef.current || !ganttExportRef.current || !exportRange) {
+    if (!exportRange) {
       window.alert('The PDF export is still getting ready. Please try again in a moment.');
       return;
     }
 
-    setIsExportingPdf(true);
-
     try {
-      await new Promise((resolve) => window.setTimeout(resolve, 150));
-
-      const captureOptions = {
-        backgroundColor: '#ffffff',
-        scale: 2,
-        useCORS: true,
-        logging: false,
-      } as const;
-
-      const [listCanvas, ganttCanvas] = await Promise.all([
-        html2canvas(listExportRef.current, captureOptions),
-        html2canvas(ganttExportRef.current, captureOptions),
-      ]);
-
       const pdf = new jsPDF({
         orientation: 'landscape',
         unit: 'pt',
@@ -701,26 +681,201 @@ export default function App() {
 
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = 20;
+      const margin = 26;
       const contentWidth = pageWidth - margin * 2;
       const contentHeight = pageHeight - margin * 2;
+      const softBlue = [95, 124, 255] as const;
+      const softPink = [255, 243, 252] as const;
+      const softPinkBorder = [249, 194, 232] as const;
 
-      const addCanvasPage = (canvas: HTMLCanvasElement, addPageFirst: boolean) => {
-        if (addPageFirst) {
-          pdf.addPage();
-        }
-
-        const imgData = canvas.toDataURL('image/png');
-        const ratio = Math.min(contentWidth / canvas.width, contentHeight / canvas.height);
-        const renderWidth = canvas.width * ratio;
-        const renderHeight = canvas.height * ratio;
-        const x = (pageWidth - renderWidth) / 2;
-        const y = (pageHeight - renderHeight) / 2;
-        pdf.addImage(imgData, 'PNG', x, y, renderWidth, renderHeight);
+      const drawPageHeading = (subhead: string) => {
+        pdf.setTextColor(17, 24, 39);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(24);
+        pdf.text(project.name, margin, margin + 10);
+        pdf.setTextColor(156, 163, 175);
+        pdf.setFontSize(10);
+        pdf.text(`${project.clientName.toUpperCase()} / ${subhead.toUpperCase()}`, margin, margin + 28);
       };
 
-      addCanvasPage(listCanvas, false);
-      addCanvasPage(ganttCanvas, true);
+      const listTop = margin + 48;
+      const rowCount = Math.max(exportTasks.length, 1);
+      const listRowHeight = Math.max(12, Math.min(24, Math.floor((contentHeight - 42) / (rowCount + 1))));
+      const listFontSize = Math.max(7, Math.min(11, listRowHeight - 3));
+      const listColumns = isGlobalMilestonesView
+        ? [
+            { key: 'id', width: 42 },
+            { key: 'task', width: contentWidth - 42 - 120 },
+            { key: 'date', width: 120 },
+          ]
+        : [
+            { key: 'id', width: 42 },
+            { key: 'task', width: contentWidth - 42 - 120 - 70 - 120 },
+            { key: 'start', width: 120 },
+            { key: 'days', width: 70 },
+            { key: 'end', width: 120 },
+          ];
+
+      drawPageHeading('List View');
+      pdf.setDrawColor(229, 231, 235);
+      pdf.setFillColor(249, 250, 251);
+      pdf.roundedRect(margin, listTop, contentWidth, listRowHeight * (rowCount + 1), 12, 12, 'FD');
+
+      let x = margin;
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(8);
+      pdf.setTextColor(156, 163, 175);
+      listColumns.forEach((col) => {
+        const label =
+          col.key === 'id' ? 'ID' :
+          col.key === 'task' ? (isGlobalMilestonesView ? 'PROJECT / MILESTONE' : 'TASK') :
+          col.key === 'start' ? 'START' :
+          col.key === 'days' ? 'DAYS' :
+          'DATE';
+        pdf.text(label, x + 8, listTop + listRowHeight * 0.68);
+        x += col.width;
+      });
+
+      exportTasks.forEach(({ task, depth, index }, rowIndex) => {
+        const y = listTop + listRowHeight * (rowIndex + 1);
+        if (task.isExternal) {
+          pdf.setFillColor(...softPink);
+          pdf.roundedRect(margin + 1, y, contentWidth - 2, listRowHeight, 0, 0, 'F');
+        } else {
+          pdf.setFillColor(255, 255, 255);
+          pdf.rect(margin + 1, y, contentWidth - 2, listRowHeight, 'F');
+        }
+
+        pdf.setDrawColor(243, 244, 246);
+        pdf.line(margin, y, margin + contentWidth, y);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(listFontSize);
+        pdf.setTextColor(55, 65, 81);
+
+        let colX = margin;
+        const taskLabel = isGlobalMilestonesView && task.sourceProjectName
+          ? `${task.sourceProjectName} / ${task.name}`
+          : task.name;
+        const values = isGlobalMilestonesView
+          ? [
+              String(index + 1),
+              taskLabel,
+              format(parseISO(task.startDate), 'dd MMM yyyy'),
+            ]
+          : [
+              String(index + 1),
+              taskLabel,
+              format(parseISO(task.startDate), 'dd MMM yyyy'),
+              task.isMilestone ? '◆' : String(differenceInBusinessDays(parseISO(task.endDate), parseISO(task.startDate)) + 1),
+              format(parseISO(task.endDate), 'dd MMM yyyy'),
+            ];
+
+        values.forEach((value, valueIndex) => {
+          const col = listColumns[valueIndex];
+          const textY = y + listRowHeight * 0.68;
+          if (col.key === 'id' || col.key === 'days') {
+            pdf.text(value, colX + col.width / 2, textY, { align: 'center' });
+          } else if (col.key === 'task') {
+            const indent = isGlobalMilestonesView ? 0 : depth * 10;
+            pdf.text(pdf.splitTextToSize(value, col.width - 16 - indent), colX + 8 + indent, textY);
+          } else {
+            pdf.text(value, colX + 8, textY);
+          }
+          colX += col.width;
+        });
+      });
+
+      pdf.addPage();
+
+      drawPageHeading('Gantt View');
+      const ganttTop = margin + 48;
+      const ganttLeftWidth = isGlobalMilestonesView ? 290 : 240;
+      const ganttWidth = contentWidth - ganttLeftWidth;
+      const ganttRowHeight = Math.max(12, Math.min(22, Math.floor((contentHeight - 42) / (rowCount + 1))));
+      const ganttFontSize = Math.max(7, Math.min(10, ganttRowHeight - 4));
+      const ganttDays = exportRange.days;
+      const dayCellWidth = ganttWidth / Math.max(ganttDays.length, 1);
+
+      pdf.setDrawColor(229, 231, 235);
+      pdf.setFillColor(249, 250, 251);
+      pdf.roundedRect(margin, ganttTop, contentWidth, ganttRowHeight * (rowCount + 1), 12, 12, 'FD');
+
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(8);
+      pdf.setTextColor(156, 163, 175);
+      pdf.text(isGlobalMilestonesView ? 'PROJECT / MILESTONE' : 'TASK', margin + 8, ganttTop + ganttRowHeight * 0.68);
+
+      ganttDays.forEach((day, index) => {
+        const dayX = margin + ganttLeftWidth + index * dayCellWidth;
+        pdf.text(format(day, 'dd'), dayX + dayCellWidth / 2, ganttTop + ganttRowHeight * 0.68, { align: 'center' });
+        pdf.setDrawColor(243, 244, 246);
+        pdf.line(dayX, ganttTop, dayX, ganttTop + ganttRowHeight * (rowCount + 1));
+      });
+
+      exportTasks.forEach(({ task, depth, index }, rowIndex) => {
+        const y = ganttTop + ganttRowHeight * (rowIndex + 1);
+        if (task.isExternal) {
+          pdf.setFillColor(...softPink);
+          pdf.roundedRect(margin + 1, y, contentWidth - 2, ganttRowHeight, 0, 0, 'F');
+        } else {
+          pdf.setFillColor(255, 255, 255);
+          pdf.rect(margin + 1, y, contentWidth - 2, ganttRowHeight, 'F');
+        }
+
+        pdf.setDrawColor(243, 244, 246);
+        pdf.line(margin, y, margin + contentWidth, y);
+
+        const taskLabel = isGlobalMilestonesView && task.sourceProjectName
+          ? `${task.sourceProjectName} / ${task.name}`
+          : task.name;
+        const indent = isGlobalMilestonesView ? 0 : depth * 10;
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(ganttFontSize);
+        pdf.setTextColor(55, 65, 81);
+        pdf.text(`${index + 1}`, margin + 6, y + ganttRowHeight * 0.66);
+        pdf.text(pdf.splitTextToSize(taskLabel, ganttLeftWidth - 28 - indent), margin + 22 + indent, y + ganttRowHeight * 0.66);
+
+        const startOffset = differenceInDays(parseISO(task.startDate), exportRange.minDate);
+        const duration = task.isMilestone ? 1 : differenceInDays(parseISO(task.endDate), parseISO(task.startDate)) + 1;
+        const barLeft = margin + ganttLeftWidth + startOffset * dayCellWidth;
+        const barWidth = duration * dayCellWidth;
+        const midY = y + ganttRowHeight / 2;
+
+        if (task.isMilestone) {
+          const size = Math.max(7, Math.min(12, ganttRowHeight - 4));
+          const cx = barLeft + dayCellWidth / 2;
+          const cy = midY;
+          if (task.isExternal) {
+            pdf.setFillColor(...softPink);
+            pdf.setDrawColor(...softPinkBorder);
+          } else {
+            pdf.setFillColor(17, 24, 39);
+            pdf.setDrawColor(17, 24, 39);
+          }
+          pdf.lines(
+            [
+              [0, -size / 2],
+              [size / 2, size / 2],
+              [-size / 2, size / 2],
+              [-size / 2, -size / 2],
+            ],
+            cx,
+            cy,
+            [1, 1],
+            task.isExternal ? 'FD' : 'F',
+            true,
+          );
+        } else {
+          if (task.isExternal) {
+            pdf.setFillColor(...softPink);
+            pdf.setDrawColor(...softPinkBorder);
+          } else {
+            pdf.setFillColor(235, 240, 255);
+            pdf.setDrawColor(...softBlue);
+          }
+          pdf.roundedRect(barLeft + 1, y + 3, Math.max(barWidth - 2, 10), Math.max(ganttRowHeight - 6, 8), 6, 6, 'FD');
+        }
+      });
 
       const slug = `${project.clientName}-${project.name}`
         .toLowerCase()
@@ -731,8 +886,6 @@ export default function App() {
     } catch (error) {
       console.error('PDF export failed', error);
       window.alert('The PDF export failed. Please try again.');
-    } finally {
-      setIsExportingPdf(false);
     }
   };
 
@@ -820,152 +973,6 @@ export default function App() {
         onClose={() => setIsShareOpen(false)}
         projectUrl={shareUrl}
       />
-
-      {isReadOnly && exportRange && (
-        <div className="fixed -left-[20000px] top-0 pointer-events-none opacity-100" aria-hidden="true">
-          <div
-            ref={listExportRef}
-            className="w-[1120px] bg-white text-gray-900 px-8 py-8"
-          >
-            <div className="flex flex-col gap-2">
-              <h1 className="text-[28px] font-black tracking-tight">{project.name}</h1>
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-gray-400">
-                {project.clientName} / List View
-              </p>
-            </div>
-
-            <div className="mt-6 overflow-hidden rounded-3xl border border-gray-200">
-              <div className="grid bg-gray-50/70 text-[10px] font-black uppercase tracking-[0.18em] text-gray-400" style={{ gridTemplateColumns: isGlobalMilestonesView ? '64px minmax(0,1fr) 160px' : '64px minmax(0,1fr) 150px 110px 150px' }}>
-                <div className="px-4 py-4">ID</div>
-                <div className="px-4 py-4">{isGlobalMilestonesView ? 'Project / Milestone' : 'Task'}</div>
-                {isGlobalMilestonesView ? (
-                  <div className="px-4 py-4">Date</div>
-                ) : (
-                  <>
-                    <div className="px-4 py-4">Start</div>
-                    <div className="px-4 py-4">Days</div>
-                    <div className="px-4 py-4">End</div>
-                  </>
-                )}
-              </div>
-
-              {exportTasks.map(({ task, depth, index }) => {
-                const dayCount = task.isMilestone ? '◆' : String(differenceInBusinessDays(parseISO(task.endDate), parseISO(task.startDate)) + 1);
-                const rowBg = task.isExternal ? '#FFF3FC' : '#FFFFFF';
-                const taskLabel = isGlobalMilestonesView && task.sourceProjectName
-                  ? `${task.sourceProjectName} / ${task.name}`
-                  : task.name;
-
-                return (
-                  <div
-                    key={`list-export-${task.id}`}
-                    className="grid border-t border-gray-100 text-[14px] text-gray-800"
-                    style={{
-                      gridTemplateColumns: isGlobalMilestonesView ? '64px minmax(0,1fr) 160px' : '64px minmax(0,1fr) 150px 110px 150px',
-                      backgroundColor: rowBg,
-                    }}
-                  >
-                    <div className="px-4 py-3 font-black text-gray-300">{index + 1}</div>
-                    <div className="px-4 py-3 font-bold" style={{ paddingLeft: `${depth * 18 + 16}px` }}>
-                      {taskLabel}
-                    </div>
-                    {isGlobalMilestonesView ? (
-                      <div className="px-4 py-3 font-bold text-gray-500 tabular-nums">
-                        {format(parseISO(task.startDate), 'dd MMM yyyy')}
-                      </div>
-                    ) : (
-                      <>
-                        <div className="px-4 py-3 font-bold text-gray-500 tabular-nums">
-                          {format(parseISO(task.startDate), 'dd MMM yyyy')}
-                        </div>
-                        <div className="px-4 py-3 font-bold text-gray-500 tabular-nums">
-                          {dayCount}
-                        </div>
-                        <div className="px-4 py-3 font-bold text-gray-500 tabular-nums">
-                          {format(parseISO(task.endDate), 'dd MMM yyyy')}
-                        </div>
-                      </>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          <div
-            ref={ganttExportRef}
-            className="w-[1120px] bg-white text-gray-900 px-8 py-8"
-          >
-            <div className="flex flex-col gap-2">
-              <h1 className="text-[28px] font-black tracking-tight">{project.name}</h1>
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-gray-400">
-                {project.clientName} / Gantt View
-              </p>
-            </div>
-
-            <div className="mt-6 overflow-hidden rounded-3xl border border-gray-200">
-              <div className="flex border-b border-gray-200 bg-gray-50/70">
-                <div className={`shrink-0 px-4 py-4 text-[10px] font-black uppercase tracking-[0.18em] text-gray-400 ${isGlobalMilestonesView ? 'w-[380px]' : 'w-[300px]'}`}>
-                  {isGlobalMilestonesView ? 'Project / Milestone' : 'Task'}
-                </div>
-                <div className="flex-1 flex">
-                  {exportRange.days.map((day) => (
-                    <div
-                      key={`gantt-export-header-${day.toISOString()}`}
-                      className="w-8 shrink-0 border-l border-gray-100 py-4 text-center text-[10px] font-black uppercase tracking-wider text-gray-400"
-                    >
-                      {format(day, 'dd')}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {exportTasks.map(({ task, depth, index }) => {
-                const startOffset = differenceInDays(parseISO(task.startDate), exportRange.minDate);
-                const duration = task.isMilestone ? 1 : differenceInDays(parseISO(task.endDate), parseISO(task.startDate)) + 1;
-                const barLeft = startOffset * 32;
-                const barWidth = duration * 32;
-                const taskLabel = isGlobalMilestonesView && task.sourceProjectName
-                  ? `${task.sourceProjectName} / ${task.name}`
-                  : task.name;
-
-                return (
-                  <div key={`gantt-export-row-${task.id}`} className="flex border-t border-gray-100">
-                    <div className={`shrink-0 px-4 py-3 text-[14px] font-bold text-gray-800 ${isGlobalMilestonesView ? 'w-[380px]' : 'w-[300px]'}`} style={{ paddingLeft: `${depth * 18 + 16}px` }}>
-                      <span className="mr-3 text-[10px] font-black text-gray-300">{index + 1}</span>
-                      {taskLabel}
-                    </div>
-                    <div className="relative flex-1 overflow-hidden">
-                      <div className="absolute inset-0 flex">
-                        {exportRange.days.map((day) => (
-                          <div
-                            key={`gantt-export-grid-${task.id}-${day.toISOString()}`}
-                            className="w-8 shrink-0 border-l border-gray-100"
-                          />
-                        ))}
-                      </div>
-
-                      {task.isMilestone ? (
-                        <div
-                          className={`absolute top-1/2 -translate-y-1/2 h-[14px] w-[14px] rotate-45 ${task.isExternal ? 'bg-[#FFF3FC] border border-pink-200' : 'bg-gray-950'}`}
-                          style={{ left: `${barLeft + 9}px` }}
-                        />
-                      ) : (
-                        <div
-                          className={`absolute top-1/2 -translate-y-1/2 h-[18px] rounded-full ${task.isExternal ? 'bg-[#FFF3FC] border border-pink-200' : 'bg-[#5F7CFF]/20 border border-[#5F7CFF]/30'}`}
-                          style={{ left: `${barLeft}px`, width: `${Math.max(barWidth - 6, 20)}px` }}
-                        />
-                      )}
-
-                      <div className="h-[44px]" />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Subtle Background Accents */}
       <div className="fixed top-0 right-0 -z-10 w-[500px] h-[500px] bg-blue-500/5 blur-[120px] rounded-full pointer-events-none" />
