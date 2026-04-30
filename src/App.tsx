@@ -953,7 +953,7 @@ export default function App() {
             </div>
 
             <form
-              className="flex flex-col gap-4"
+              className="flex flex-col gap-3"
               onSubmit={(event) => {
                 event.preventDefault();
                 if (dashboardPasswordInput === dashboardPassword) {
@@ -967,10 +967,7 @@ export default function App() {
                 setDashboardPasswordError('That password did not match.');
               }}
             >
-              <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.18em]">
-                  Password
-                </label>
+              <div className="flex flex-col gap-1.5">
                 <input
                   autoFocus
                   type="password"
