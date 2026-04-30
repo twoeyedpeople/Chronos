@@ -588,7 +588,7 @@ const ListView: React.FC<ListViewProps> = ({
 
                   <div className="flex items-start gap-12 w-full">
                     <div className="flex flex-col gap-1.5 w-44">
-                      <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Total Project Days</span>
+                      <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em]">Total Project Days</span>
                       <div className="flex items-baseline gap-2">
                         <span className="text-lg font-black text-gray-900 tracking-tighter leading-none">{totalBusinessDays}</span>
                         <span className="text-[10px] font-black text-gray-400 uppercase tracking-tight">Working Days</span>
@@ -596,7 +596,7 @@ const ListView: React.FC<ListViewProps> = ({
                     </div>
 
                     <div className="flex flex-col gap-1.5 w-28">
-                      <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Total Tasks</span>
+                      <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em]">Total Tasks</span>
                       <div className="flex items-baseline gap-2">
                         <span className="text-lg font-black text-gray-900 tracking-tighter leading-none">{tasks.length}</span>
                         <span className="text-[10px] font-black text-gray-400 uppercase tracking-tight">Items</span>
