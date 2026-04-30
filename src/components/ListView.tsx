@@ -282,36 +282,44 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
 
           {!isGlobalMilestonesView && (
             <div className="w-20 px-2 shrink-0">
-              <div className="relative">
-                <input
-                  type="text"
-                  value={daysInput}
-                  onChange={(e) => handleDaysChange(e.target.value)}
-                  onFocus={(e) => {
-                    if (task.isMilestone && e.currentTarget.value === '◆') {
-                      e.currentTarget.select();
-                    }
-                  }}
-                  onBlur={commitDaysChange}
-                  disabled={readOnly}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.currentTarget.blur();
-                    }
-                  }}
-                  className={`text-[11px] bg-white border border-gray-100 rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500/10 outline-none font-bold w-full ${
-                    task.isMilestone
-                      ? task.isExternal
-                        ? 'text-pink-300 text-center'
-                        : 'text-gray-900 text-center'
-                      : 'text-gray-600 pr-6'
-                  }`}
-                  placeholder="0"
-                />
-                {!task.isMilestone && (
-                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] text-gray-300 font-bold uppercase pointer-events-none">d</span>
-                )}
-              </div>
+              {readOnly ? (
+                <div className="h-[30px] w-full rounded-lg border border-gray-100 bg-white flex items-center justify-center text-[11px] font-bold">
+                  <span className={task.isMilestone ? (task.isExternal ? 'text-pink-300' : 'text-gray-900') : 'text-gray-600'}>
+                    {task.isMilestone ? '◆' : days}
+                  </span>
+                </div>
+              ) : (
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={daysInput}
+                    onChange={(e) => handleDaysChange(e.target.value)}
+                    onFocus={(e) => {
+                      if (task.isMilestone && e.currentTarget.value === '◆') {
+                        e.currentTarget.select();
+                      }
+                    }}
+                    onBlur={commitDaysChange}
+                    disabled={readOnly}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.currentTarget.blur();
+                      }
+                    }}
+                    className={`text-[11px] bg-white border border-gray-100 rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500/10 outline-none font-bold w-full ${
+                      task.isMilestone
+                        ? task.isExternal
+                          ? 'text-pink-300 text-center'
+                          : 'text-gray-900 text-center'
+                        : 'text-gray-600 pr-6'
+                    }`}
+                    placeholder="0"
+                  />
+                  {!task.isMilestone && (
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] text-gray-300 font-bold uppercase pointer-events-none">d</span>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
