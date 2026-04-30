@@ -285,11 +285,13 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
               {readOnly ? (
                 <div className="h-[30px] w-full rounded-lg border border-gray-100 bg-white flex items-center px-3 text-[11px] font-bold">
                   {task.isMilestone ? (
-                    <span
-                      className={`block h-2.5 w-2.5 rotate-45 rounded-[1px] ${
-                        task.isExternal ? 'bg-pink-300' : 'bg-gray-900'
-                      }`}
-                    />
+                    <span className="block w-full text-left">
+                      <span
+                        className={`ml-[2px] block h-2.5 w-2.5 rotate-45 rounded-[1px] ${
+                          task.isExternal ? 'bg-pink-300' : 'bg-gray-900'
+                        }`}
+                      />
+                    </span>
                   ) : (
                     <span className="block w-full text-left text-gray-600 tabular-nums">
                       {days}
@@ -588,20 +590,14 @@ const ListView: React.FC<ListViewProps> = ({
 
                   <div className="flex items-end gap-6 w-full">
                     <div className="flex flex-col gap-2 min-w-[132px]">
-                      <div className="flex flex-col gap-1">
-                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-[0.06em]">Working Days</span>
-                        <div className="flex items-baseline gap-2">
-                          <span className="text-[18px] font-black text-gray-900 tracking-tighter leading-none">{totalBusinessDays}</span>
-                          <span className="text-[8px] font-black text-gray-400 uppercase tracking-tight">Days</span>
-                        </div>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-[11px] font-medium text-gray-500 tracking-[0.01em]">Working days:</span>
+                        <span className="text-[16px] font-black text-gray-900 tracking-tight leading-none">{totalBusinessDays}</span>
                       </div>
 
-                      <div className="flex flex-col gap-1">
-                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-[0.06em]">Total Tasks</span>
-                        <div className="flex items-baseline gap-2">
-                          <span className="text-[18px] font-black text-gray-900 tracking-tighter leading-none">{tasks.length}</span>
-                          <span className="text-[8px] font-black text-gray-400 uppercase tracking-tight">Items</span>
-                        </div>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-[11px] font-medium text-gray-500 tracking-[0.01em]">Total Tasks:</span>
+                        <span className="text-[16px] font-black text-gray-900 tracking-tight leading-none">{tasks.length}</span>
                       </div>
                     </div>
 
