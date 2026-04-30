@@ -944,7 +944,7 @@ export default function App() {
                 className="h-6 w-fit opacity-80"
                 referrerPolicy="no-referrer"
               />
-              <h1 className="text-3xl font-black text-gray-900 tracking-tight">Dashboard Access</h1>
+              <h1 className="text-3xl font-black text-gray-900 tracking-tight">Halt! Turn back, or present the sacred key.</h1>
               <div className="flex flex-col gap-3 text-sm text-gray-500 leading-relaxed">
                 <p>Behind this lock sits a collection of secret timelines, mysterious builds and ongoing Two-Eyed People operations.</p>
                 <p>Some of it is real. Some of it is… less explainable.</p>
