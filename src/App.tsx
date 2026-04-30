@@ -105,10 +105,10 @@ function rollupTaskDates(tasks: Task[], parentId: string | null | undefined): Ta
   if (!parent) return tasks;
 
   if (children.length === 0) {
-    return rollupTaskDates(
-      tasks.filter((task) => task.id !== parentId),
-      parent.parentId,
-    );
+    // Keep the parent task intact when its last child is moved out or deleted.
+    // This prevents structural actions like "unnest" from unexpectedly removing
+    // the original parent row.
+    return tasks;
   }
 
   const startDates = children.map((task) => parseISO(task.startDate).getTime());
