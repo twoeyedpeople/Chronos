@@ -6,6 +6,7 @@ import { Plus, Folder, Calendar, User, ExternalLink, Search, Trash2, Pencil } fr
 import { format } from 'date-fns';
 
 const GLOBAL_MILESTONES_SEARCH_TEXT = 'global milestones agency overview milestone tracker';
+const FEATURED_PROJECT_NAME = '2-EP New Business';
 
 const AdminDashboard: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -112,10 +113,17 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
-  const filteredProjects = projects.filter(p => 
-    p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.clientName.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredProjects = projects
+    .filter(p => 
+      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.clientName.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .sort((a, b) => {
+      const aFeatured = a.name === FEATURED_PROJECT_NAME ? 0 : 1;
+      const bFeatured = b.name === FEATURED_PROJECT_NAME ? 0 : 1;
+      if (aFeatured !== bFeatured) return aFeatured - bFeatured;
+      return b.updatedAt - a.updatedAt;
+    });
   const showGlobalMilestonesCard =
     searchQuery.trim() === '' || GLOBAL_MILESTONES_SEARCH_TEXT.includes(searchQuery.trim().toLowerCase());
 
@@ -145,7 +153,7 @@ const AdminDashboard: React.FC = () => {
               referrerPolicy="no-referrer"
             />
             <h1 className="text-4xl font-black text-gray-900 tracking-tight">Project Dashboard</h1>
-            <p className="text-gray-500 font-medium mt-1 uppercase text-[10px] tracking-[0.2em]">Manage your project timelines</p>
+            <p className="text-gray-500 font-medium mt-1 uppercase text-[10px] tracking-[0.12em]">Live project timelines and key milestones</p>
           </div>
           
           <button
@@ -182,11 +190,11 @@ const AdminDashboard: React.FC = () => {
                     </div>
                     <div className="min-w-0 pt-0.5">
                       <h3 className="text-[16px] font-black text-gray-900 tracking-tight leading-tight mb-1 group-hover:text-pink-600 transition-colors truncate">
-                        Global Milestones
+                        All Milestones
                       </h3>
                       <div className="flex items-center gap-2 text-pink-300">
                         <User size={12} />
-                        <span className="text-[10px] font-black uppercase tracking-[0.18em] truncate">Agency Overview</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.18em] truncate">Agency View</span>
                       </div>
                     </div>
                   </div>
@@ -217,16 +225,24 @@ const AdminDashboard: React.FC = () => {
             <div
               key={project.id}
               onClick={() => navigateToProject(`${window.location.origin}${window.location.pathname}?p=${project.id}&edit=1`)}
-              className="group bg-white border border-gray-100 rounded-[24px] p-4 hover:shadow-2xl hover:shadow-blue-500/5 transition-all cursor-pointer relative overflow-hidden min-h-[146px]"
+              className={`group border rounded-[24px] p-4 transition-all cursor-pointer relative overflow-hidden min-h-[146px] ${
+                project.name === FEATURED_PROJECT_NAME
+                  ? 'bg-[#FFFBE8] border-yellow-100 hover:shadow-2xl hover:shadow-yellow-200/40'
+                  : 'bg-white border-gray-100 hover:shadow-2xl hover:shadow-blue-500/5'
+              }`}
             >
               <div className="flex flex-col gap-2 relative z-10 h-full">
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-3 min-w-0 flex-1 pr-3">
-                    <div className="w-9 h-9 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform shrink-0">
+                    <div className={`w-9 h-9 rounded-2xl flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform shrink-0 ${
+                      project.name === FEATURED_PROJECT_NAME ? 'bg-yellow-50' : 'bg-blue-50'
+                    }`}>
                       <Folder size={18} />
                     </div>
                     <div className="min-w-0 pt-0.5">
-                      <h3 className="text-[16px] font-black text-gray-900 tracking-tight leading-tight mb-1 group-hover:text-blue-600 transition-colors truncate">
+                      <h3 className={`text-[16px] font-black text-gray-900 tracking-tight leading-tight mb-1 transition-colors truncate ${
+                        project.name === FEATURED_PROJECT_NAME ? 'group-hover:text-yellow-600' : 'group-hover:text-blue-600'
+                      }`}>
                         {project.name}
                       </h3>
                       <div className="flex items-center gap-2 text-gray-400">
@@ -253,7 +269,9 @@ const AdminDashboard: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="mt-auto flex items-end justify-between pt-2 border-t border-gray-50">
+                <div className={`mt-auto flex items-end justify-between pt-2 ${
+                  project.name === FEATURED_PROJECT_NAME ? 'border-t border-yellow-100/70' : 'border-t border-gray-50'
+                }`}>
                   <div className="flex flex-col gap-1.5 text-gray-400">
                     {(() => {
                       const timeline = getProjectTimeline(project);
@@ -276,7 +294,9 @@ const AdminDashboard: React.FC = () => {
                       );
                     })()}
                   </div>
-                  <div className="flex items-center gap-1 text-blue-500 font-black text-[9px] uppercase tracking-[0.16em] opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
+                  <div className={`flex items-center gap-1 font-black text-[9px] uppercase tracking-[0.16em] opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0 ${
+                    project.name === FEATURED_PROJECT_NAME ? 'text-yellow-600' : 'text-blue-500'
+                  }`}>
                     <span>Open</span>
                     <ExternalLink size={10} />
                   </div>
@@ -284,7 +304,11 @@ const AdminDashboard: React.FC = () => {
               </div>
               
               {/* Decorative background */}
-              <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl group-hover:bg-blue-500/10 transition-colors" />
+              <div className={`absolute -right-4 -bottom-4 w-24 h-24 rounded-full blur-2xl transition-colors ${
+                project.name === FEATURED_PROJECT_NAME
+                  ? 'bg-yellow-200/30 group-hover:bg-yellow-200/50'
+                  : 'bg-blue-500/5 group-hover:bg-blue-500/10'
+              }`} />
             </div>
           ))}
 
