@@ -126,6 +126,12 @@ const SortableSidebarRow: React.FC<SortableSidebarRowProps> = ({
             type="text"
             value={isGlobalMilestonesView && task.sourceProjectName ? `${task.sourceProjectName} / ${task.name}` : task.name}
             onChange={(e) => onUpdateTask(task.id, { name: e.target.value })}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                e.currentTarget.blur();
+              }
+            }}
             readOnly={readOnly}
             className={`bg-transparent border-none focus:ring-0 text-[10px] w-full truncate p-0 leading-tight ${hasSubtasks ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-700'}`}
             placeholder={hasSubtasks ? "Folder..." : "Task..."}
@@ -186,7 +192,7 @@ interface SidebarProps {
   onAddTask: (parentId?: string) => void;
   onUpdateTask: (id: string, updates: Partial<Task>) => void;
   onDeleteTask: (id: string) => void;
-  onMoveTask: (id: string, newParentId: string | undefined) => void;
+  onMoveTask: (id: string, newParentId: string | undefined, insertBeforeId?: string) => void;
   readOnly?: boolean;
   showProjectName?: boolean;
 }
@@ -205,6 +211,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
+  const NEST_DRAG_THRESHOLD = 28;
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -215,7 +222,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const handleDragOver = (event: DragOverEvent) => setOverId(event.over ? (event.over.id as string) : null);
   const handleDragEnd = (event: DragEndEvent) => {
     if (readOnly) return;
-    const { active, over } = event;
+    const { active, over, delta } = event;
     setActiveId(null);
     setOverId(null);
 
@@ -230,14 +237,20 @@ const Sidebar: React.FC<SidebarProps> = ({
         // Drag Out: If dragging a child to a position above its parent
         if (activeTask.parentId) {
           const parentIndex = flattenedTasks.findIndex(t => t.task.id === activeTask.parentId);
-          if (overIndex < parentIndex) {
-            onMoveTask(active.id as string, undefined);
+          if (overIndex < parentIndex && delta.x < NEST_DRAG_THRESHOLD) {
+            onMoveTask(active.id as string, undefined, over.id as string);
             return;
           }
         }
-        
-        // Drag In: Drop on a task to make it a child
-        onMoveTask(active.id as string, over.id as string);
+
+        const shouldNest = delta.x > NEST_DRAG_THRESHOLD;
+
+        if (shouldNest) {
+          onMoveTask(active.id as string, over.id as string);
+          return;
+        }
+
+        onMoveTask(active.id as string, overTask.parentId ?? undefined, over.id as string);
       }
     }
   };

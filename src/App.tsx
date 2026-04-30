@@ -508,7 +508,7 @@ export default function App() {
     applyProjectChange((prev) => ({ ...prev, clientName, updatedAt: Date.now() }));
   };
 
-  const moveTask = (id: string, newParentId: string | null | undefined) => {
+  const moveTask = (id: string, newParentId: string | null | undefined, insertBeforeId?: string) => {
     const normalizedParentId = newParentId === undefined ? null : newParentId;
     
     // Prevent moving a task to its own child
@@ -525,8 +525,24 @@ export default function App() {
     applyProjectChange((prev) => {
       const taskToMove = prev.tasks.find(t => t.id === id);
       const oldParentId = taskToMove?.parentId;
-      
-      let newTasks = prev.tasks.map(t => t.id === id ? { ...t, parentId: normalizedParentId } : t);
+
+      if (!taskToMove) return prev;
+
+      let newTasks = [...prev.tasks];
+      const activeIndex = newTasks.findIndex((task) => task.id === id);
+      const [movedTask] = newTasks.splice(activeIndex, 1);
+      const updatedTask = { ...movedTask, parentId: normalizedParentId };
+
+      if (insertBeforeId && insertBeforeId !== id) {
+        const targetIndex = newTasks.findIndex((task) => task.id === insertBeforeId);
+        if (targetIndex >= 0) {
+          newTasks.splice(targetIndex, 0, updatedTask);
+        } else {
+          newTasks.push(updatedTask);
+        }
+      } else {
+        newTasks.push(updatedTask);
+      }
 
       // Rollup for both old and new parents
       newTasks = rollupTaskDates(newTasks, oldParentId);

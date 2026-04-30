@@ -187,6 +187,12 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
             type="text"
             value={isGlobalMilestonesView && task.sourceProjectName ? `${task.sourceProjectName} / ${task.name}` : task.name}
             onChange={(e) => onUpdateTask(task.id, { name: e.target.value })}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                e.currentTarget.blur();
+              }
+            }}
             readOnly={readOnly}
             className={`bg-transparent border-none focus:ring-0 text-[13px] w-full truncate p-0 leading-tight ${isFolder ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-800'}`}
             placeholder={isFolder ? "Folder name..." : "Task name..."}
@@ -365,7 +371,7 @@ interface ListViewProps {
   onAddTask: (parentId?: string) => void;
   onUpdateTask: (id: string, updates: Partial<Task>) => void;
   onDeleteTask: (id: string) => void;
-  onMoveTask: (id: string, newParentId: string | undefined) => void;
+  onMoveTask: (id: string, newParentId: string | undefined, insertBeforeId?: string) => void;
   readOnly?: boolean;
   showProjectName?: boolean;
 }
@@ -384,6 +390,7 @@ const ListView: React.FC<ListViewProps> = ({
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
   const isGlobalMilestonesView = Boolean(readOnly && showProjectName);
+  const NEST_DRAG_THRESHOLD = 28;
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -429,7 +436,7 @@ const ListView: React.FC<ListViewProps> = ({
 
   const handleDragEnd = (event: DragEndEvent) => {
     if (readOnly) return;
-    const { active, over } = event;
+    const { active, over, delta } = event;
     setActiveId(null);
     setOverId(null);
 
@@ -441,17 +448,24 @@ const ListView: React.FC<ListViewProps> = ({
         const activeIndex = flattenedTasks.findIndex(t => t.task.id === active.id);
         const overIndex = flattenedTasks.findIndex(t => t.task.id === over.id);
         
-        // Drag Out: If dragging a child to a position above its parent
+        // Drag Out: If dragging a child above its parent level without
+        // intentionally dragging right to nest.
         if (activeTask.parentId) {
           const parentIndex = flattenedTasks.findIndex(t => t.task.id === activeTask.parentId);
-          if (overIndex < parentIndex) {
-            onMoveTask(active.id as string, undefined);
+          if (overIndex < parentIndex && delta.x < NEST_DRAG_THRESHOLD) {
+            onMoveTask(active.id as string, undefined, over.id as string);
             return;
           }
         }
-        
-        // Drag In: Drop on a task to make it a child
-        onMoveTask(active.id as string, over.id as string);
+
+        const shouldNest = delta.x > NEST_DRAG_THRESHOLD;
+
+        if (shouldNest) {
+          onMoveTask(active.id as string, over.id as string);
+          return;
+        }
+
+        onMoveTask(active.id as string, overTask.parentId ?? undefined, over.id as string);
       }
     }
   };
