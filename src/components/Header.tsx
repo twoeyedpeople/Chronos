@@ -25,6 +25,7 @@ interface HeaderProps {
   showFiltersButton?: boolean;
   activeFilterCount?: number;
   isMobile?: boolean;
+  hideMainViewToggle?: boolean;
 }
 
 const Header: React.FC<HeaderProps> = ({ 
@@ -48,7 +49,8 @@ const Header: React.FC<HeaderProps> = ({
   isSaving,
   readOnly,
   showFiltersButton,
-  isMobile
+  isMobile,
+  hideMainViewToggle,
 }) => {
   return (
     <header className="h-20 px-4 md:px-8 bg-white/95 backdrop-blur-2xl border-b border-gray-100 flex items-center justify-between sticky top-0 z-50 shadow-sm gap-4 overflow-x-auto no-scrollbar">
@@ -88,7 +90,7 @@ const Header: React.FC<HeaderProps> = ({
           <Home size={15} />
         </button>
 
-        {!isMobile && (
+        {!isMobile && !hideMainViewToggle && (
           <div className="flex items-center gap-1 bg-gray-50 border border-gray-100 rounded-2xl p-1 shrink-0">
             <button
               onClick={() => onMainViewModeChange('list')}

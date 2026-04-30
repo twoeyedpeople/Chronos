@@ -38,6 +38,7 @@ interface SortableTaskRowProps {
   tasks: Task[];
   readOnly?: boolean;
   showProjectName?: boolean;
+  isKioskView?: boolean;
 }
 
 const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
@@ -54,7 +55,8 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
   isOver,
   tasks,
   readOnly,
-  showProjectName
+  showProjectName,
+  isKioskView
 }) => {
   const {
     attributes,
@@ -73,6 +75,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
   const days = task.isMilestone ? 0 : differenceInBusinessDays(parseISO(task.endDate), parseISO(task.startDate)) + 1;
   const [daysInput, setDaysInput] = useState(task.isMilestone ? '◆' : String(days));
   const isGlobalMilestonesView = Boolean(readOnly && showProjectName);
+  const isGlobalMilestonesKioskView = Boolean(isGlobalMilestonesView && isKioskView);
   const globalMilestoneDateText = format(parseISO(task.startDate), 'EEE, dd MMM yy');
   const mobileStartDateText = format(parseISO(task.startDate), 'dd MMM yy');
   const mobileEndDateText = format(parseISO(task.endDate), 'dd MMM yy');
@@ -152,7 +155,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
         isDragging ? 'opacity-50 bg-blue-50/50 z-50' : task.isExternal ? 'bg-[#FFF3FC] hover:bg-[#ffedf9]' : 'bg-white hover:bg-gray-50/80'
       } ${isOver ? 'bg-blue-100/50 ring-2 ring-blue-500/20' : ''}`}
     >
-      <div className="hidden md:flex items-center h-10 px-4">
+      <div className={`hidden md:flex items-center px-4 ${isGlobalMilestonesKioskView ? 'h-12' : 'h-10'}`}>
         <div className="w-8 shrink-0 flex items-center justify-center">
           <div 
             {...attributes} 
@@ -209,7 +212,9 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                 }
               }}
               readOnly={readOnly}
-              className={`bg-transparent border-none focus:ring-0 text-[13px] w-full truncate p-0 leading-tight ${isFolder ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-800'}`}
+              className={`bg-transparent border-none focus:ring-0 w-full truncate p-0 leading-tight ${
+                isGlobalMilestonesKioskView ? 'text-[17px]' : 'text-[13px]'
+              } ${isFolder ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-800'}`}
               placeholder={isFolder ? "Folder name..." : "Task name..."}
             />
           </div>
@@ -267,7 +272,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
           <>
             <div className={`${isGlobalMilestonesView ? 'w-32' : 'w-32'} px-2 shrink-0`}>
               {isGlobalMilestonesView ? (
-                <div className="text-[11px] text-gray-600 font-bold w-full tabular-nums">
+                <div className={`${isGlobalMilestonesKioskView ? 'text-[14px]' : 'text-[11px]'} text-gray-600 font-bold w-full tabular-nums`}>
                   {globalMilestoneDateText}
                 </div>
               ) : (
@@ -631,6 +636,7 @@ interface ListViewProps {
   showProjectName?: boolean;
   isMobile?: boolean;
   refreshTick?: number;
+  isKioskView?: boolean;
 }
 
 const ListView: React.FC<ListViewProps> = ({
@@ -644,10 +650,12 @@ const ListView: React.FC<ListViewProps> = ({
   readOnly,
   showProjectName,
   refreshTick,
+  isKioskView,
 }) => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
   const isGlobalMilestonesView = Boolean(readOnly && showProjectName);
+  const isGlobalMilestonesKioskView = Boolean(isGlobalMilestonesView && isKioskView);
   const NEST_DRAG_THRESHOLD = 28;
 
   const sensors = useSensors(
@@ -848,7 +856,7 @@ const ListView: React.FC<ListViewProps> = ({
                     globalMilestoneSections.map((section) => (
                       <div key={section.id} className="flex flex-col">
                         <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-y border-gray-100 px-4 py-2">
-                          <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.18em]">
+                          <span className={`${isGlobalMilestonesKioskView ? 'text-[13px]' : 'text-[10px]'} font-black text-gray-400 uppercase tracking-[0.18em]`}>
                             {section.label}
                           </span>
                         </div>
@@ -871,6 +879,7 @@ const ListView: React.FC<ListViewProps> = ({
                               tasks={orderedTasks}
                               readOnly={readOnly}
                               showProjectName={showProjectName}
+                              isKioskView={isKioskView}
                             />
                           );
                         })}
@@ -894,6 +903,7 @@ const ListView: React.FC<ListViewProps> = ({
                         tasks={orderedTasks}
                         readOnly={readOnly}
                         showProjectName={showProjectName}
+                        isKioskView={isKioskView}
                       />
                     ))
                   )}

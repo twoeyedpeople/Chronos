@@ -15,6 +15,7 @@ import { jsPDF } from 'jspdf';
 
 const MAX_UNDO_STEPS = 100;
 const GLOBAL_MILESTONES_ROUTE = 'milestones';
+const GLOBAL_MILESTONES_KIOSK_ROUTE = 'milestones-kiosk';
 const GLOBAL_MILESTONES_ID = 'global-milestones';
 const GLOBAL_MILESTONES_CLIENT = 'Agency Overview';
 const DASHBOARD_SESSION_KEY = 'chronos_dashboard_unlocked';
@@ -214,6 +215,7 @@ export default function App() {
   const [isReadOnly, setIsReadOnly] = useState(false);
   const [undoStack, setUndoStack] = useState<Project[]>([]);
   const [isGlobalMilestonesView, setIsGlobalMilestonesView] = useState(false);
+  const [isGlobalMilestonesKioskView, setIsGlobalMilestonesKioskView] = useState(false);
   const [globalMilestonesRefreshTick, setGlobalMilestonesRefreshTick] = useState(() => Date.now());
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
@@ -242,6 +244,12 @@ export default function App() {
       setMainViewMode('list');
     }
   }, [isMobile, mainViewMode]);
+
+  useEffect(() => {
+    if (isGlobalMilestonesKioskView && mainViewMode !== 'list') {
+      setMainViewMode('list');
+    }
+  }, [isGlobalMilestonesKioskView, mainViewMode]);
 
   useEffect(() => {
     if (!isGlobalMilestonesView) return;
@@ -277,10 +285,12 @@ export default function App() {
     const pId = params.get('p');
     const globalView = params.get('global');
     const canEdit = params.get('edit') === '1';
-    const showGlobalMilestones = globalView === GLOBAL_MILESTONES_ROUTE;
+    const showGlobalMilestones = globalView === GLOBAL_MILESTONES_ROUTE || globalView === GLOBAL_MILESTONES_KIOSK_ROUTE;
+    const showGlobalMilestonesKiosk = globalView === GLOBAL_MILESTONES_KIOSK_ROUTE;
 
     setProjectId(showGlobalMilestones ? null : pId);
     setIsGlobalMilestonesView(showGlobalMilestones);
+    setIsGlobalMilestonesKioskView(showGlobalMilestonesKiosk);
     setIsReadOnly(showGlobalMilestones || (Boolean(pId) && !canEdit));
     
     // Connection test
@@ -1041,10 +1051,11 @@ export default function App() {
         showFiltersButton={isGlobalMilestonesView}
         activeFilterCount={activeMilestoneFilterCount}
         isMobile={isMobile}
+        hideMainViewToggle={isGlobalMilestonesKioskView}
       />
 
       <main className="flex-1 flex overflow-hidden">
-        {!isMobile && mainViewMode === 'gantt' ? (
+        {!isMobile && !isGlobalMilestonesKioskView && mainViewMode === 'gantt' ? (
           <>
             <Sidebar 
               tasks={visibleTasks}
@@ -1083,6 +1094,7 @@ export default function App() {
             showProjectName={isGlobalMilestonesView}
             isMobile={isMobile}
             refreshTick={globalMilestonesRefreshTick}
+            isKioskView={isGlobalMilestonesKioskView}
           />
         )}
       </main>
