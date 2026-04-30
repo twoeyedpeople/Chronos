@@ -173,16 +173,43 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
           placeholder={isFolder ? "Folder name..." : "Task name..."}
         />
         {!isFolder && !readOnly && (
-          <label className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[9px] font-black text-gray-400 uppercase tracking-widest shrink-0">
-            <input
-              type="checkbox"
-              checked={Boolean(task.isExternal)}
-              onChange={(e) => onUpdateTask(task.id, { isExternal: e.target.checked })}
-              disabled={readOnly}
-              className="w-3 h-3 rounded border-gray-200 accent-pink-300"
-            />
-            <span>EXT</span>
-          </label>
+          <>
+            <label className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[9px] font-black text-gray-400 uppercase tracking-widest shrink-0">
+              <input
+                type="checkbox"
+                checked={Boolean(task.isMilestone)}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    onUpdateTask(task.id, {
+                      isMilestone: true,
+                      endDate: task.startDate,
+                    });
+                    setDaysInput('0');
+                  } else {
+                    const newEndDate = format(addBusinessDays(parseISO(task.startDate), 0), 'yyyy-MM-dd');
+                    onUpdateTask(task.id, {
+                      isMilestone: false,
+                      endDate: newEndDate,
+                    });
+                    setDaysInput('1');
+                  }
+                }}
+                disabled={readOnly}
+                className="w-3 h-3 rounded border-gray-200 accent-gray-700"
+              />
+              <span>Milestone</span>
+            </label>
+            <label className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[9px] font-black text-gray-400 uppercase tracking-widest shrink-0">
+              <input
+                type="checkbox"
+                checked={Boolean(task.isExternal)}
+                onChange={(e) => onUpdateTask(task.id, { isExternal: e.target.checked })}
+                disabled={readOnly}
+                className="w-3 h-3 rounded border-gray-200 accent-pink-300"
+              />
+              <span>EXT</span>
+            </label>
+          </>
         )}
         {!readOnly && (
           <button

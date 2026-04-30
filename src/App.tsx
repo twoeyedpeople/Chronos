@@ -12,6 +12,8 @@ import { doc, setDoc, onSnapshot, getDocFromServer, updateDoc } from 'firebase/f
 import { db, auth } from './firebase';
 import firebaseConfig from '../firebase-applet-config.json';
 
+const MAX_UNDO_STEPS = 100;
+
 enum OperationType {
   CREATE = 'create',
   UPDATE = 'update',
@@ -69,6 +71,13 @@ function withProjectId(data: Partial<Project>, fallbackId: string): Project {
     ...data,
     id: data.id ?? fallbackId,
     tasks: Array.isArray(data.tasks) ? data.tasks : [],
+  };
+}
+
+function cloneProject(project: Project): Project {
+  return {
+    ...project,
+    tasks: project.tasks.map((task) => ({ ...task })),
   };
 }
 
@@ -139,6 +148,7 @@ export default function App() {
   const [expandedTasks, setExpandedTasks] = useState<Set<string>>(new Set());
   const [projectId, setProjectId] = useState<string | null>(null);
   const [isReadOnly, setIsReadOnly] = useState(false);
+  const [undoStack, setUndoStack] = useState<Project[]>([]);
 
   // Expand all parents when changing main view mode or zoom/view settings
   useEffect(() => {
@@ -181,6 +191,7 @@ export default function App() {
       const unsub = onSnapshot(doc(db, 'projects', pId), (docSnap) => {
         if (docSnap.exists()) {
           setProject(withProjectId(docSnap.data() as Partial<Project>, docSnap.id));
+          setUndoStack([]);
         } else {
           console.error(`Project ${pId} not found. Loading default project.`);
         }
@@ -221,6 +232,18 @@ export default function App() {
     return () => clearInterval(interval);
   }, [project, projectId, isReadOnly]);
 
+  const applyProjectChange = (updater: (prev: Project) => Project) => {
+    if (isReadOnly) return;
+
+    setProject((prev) => {
+      const next = updater(prev);
+      if (next === prev) return prev;
+
+      setUndoStack((stack) => [cloneProject(prev), ...stack].slice(0, MAX_UNDO_STEPS));
+      return next;
+    });
+  };
+
   const addTask = (parentId: string | null = null) => {
     const newTask: Task = {
       id: uuidv4(),
@@ -229,7 +252,7 @@ export default function App() {
       endDate: format(addBusinessDays(new Date(), 4), 'yyyy-MM-dd'),
       parentId,
     };
-    setProject(prev => {
+    applyProjectChange((prev) => {
       let newTasks = [...prev.tasks, newTask];
       newTasks = rollupTaskDates(newTasks, parentId);
 
@@ -242,7 +265,7 @@ export default function App() {
   };
 
   const updateTask = (id: string, updates: Partial<Task>) => {
-    setProject(prev => {
+    applyProjectChange((prev) => {
       // Check for circular dependency if dependencyId is being updated
       if (updates.dependencyId) {
         const wouldBeCircular = (startId: string, targetId: string): boolean => {
@@ -331,7 +354,7 @@ export default function App() {
   };
 
   const deleteTask = (id: string) => {
-    setProject(prev => {
+    applyProjectChange((prev) => {
       const getDescendantIds = (parentId: string): string[] => {
         const children = prev.tasks.filter(t => t.parentId === parentId);
         return children.reduce((acc, child) => [...acc, child.id, ...getDescendantIds(child.id)], [] as string[]);
@@ -354,11 +377,11 @@ export default function App() {
   };
 
   const updateProjectName = (name: string) => {
-    setProject(prev => ({ ...prev, name, updatedAt: Date.now() }));
+    applyProjectChange((prev) => ({ ...prev, name, updatedAt: Date.now() }));
   };
 
   const updateClientName = (clientName: string) => {
-    setProject(prev => ({ ...prev, clientName, updatedAt: Date.now() }));
+    applyProjectChange((prev) => ({ ...prev, clientName, updatedAt: Date.now() }));
   };
 
   const moveTask = (id: string, newParentId: string | null | undefined) => {
@@ -375,7 +398,7 @@ export default function App() {
       return;
     }
 
-    setProject(prev => {
+    applyProjectChange((prev) => {
       const taskToMove = prev.tasks.find(t => t.id === id);
       const oldParentId = taskToMove?.parentId;
       
@@ -390,6 +413,17 @@ export default function App() {
         tasks: newTasks,
         updatedAt: Date.now()
       };
+    });
+  };
+
+  const handleUndo = () => {
+    if (isReadOnly) return;
+
+    setUndoStack((stack) => {
+      const [previous, ...rest] = stack;
+      if (!previous) return stack;
+      setProject(cloneProject(previous));
+      return rest;
     });
   };
 
@@ -475,6 +509,8 @@ export default function App() {
         onSave={handleSave}
         onShare={handleShare}
         onHome={handleHome}
+        onUndo={handleUndo}
+        canUndo={undoStack.length > 0}
         zoom={zoom}
         onZoomChange={setZoom}
         viewMode={viewMode}

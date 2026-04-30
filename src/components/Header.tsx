@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Share2, ZoomIn, ZoomOut, LayoutList, GanttChart } from 'lucide-react';
+import { Home, RotateCcw, Share2, ZoomIn, ZoomOut, LayoutList, GanttChart } from 'lucide-react';
 import { MainViewMode, ViewMode } from '../types';
 
 interface HeaderProps {
@@ -10,6 +10,8 @@ interface HeaderProps {
   onSave: () => void;
   onShare: () => void;
   onHome: () => void;
+  onUndo: () => void;
+  canUndo: boolean;
   zoom: number;
   onZoomChange: (zoom: number) => void;
   viewMode: ViewMode;
@@ -28,6 +30,8 @@ const Header: React.FC<HeaderProps> = ({
   onSave,
   onShare,
   onHome,
+  onUndo,
+  canUndo,
   zoom,
   onZoomChange,
   viewMode,
@@ -150,6 +154,16 @@ const Header: React.FC<HeaderProps> = ({
           )}
           {!readOnly && (
             <>
+            <button 
+              onClick={onUndo}
+              disabled={isSaving || !canUndo}
+              className="text-[10px] font-black text-gray-400 hover:text-blue-500 uppercase tracking-widest transition-all px-2 py-1 disabled:opacity-40"
+            >
+              <span className="inline-flex items-center gap-1">
+                <RotateCcw size={12} />
+                Undo
+              </span>
+            </button>
             <button 
               onClick={onSave}
               disabled={isSaving}
