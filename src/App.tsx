@@ -198,7 +198,7 @@ const DEFAULT_PROJECT: Project = {
 export default function App() {
   const [project, setProject] = useState<Project>(DEFAULT_PROJECT);
   const [viewMode, setViewMode] = useState<ViewMode>('day');
-  const [mainViewMode, setMainViewMode] = useState<MainViewMode>('gantt');
+  const [mainViewMode, setMainViewMode] = useState<MainViewMode>('list');
   const [zoom, setZoom] = useState(1);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
