@@ -158,9 +158,9 @@ const AdminDashboard: React.FC = () => {
           {showGlobalMilestonesCard && (
             <div
               onClick={() => navigateToProject(`${window.location.origin}${window.location.pathname}?global=milestones`)}
-              className="group bg-[#FFF3FC] border border-pink-100 rounded-[24px] p-4 hover:shadow-2xl hover:shadow-pink-200/40 transition-all cursor-pointer relative overflow-hidden min-h-[200px]"
+              className="group bg-[#FFF3FC] border border-pink-100 rounded-[24px] p-4 hover:shadow-2xl hover:shadow-pink-200/40 transition-all cursor-pointer relative overflow-hidden min-h-[132px]"
             >
-              <div className="flex flex-col gap-2.5 relative z-10 h-full">
+              <div className="flex flex-col gap-2 relative z-10 h-full">
                 <div className="flex items-start justify-between">
                   <div className="w-9 h-9 rounded-2xl bg-white/80 flex items-center justify-center text-pink-500 group-hover:scale-110 transition-transform border border-pink-100">
                     <Calendar size={18} />
@@ -170,7 +170,7 @@ const AdminDashboard: React.FC = () => {
                   </span>
                 </div>
 
-                <div className="pt-0.5">
+                <div className="pt-0">
                   <h3 className="text-[16px] font-black text-gray-900 tracking-tight leading-tight mb-1 group-hover:text-pink-600 transition-colors">
                     Global Milestones
                   </h3>
@@ -180,7 +180,7 @@ const AdminDashboard: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="mt-auto flex items-center justify-between pt-2.5 border-t border-pink-100/70">
+                <div className="mt-auto flex items-center justify-between pt-2 border-t border-pink-100/70">
                   <div className="flex items-center gap-2 text-pink-300">
                     <Calendar size={12} />
                     <span className="text-[9px] font-bold">All active project milestones</span>
@@ -200,9 +200,9 @@ const AdminDashboard: React.FC = () => {
             <div
               key={project.id}
               onClick={() => navigateToProject(`${window.location.origin}${window.location.pathname}?p=${project.id}&edit=1`)}
-              className="group bg-white border border-gray-100 rounded-[24px] p-4 hover:shadow-2xl hover:shadow-blue-500/5 transition-all cursor-pointer relative overflow-hidden min-h-[200px]"
+              className="group bg-white border border-gray-100 rounded-[24px] p-4 hover:shadow-2xl hover:shadow-blue-500/5 transition-all cursor-pointer relative overflow-hidden min-h-[132px]"
             >
-              <div className="flex flex-col gap-2.5 relative z-10 h-full">
+              <div className="flex flex-col gap-2 relative z-10 h-full">
                 <div className="flex items-start justify-between">
                   <div className="w-9 h-9 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform">
                     <Folder size={18} />
@@ -225,7 +225,7 @@ const AdminDashboard: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="pt-0.5">
+                <div className="pt-0">
                   <h3 className="text-[16px] font-black text-gray-900 tracking-tight leading-tight mb-1 group-hover:text-blue-600 transition-colors">
                     {project.name}
                   </h3>
@@ -235,7 +235,7 @@ const AdminDashboard: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="mt-auto flex items-center justify-between pt-2.5 border-t border-gray-50">
+                <div className="mt-auto flex items-center justify-between pt-2 border-t border-gray-50">
                   <div className="flex items-center gap-2 text-gray-400">
                     <Calendar size={12} />
                     <span className="text-[9px] font-bold">{format(project.updatedAt, 'MMM dd, yyyy')}</span>
