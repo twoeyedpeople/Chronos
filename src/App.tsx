@@ -17,6 +17,7 @@ const MAX_UNDO_STEPS = 100;
 const GLOBAL_MILESTONES_ROUTE = 'milestones';
 const GLOBAL_MILESTONES_ID = 'global-milestones';
 const GLOBAL_MILESTONES_CLIENT = 'Agency Overview';
+const DASHBOARD_SESSION_KEY = 'chronos_dashboard_unlocked';
 
 enum OperationType {
   CREATE = 'create',
@@ -196,6 +197,9 @@ const DEFAULT_PROJECT: Project = {
 };
 
 export default function App() {
+  const dashboardPassword =
+    ((import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env?.VITE_DASHBOARD_PASSWORD ?? '').trim();
+  const dashboardGateEnabled = dashboardPassword.length > 0;
   const [project, setProject] = useState<Project>(DEFAULT_PROJECT);
   const [viewMode, setViewMode] = useState<ViewMode>('day');
   const [mainViewMode, setMainViewMode] = useState<MainViewMode>('list');
@@ -213,6 +217,12 @@ export default function App() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [selectedMilestoneProjectIds, setSelectedMilestoneProjectIds] = useState<string[] | null>(null);
+  const [dashboardPasswordInput, setDashboardPasswordInput] = useState('');
+  const [dashboardPasswordError, setDashboardPasswordError] = useState('');
+  const [isDashboardUnlocked, setIsDashboardUnlocked] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.sessionStorage.getItem(DASHBOARD_SESSION_KEY) === 'true';
+  });
   const projectRef = useRef(project);
 
   useEffect(() => {
@@ -923,6 +933,74 @@ export default function App() {
   }
 
   if (!projectId && !isGlobalMilestonesView) {
+    if (dashboardGateEnabled && !isDashboardUnlocked) {
+      return (
+        <div className="min-h-screen bg-gray-50 font-sans flex items-center justify-center p-6">
+          <div className="w-full max-w-md bg-white border border-gray-100 rounded-[32px] shadow-xl shadow-gray-200/40 p-8 flex flex-col gap-6">
+            <div className="flex flex-col gap-2">
+              <img
+                src="https://twoeyedpeople.com/img/2EP_Logotype.svg"
+                alt="Two-Eyed People"
+                className="h-6 w-fit opacity-80"
+                referrerPolicy="no-referrer"
+              />
+              <h1 className="text-3xl font-black text-gray-900 tracking-tight">Dashboard Access</h1>
+              <div className="flex flex-col gap-3 text-sm text-gray-500 leading-relaxed">
+                <p>Behind this lock sits a collection of secret timelines, mysterious builds and ongoing Two-Eyed People operations.</p>
+                <p>Some of it is real. Some of it is… less explainable.</p>
+                <p className="font-black uppercase tracking-[0.14em] text-gray-700">Enter at your own risk</p>
+              </div>
+            </div>
+
+            <form
+              className="flex flex-col gap-4"
+              onSubmit={(event) => {
+                event.preventDefault();
+                if (dashboardPasswordInput === dashboardPassword) {
+                  window.sessionStorage.setItem(DASHBOARD_SESSION_KEY, 'true');
+                  setIsDashboardUnlocked(true);
+                  setDashboardPasswordError('');
+                  setDashboardPasswordInput('');
+                  return;
+                }
+
+                setDashboardPasswordError('That password did not match.');
+              }}
+            >
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.18em]">
+                  Password
+                </label>
+                <input
+                  autoFocus
+                  type="password"
+                  value={dashboardPasswordInput}
+                  onChange={(event) => {
+                    setDashboardPasswordInput(event.target.value);
+                    if (dashboardPasswordError) {
+                      setDashboardPasswordError('');
+                    }
+                  }}
+                  className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 px-5 text-sm font-bold text-gray-800 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all"
+                  placeholder="Enter password"
+                />
+                {dashboardPasswordError && (
+                  <p className="text-sm font-medium text-red-500">{dashboardPasswordError}</p>
+                )}
+              </div>
+
+              <button
+                type="submit"
+                className="w-full px-6 py-4 bg-gray-950 text-white rounded-2xl font-black text-sm shadow-xl shadow-gray-200 hover:bg-black transition-all active:scale-[0.99]"
+              >
+                Unlock Dashboard
+              </button>
+            </form>
+          </div>
+        </div>
+      );
+    }
+
     return <AdminDashboard />;
   }
 
