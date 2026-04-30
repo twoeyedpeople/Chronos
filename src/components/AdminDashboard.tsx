@@ -154,38 +154,38 @@ const AdminDashboard: React.FC = () => {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {showGlobalMilestonesCard && (
             <div
               onClick={() => navigateToProject(`${window.location.origin}${window.location.pathname}?global=milestones`)}
-              className="group bg-[#FFF3FC] border border-pink-100 rounded-3xl p-6 hover:shadow-2xl hover:shadow-pink-200/40 transition-all cursor-pointer relative overflow-hidden"
+              className="group bg-[#FFF3FC] border border-pink-100 rounded-[24px] p-4 hover:shadow-2xl hover:shadow-pink-200/40 transition-all cursor-pointer relative overflow-hidden min-h-[200px]"
             >
-              <div className="flex flex-col gap-4 relative z-10">
+              <div className="flex flex-col gap-2.5 relative z-10 h-full">
                 <div className="flex items-start justify-between">
-                  <div className="w-12 h-12 rounded-2xl bg-white/80 flex items-center justify-center text-pink-500 group-hover:scale-110 transition-transform border border-pink-100">
-                    <Calendar size={24} />
+                  <div className="w-9 h-9 rounded-2xl bg-white/80 flex items-center justify-center text-pink-500 group-hover:scale-110 transition-transform border border-pink-100">
+                    <Calendar size={18} />
                   </div>
-                  <span className="px-3 py-1 rounded-full bg-white/80 border border-pink-100 text-[9px] font-black uppercase tracking-[0.2em] text-pink-500">
+                  <span className="px-2.5 py-1 rounded-full bg-white/80 border border-pink-100 text-[7px] font-black uppercase tracking-[0.16em] text-pink-500">
                     Read Only
                   </span>
                 </div>
 
-                <div>
-                  <h3 className="text-xl font-black text-gray-900 tracking-tight mb-1 group-hover:text-pink-600 transition-colors">
+                <div className="pt-0.5">
+                  <h3 className="text-[16px] font-black text-gray-900 tracking-tight leading-tight mb-1 group-hover:text-pink-600 transition-colors">
                     Global Milestones
                   </h3>
                   <div className="flex items-center gap-2 text-pink-300">
                     <User size={12} />
-                    <span className="text-[10px] font-black uppercase tracking-widest">Agency Overview</span>
+                    <span className="text-[9px] font-black uppercase tracking-[0.18em]">Agency Overview</span>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between pt-4 border-t border-pink-100/70">
+                <div className="mt-auto flex items-center justify-between pt-2.5 border-t border-pink-100/70">
                   <div className="flex items-center gap-2 text-pink-300">
                     <Calendar size={12} />
-                    <span className="text-[10px] font-bold">All active project milestones</span>
+                    <span className="text-[9px] font-bold">All active project milestones</span>
                   </div>
-                  <div className="flex items-center gap-1 text-pink-500 font-black text-[10px] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
+                  <div className="flex items-center gap-1 text-pink-500 font-black text-[9px] uppercase tracking-[0.16em] opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
                     <span>Open</span>
                     <ExternalLink size={10} />
                   </div>
@@ -200,47 +200,47 @@ const AdminDashboard: React.FC = () => {
             <div
               key={project.id}
               onClick={() => navigateToProject(`${window.location.origin}${window.location.pathname}?p=${project.id}&edit=1`)}
-              className="group bg-white border border-gray-100 rounded-3xl p-6 hover:shadow-2xl hover:shadow-blue-500/5 transition-all cursor-pointer relative overflow-hidden"
+              className="group bg-white border border-gray-100 rounded-[24px] p-4 hover:shadow-2xl hover:shadow-blue-500/5 transition-all cursor-pointer relative overflow-hidden min-h-[200px]"
             >
-              <div className="flex flex-col gap-4 relative z-10">
+              <div className="flex flex-col gap-2.5 relative z-10 h-full">
                 <div className="flex items-start justify-between">
-                  <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform">
-                    <Folder size={24} />
+                  <div className="w-9 h-9 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform">
+                    <Folder size={18} />
                   </div>
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
                     <button
                       onClick={(e) => openEditModal(e, project)}
-                      className="p-2 text-gray-300 hover:text-blue-500 hover:bg-blue-50 rounded-xl transition-all"
+                      className="p-2 text-gray-300 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-all"
                       title="Edit project"
                     >
-                      <Pencil size={16} />
+                      <Pencil size={14} />
                     </button>
                     <button
                       onClick={(e) => confirmDelete(e, project.id, project.name)}
-                      className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                      className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
                       title="Delete project"
                     >
-                      <Trash2 size={16} />
+                      <Trash2 size={14} />
                     </button>
                   </div>
                 </div>
 
-                <div>
-                  <h3 className="text-xl font-black text-gray-900 tracking-tight mb-1 group-hover:text-blue-600 transition-colors">
+                <div className="pt-0.5">
+                  <h3 className="text-[16px] font-black text-gray-900 tracking-tight leading-tight mb-1 group-hover:text-blue-600 transition-colors">
                     {project.name}
                   </h3>
                   <div className="flex items-center gap-2 text-gray-400">
                     <User size={12} />
-                    <span className="text-[10px] font-black uppercase tracking-widest">{project.clientName}</span>
+                    <span className="text-[9px] font-black uppercase tracking-[0.18em]">{project.clientName}</span>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between pt-4 border-t border-gray-50">
+                <div className="mt-auto flex items-center justify-between pt-2.5 border-t border-gray-50">
                   <div className="flex items-center gap-2 text-gray-400">
                     <Calendar size={12} />
-                    <span className="text-[10px] font-bold">{format(project.updatedAt, 'MMM dd, yyyy')}</span>
+                    <span className="text-[9px] font-bold">{format(project.updatedAt, 'MMM dd, yyyy')}</span>
                   </div>
-                  <div className="flex items-center gap-1 text-blue-500 font-black text-[10px] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
+                  <div className="flex items-center gap-1 text-blue-500 font-black text-[9px] uppercase tracking-[0.16em] opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
                     <span>Open</span>
                     <ExternalLink size={10} />
                   </div>

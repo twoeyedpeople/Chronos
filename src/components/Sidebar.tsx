@@ -348,38 +348,40 @@ const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {!isGlobalMilestonesView && (
-        <div className="border-t border-gray-50 bg-gray-50/20 p-4 flex flex-col gap-4">
-          <div className="flex flex-col gap-1">
-            <span className="text-[8px] font-black text-gray-400 uppercase tracking-[0.2em]">Working Days</span>
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-lg font-black text-gray-900 tracking-tighter">{totalBusinessDays}</span>
-              <span className="text-[8px] font-bold text-gray-400 uppercase">Days</span>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-1">
-            <span className="text-[8px] font-black text-gray-400 uppercase tracking-[0.2em]">Total Tasks</span>
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-lg font-black text-gray-900 tracking-tighter">{tasks.length}</span>
-              <span className="text-[8px] font-bold text-gray-400 uppercase">Items</span>
-            </div>
-          </div>
-
-          {projectSpan && (
-            <div className="flex flex-col gap-2">
-              <span className="text-[8px] font-black text-gray-400 uppercase tracking-[0.2em]">Timeline</span>
-              <div className="flex flex-col gap-1.5">
-                <div className="flex items-center gap-2 bg-white/50 px-2 py-1.5 rounded-lg border border-gray-100/50">
-                  <Calendar size={10} className="text-blue-400" />
-                  <span className="text-[9px] font-bold text-gray-600">{format(projectSpan.start, 'MMM dd, yyyy')}</span>
-                </div>
-                <div className="flex items-center gap-2 bg-white/50 px-2 py-1.5 rounded-lg border border-gray-100/50">
-                  <Calendar size={10} className="text-red-400" />
-                  <span className="text-[9px] font-bold text-gray-600">{format(projectSpan.end, 'MMM dd, yyyy')}</span>
-                </div>
+        <div className="border-t border-gray-50 bg-gray-50/20 px-4 py-3">
+          <div className="grid grid-cols-3 gap-3 items-start">
+            <div className="flex flex-col gap-0.5 min-w-0">
+              <span className="text-[7px] font-black text-gray-400 uppercase tracking-[0.14em]">Working Days</span>
+              <div className="flex items-baseline gap-1">
+                <span className="text-sm font-black text-gray-900 tracking-tight">{totalBusinessDays}</span>
+                <span className="text-[7px] font-bold text-gray-400 uppercase">Days</span>
               </div>
             </div>
-          )}
+
+            <div className="flex flex-col gap-0.5 min-w-0">
+              <span className="text-[7px] font-black text-gray-400 uppercase tracking-[0.14em]">Total Tasks</span>
+              <div className="flex items-baseline gap-1">
+                <span className="text-sm font-black text-gray-900 tracking-tight">{tasks.length}</span>
+                <span className="text-[7px] font-bold text-gray-400 uppercase">Items</span>
+              </div>
+            </div>
+
+            {projectSpan && (
+              <div className="flex flex-col gap-0.5 min-w-0">
+                <span className="text-[7px] font-black text-gray-400 uppercase tracking-[0.14em]">Timeline</span>
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-1.5 bg-white/50 px-2 py-1 rounded-lg border border-gray-100/50 min-w-0">
+                    <Calendar size={9} className="text-blue-400 shrink-0" />
+                    <span className="text-[8px] font-bold text-gray-600 truncate">{format(projectSpan.start, 'MMM dd, yyyy')}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 bg-white/50 px-2 py-1 rounded-lg border border-gray-100/50 min-w-0">
+                    <Calendar size={9} className="text-red-400 shrink-0" />
+                    <span className="text-[8px] font-bold text-gray-600 truncate">{format(projectSpan.end, 'MMM dd, yyyy')}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </aside>
