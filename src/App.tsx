@@ -210,6 +210,8 @@ export default function App() {
   const [undoStack, setUndoStack] = useState<Project[]>([]);
   const [isGlobalMilestonesView, setIsGlobalMilestonesView] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [selectedMilestoneProjectIds, setSelectedMilestoneProjectIds] = useState<string[] | null>(null);
   const projectRef = useRef(project);
 
   useEffect(() => {
@@ -647,12 +649,64 @@ export default function App() {
     return result;
   };
 
+  const milestoneFilterProjects = useMemo(() => {
+    if (!isGlobalMilestonesView) return [];
+
+    return Array.from(
+      new Map<string, { id: string; name: string }>(
+        project.tasks
+          .filter((task) => task.sourceProjectId && task.sourceProjectName)
+          .map((task) => [
+            task.sourceProjectId as string,
+            {
+              id: task.sourceProjectId as string,
+              name: task.sourceProjectName as string,
+            },
+          ]),
+      ).values(),
+    ).sort((a, b) => a.name.localeCompare(b.name));
+  }, [isGlobalMilestonesView, project.tasks]);
+
+  useEffect(() => {
+    if (!isGlobalMilestonesView) {
+      setSelectedMilestoneProjectIds(null);
+      setIsFiltersOpen(false);
+      return;
+    }
+
+    const projectIds = milestoneFilterProjects.map((project) => project.id);
+    setSelectedMilestoneProjectIds((previous) => {
+      if (previous === null) {
+        return projectIds;
+      }
+
+      const preserved = previous.filter((id) => projectIds.includes(id));
+      const additions = projectIds.filter((id) => !preserved.includes(id));
+      return [...preserved, ...additions];
+    });
+  }, [isGlobalMilestonesView, milestoneFilterProjects]);
+
+  const visibleTasks = useMemo(() => {
+    if (!isGlobalMilestonesView || selectedMilestoneProjectIds === null) {
+      return project.tasks;
+    }
+
+    return project.tasks.filter((task) => {
+      if (!task.sourceProjectId) return false;
+      return selectedMilestoneProjectIds.includes(task.sourceProjectId);
+    });
+  }, [isGlobalMilestonesView, project.tasks, selectedMilestoneProjectIds]);
+
   const flattenedTasks = getFlattenedTasks();
+  const visibleFlattenedTasks = useMemo(
+    () => flattenedTasks.filter(({ task }) => visibleTasks.some((visibleTask) => visibleTask.id === task.id)),
+    [flattenedTasks, visibleTasks],
+  );
   const exportTasks = flattenedTasks.map(({ task, depth }, index) => ({ task, depth, index }));
   const exportRange = useMemo(() => {
-    if (project.tasks.length === 0) return null;
+    if (visibleTasks.length === 0) return null;
 
-    const taskTimes = project.tasks.flatMap((task) => [
+    const taskTimes = visibleTasks.flatMap((task) => [
       parseISO(task.startDate).getTime(),
       parseISO(task.endDate).getTime(),
     ]);
@@ -664,7 +718,12 @@ export default function App() {
       maxDate,
       days: eachDayOfInterval({ start: minDate, end: maxDate }),
     };
-  }, [project.tasks]);
+  }, [visibleTasks]);
+
+  const exportTasksData = useMemo(
+    () => visibleFlattenedTasks.map(({ task, depth }, index) => ({ task, depth, index })),
+    [visibleFlattenedTasks],
+  );
 
   const handleDownloadPdf = async () => {
     if (!exportRange) {
@@ -731,7 +790,7 @@ export default function App() {
       };
 
       const listTop = margin + 48;
-      const rowCount = Math.max(exportTasks.length, 1);
+      const rowCount = Math.max(exportTasksData.length, 1);
       const listRowHeight = Math.max(12, Math.min(24, Math.floor((contentHeight - 42) / (rowCount + 1))));
       const listFontSize = Math.max(7, Math.min(11, listRowHeight - 3));
       const listColumns = isGlobalMilestonesView
@@ -768,7 +827,7 @@ export default function App() {
         x += col.width;
       });
 
-      exportTasks.forEach(({ task, depth, index }, rowIndex) => {
+      exportTasksData.forEach(({ task, depth, index }, rowIndex) => {
         const y = listTop + listRowHeight * (rowIndex + 1);
         if (task.isExternal) {
           pdf.setFillColor(...softPink);
@@ -854,6 +913,7 @@ export default function App() {
   }
 
   const shareUrl = `${window.location.origin}${window.location.pathname}?p=${projectId}`;
+  const activeMilestoneFilterCount = selectedMilestoneProjectIds?.length ?? milestoneFilterProjects.length;
 
   return (
     <div className="h-screen flex flex-col bg-gray-50 overflow-hidden font-sans selection:bg-blue-100 selection:text-blue-900">
@@ -867,6 +927,7 @@ export default function App() {
         onHome={handleHome}
         onUndo={handleUndo}
         onDownloadPdf={handleDownloadPdf}
+        onOpenFilters={() => setIsFiltersOpen(true)}
         canUndo={undoStack.length > 0}
         zoom={zoom}
         onZoomChange={setZoom}
@@ -876,14 +937,16 @@ export default function App() {
         onMainViewModeChange={setMainViewMode}
         isSaving={isSaving}
         readOnly={isReadOnly}
+        showFiltersButton={isGlobalMilestonesView}
+        activeFilterCount={activeMilestoneFilterCount}
       />
 
       <main className="flex-1 flex overflow-hidden">
         {mainViewMode === 'gantt' ? (
           <>
             <Sidebar 
-              tasks={project.tasks}
-              flattenedTasks={flattenedTasks}
+              tasks={visibleTasks}
+              flattenedTasks={visibleFlattenedTasks}
               expandedTasks={expandedTasks}
               onToggleExpand={onToggleExpand}
               onAddTask={addTask}
@@ -894,8 +957,8 @@ export default function App() {
               showProjectName={isGlobalMilestonesView}
             />
             <GanttView 
-              tasks={flattenedTasks.map(t => t.task)}
-              allTasks={project.tasks}
+              tasks={visibleFlattenedTasks.map(t => t.task)}
+              allTasks={visibleTasks}
               viewMode={viewMode}
               zoom={zoom}
               onUpdateTask={updateTask}
@@ -904,7 +967,7 @@ export default function App() {
           </>
         ) : (
           <ListView 
-            tasks={project.tasks}
+            tasks={visibleTasks}
             expandedTasks={expandedTasks}
             onToggleExpand={onToggleExpand}
             onAddTask={addTask}
@@ -922,6 +985,81 @@ export default function App() {
         onClose={() => setIsShareOpen(false)}
         projectUrl={shareUrl}
       />
+
+      {isGlobalMilestonesView && isFiltersOpen && (
+        <div className="fixed inset-0 z-[60] flex items-start justify-end bg-gray-950/25 backdrop-blur-sm p-4 md:p-6">
+          <div className="w-full max-w-xl rounded-[32px] border border-gray-200 bg-white shadow-2xl overflow-hidden">
+            <div className="flex items-start justify-between gap-4 px-6 py-5 border-b border-gray-100">
+              <div className="flex flex-col gap-1">
+                <span className="text-[11px] font-black text-gray-400 uppercase tracking-[0.18em]">Global Milestones</span>
+                <h2 className="text-2xl font-black text-gray-900 tracking-tight">Filters</h2>
+                <p className="text-sm text-gray-500">Choose which projects are visible in this milestone view.</p>
+              </div>
+              <button
+                onClick={() => setIsFiltersOpen(false)}
+                className="px-4 py-2 rounded-xl border border-gray-200 text-sm font-bold text-gray-500 hover:text-gray-700 hover:border-gray-300 transition-all"
+              >
+                Done
+              </button>
+            </div>
+
+            <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
+              <button
+                onClick={() => setSelectedMilestoneProjectIds(milestoneFilterProjects.map((project) => project.id))}
+                className="px-4 py-2 rounded-xl bg-gray-900 text-white text-sm font-bold hover:bg-black transition-all"
+              >
+                All On
+              </button>
+              <button
+                onClick={() => setSelectedMilestoneProjectIds([])}
+                className="px-4 py-2 rounded-xl border border-gray-200 text-sm font-bold text-gray-600 hover:border-gray-300 hover:text-gray-800 transition-all"
+              >
+                All Off
+              </button>
+            </div>
+
+            <div className="max-h-[60vh] overflow-y-auto px-6 py-4">
+              <div className="grid grid-cols-1 gap-3">
+                {milestoneFilterProjects.map((filterProject) => {
+                  const checked = selectedMilestoneProjectIds?.includes(filterProject.id) ?? true;
+                  const milestoneCount = project.tasks.filter((task) => task.sourceProjectId === filterProject.id).length;
+
+                  return (
+                    <label
+                      key={filterProject.id}
+                      className={`flex items-center justify-between gap-4 rounded-2xl border px-4 py-4 transition-all cursor-pointer ${
+                        checked ? 'border-blue-200 bg-blue-50/50' : 'border-gray-200 bg-white hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={(event) => {
+                            setSelectedMilestoneProjectIds((previous) => {
+                              const current = previous ?? milestoneFilterProjects.map((item) => item.id);
+                              if (event.target.checked) {
+                                return current.includes(filterProject.id) ? current : [...current, filterProject.id];
+                              }
+                              return current.filter((id) => id !== filterProject.id);
+                            });
+                          }}
+                          className="h-4 w-4 rounded border-gray-300 accent-blue-600 shrink-0"
+                        />
+                        <div className="min-w-0">
+                          <div className="text-sm font-bold text-gray-900 truncate">{filterProject.name}</div>
+                          <div className="text-xs font-bold uppercase tracking-[0.14em] text-gray-400">{milestoneCount} milestones</div>
+                        </div>
+                      </div>
+                      <div className={`h-3 w-3 rounded-full shrink-0 ${checked ? 'bg-blue-500' : 'bg-gray-200'}`} />
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Subtle Background Accents */}
       <div className="fixed top-0 right-0 -z-10 w-[500px] h-[500px] bg-blue-500/5 blur-[120px] rounded-full pointer-events-none" />

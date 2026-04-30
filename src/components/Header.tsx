@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, RotateCcw, Share2, ZoomIn, ZoomOut, LayoutList, GanttChart, Download } from 'lucide-react';
+import { Home, RotateCcw, Share2, ZoomIn, ZoomOut, LayoutList, GanttChart, Download, SlidersHorizontal } from 'lucide-react';
 import { MainViewMode, ViewMode } from '../types';
 
 interface HeaderProps {
@@ -12,6 +12,7 @@ interface HeaderProps {
   onHome: () => void;
   onUndo: () => void;
   onDownloadPdf: () => void;
+  onOpenFilters?: () => void;
   canUndo: boolean;
   zoom: number;
   onZoomChange: (zoom: number) => void;
@@ -21,6 +22,8 @@ interface HeaderProps {
   onMainViewModeChange: (mode: MainViewMode) => void;
   isSaving?: boolean;
   readOnly?: boolean;
+  showFiltersButton?: boolean;
+  activeFilterCount?: number;
 }
 
 const Header: React.FC<HeaderProps> = ({ 
@@ -33,6 +36,7 @@ const Header: React.FC<HeaderProps> = ({
   onHome,
   onUndo,
   onDownloadPdf,
+  onOpenFilters,
   canUndo,
   zoom,
   onZoomChange,
@@ -41,7 +45,9 @@ const Header: React.FC<HeaderProps> = ({
   mainViewMode,
   onMainViewModeChange,
   isSaving,
-  readOnly
+  readOnly,
+  showFiltersButton,
+  activeFilterCount
 }) => {
   return (
     <header className="h-20 px-4 md:px-8 bg-white/90 backdrop-blur-2xl border-b border-gray-100 flex items-center justify-between sticky top-0 z-50 shadow-sm gap-4 overflow-x-auto no-scrollbar">
@@ -151,6 +157,20 @@ const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center gap-2">
           {readOnly && (
             <>
+              {showFiltersButton && (
+                <button
+                  onClick={onOpenFilters}
+                  className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 hover:border-gray-300 text-gray-700 rounded-xl text-xs font-bold transition-all shadow-sm hover:shadow-md whitespace-nowrap"
+                >
+                  <SlidersHorizontal size={14} />
+                  <span>Filters</span>
+                  {typeof activeFilterCount === 'number' && (
+                    <span className="px-1.5 py-0.5 rounded-full bg-gray-100 text-[10px] font-black text-gray-500">
+                      {activeFilterCount}
+                    </span>
+                  )}
+                </button>
+              )}
               <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">
                 View Only
               </span>
