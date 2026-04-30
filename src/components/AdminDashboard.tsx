@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
-import { collection, onSnapshot, query, orderBy, doc, setDoc, deleteDoc } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy, doc, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { Project } from '../types';
-import { Plus, Folder, Calendar, User, ExternalLink, Search, Trash2 } from 'lucide-react';
+import { Plus, Folder, Calendar, User, ExternalLink, Search, Trash2, Pencil } from 'lucide-react';
 import { format } from 'date-fns';
 const AdminDashboard: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -11,7 +11,9 @@ const AdminDashboard: React.FC = () => {
   const [newClientName, setNewClientName] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<{ id: string, name: string } | null>(null);
+  const [projectToEdit, setProjectToEdit] = useState<{ id: string, name: string, clientName: string } | null>(null);
 
   useEffect(() => {
     const q = query(collection(db, 'projects'), orderBy('updatedAt', 'desc'));
@@ -71,6 +73,38 @@ const AdminDashboard: React.FC = () => {
     setProjectToDelete({ id, name });
   };
 
+  const openEditModal = (e: React.MouseEvent, project: Project) => {
+    e.stopPropagation();
+    setProjectToEdit({
+      id: project.id,
+      name: project.name,
+      clientName: project.clientName,
+    });
+    setNewProjectName(project.name);
+    setNewClientName(project.clientName);
+  };
+
+  const handleUpdateProject = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!projectToEdit || !newProjectName || !newClientName) return;
+
+    setIsUpdating(true);
+    try {
+      await updateDoc(doc(db, 'projects', projectToEdit.id), {
+        name: newProjectName,
+        clientName: newClientName,
+        updatedAt: Date.now(),
+      });
+      setProjectToEdit(null);
+      setNewProjectName('');
+      setNewClientName('');
+    } catch (error) {
+      console.error('Error updating project:', error);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   const filteredProjects = projects.filter(p => 
     p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.clientName.toLowerCase().includes(searchQuery.toLowerCase())
@@ -123,13 +157,22 @@ const AdminDashboard: React.FC = () => {
                   <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform">
                     <Folder size={24} />
                   </div>
-                  <button
-                    onClick={(e) => confirmDelete(e, project.id, project.name)}
-                    className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all opacity-0 group-hover:opacity-100"
-                    title="Delete project"
-                  >
-                    <Trash2 size={16} />
-                  </button>
+                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                    <button
+                      onClick={(e) => openEditModal(e, project)}
+                      className="p-2 text-gray-300 hover:text-blue-500 hover:bg-blue-50 rounded-xl transition-all"
+                      title="Edit project"
+                    >
+                      <Pencil size={16} />
+                    </button>
+                    <button
+                      onClick={(e) => confirmDelete(e, project.id, project.name)}
+                      className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                      title="Delete project"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </div>
 
                 <div>
@@ -255,6 +298,60 @@ const AdminDashboard: React.FC = () => {
                 Delete Project
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {projectToEdit && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm"
+            onClick={() => setProjectToEdit(null)}
+          />
+          <div className="relative bg-white rounded-[32px] w-full max-w-md p-8 shadow-2xl animate-in fade-in zoom-in duration-200">
+            <h2 className="text-2xl font-black text-gray-900 tracking-tight mb-6">Edit Project</h2>
+
+            <form onSubmit={handleUpdateProject} className="flex flex-col gap-6">
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Client Name</label>
+                <input
+                  autoFocus
+                  type="text"
+                  required
+                  value={newClientName}
+                  onChange={(e) => setNewClientName(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 px-5 text-sm font-bold text-gray-800 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all"
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Project Name</label>
+                <input
+                  type="text"
+                  required
+                  value={newProjectName}
+                  onChange={(e) => setNewProjectName(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 px-5 text-sm font-bold text-gray-800 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all"
+                />
+              </div>
+
+              <div className="flex gap-3 mt-2">
+                <button
+                  type="button"
+                  onClick={() => setProjectToEdit(null)}
+                  className="flex-1 px-6 py-4 bg-gray-100 text-gray-500 rounded-2xl font-black text-sm hover:bg-gray-200 transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isUpdating}
+                  className="flex-[2] px-6 py-4 bg-blue-500 text-white rounded-2xl font-black text-sm shadow-xl shadow-blue-200 hover:scale-105 transition-all active:scale-95 disabled:opacity-50"
+                >
+                  {isUpdating ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
