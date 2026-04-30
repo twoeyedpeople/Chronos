@@ -229,7 +229,7 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
           {monthHeaderSegments.map((segment) => (
             <div
               key={segment.key}
-              className="border-r border-gray-50 flex items-center justify-start px-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 shrink-0"
+              className="border-r border-gray-50 flex items-center justify-center px-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 shrink-0"
               style={{ width: segment.width }}
             >
               {segment.label}
