@@ -311,9 +311,33 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
           )}
         </>
       ) : (
-        <div className="flex-1 flex items-center justify-center">
-          <span className="text-[9px] font-black text-gray-300 uppercase tracking-[0.2em]">Folder (No Dates)</span>
-        </div>
+        <>
+          <div className="w-32 px-2 shrink-0">
+            <div className="text-[11px] text-gray-500 font-bold w-full tabular-nums">
+              {format(parseISO(task.startDate), 'dd MMM yyyy')}
+            </div>
+          </div>
+
+          {!isGlobalMilestonesView && (
+            <>
+              <div className="w-20 px-2 shrink-0">
+                <div className="text-[11px] text-gray-500 font-bold w-full">
+                  {differenceInBusinessDays(parseISO(task.endDate), parseISO(task.startDate)) + 1}
+                </div>
+              </div>
+
+              <div className="w-32 px-2 shrink-0">
+                <div className="text-[11px] text-gray-500 font-bold w-full tabular-nums">
+                  {format(parseISO(task.endDate), 'dd MMM yyyy')}
+                </div>
+              </div>
+
+              <div className="w-20 px-2 shrink-0 text-center">
+                <span className="text-[9px] font-black text-gray-300 uppercase tracking-[0.2em]">-</span>
+              </div>
+            </>
+          )}
+        </>
       )}
 
       <div className="w-24 px-2 shrink-0 text-right">
