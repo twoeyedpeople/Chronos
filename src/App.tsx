@@ -8,11 +8,14 @@ import ShareModal from './components/ShareModal';
 import { v4 as uuidv4 } from 'uuid';
 import { format, parseISO, addBusinessDays, differenceInBusinessDays } from 'date-fns';
 import AdminDashboard from './components/AdminDashboard';
-import { doc, setDoc, onSnapshot, getDocFromServer, updateDoc } from 'firebase/firestore';
+import { collection, doc, setDoc, onSnapshot, getDocFromServer, query, updateDoc, orderBy } from 'firebase/firestore';
 import { db, auth } from './firebase';
 import firebaseConfig from '../firebase-applet-config.json';
 
 const MAX_UNDO_STEPS = 100;
+const GLOBAL_MILESTONES_ROUTE = 'milestones';
+const GLOBAL_MILESTONES_ID = 'global-milestones';
+const GLOBAL_MILESTONES_CLIENT = 'Agency Overview';
 
 enum OperationType {
   CREATE = 'create',
@@ -112,6 +115,49 @@ function rollupTaskDates(tasks: Task[], parentId: string | null | undefined): Ta
   return rollupTaskDates(updatedTasks, parent.parentId);
 }
 
+function buildGlobalMilestonesProject(projects: Project[]): Project {
+  const milestones = projects
+    .flatMap((project) =>
+      project.tasks
+        .filter((task) => task.isMilestone)
+        .map((task) => ({
+          ...task,
+          id: `${project.id}::${task.id}`,
+          parentId: null,
+          dependencyId: undefined,
+          dependencyType: undefined,
+          startDate: task.startDate,
+          endDate: task.startDate,
+          sourceProjectId: project.id,
+          sourceProjectName: project.name,
+          sourceClientName: project.clientName,
+          isMilestone: true,
+        })),
+    )
+    .sort((a, b) => {
+      const dateDiff = parseISO(a.startDate).getTime() - parseISO(b.startDate).getTime();
+      if (dateDiff !== 0) return dateDiff;
+
+      const projectDiff = (a.sourceProjectName || '').localeCompare(b.sourceProjectName || '');
+      if (projectDiff !== 0) return projectDiff;
+
+      return a.name.localeCompare(b.name);
+    });
+
+  const updatedAt = projects.length > 0
+    ? Math.max(...projects.map((project) => project.updatedAt))
+    : Date.now();
+
+  return {
+    id: GLOBAL_MILESTONES_ID,
+    name: 'Global Milestones',
+    clientName: GLOBAL_MILESTONES_CLIENT,
+    tasks: milestones,
+    createdAt: updatedAt,
+    updatedAt,
+  };
+}
+
 const isFirebaseConfigured = firebaseConfig.apiKey && firebaseConfig.apiKey !== 'MOCK_API_KEY';
 
 const DEFAULT_PROJECT: Project = {
@@ -149,6 +195,7 @@ export default function App() {
   const [projectId, setProjectId] = useState<string | null>(null);
   const [isReadOnly, setIsReadOnly] = useState(false);
   const [undoStack, setUndoStack] = useState<Project[]>([]);
+  const [isGlobalMilestonesView, setIsGlobalMilestonesView] = useState(false);
 
   // Expand all parents when changing main view mode or zoom/view settings
   useEffect(() => {
@@ -171,9 +218,13 @@ export default function App() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const pId = params.get('p');
+    const globalView = params.get('global');
     const canEdit = params.get('edit') === '1';
-    setProjectId(pId);
-    setIsReadOnly(Boolean(pId) && !canEdit);
+    const showGlobalMilestones = globalView === GLOBAL_MILESTONES_ROUTE;
+
+    setProjectId(showGlobalMilestones ? null : pId);
+    setIsGlobalMilestonesView(showGlobalMilestones);
+    setIsReadOnly(showGlobalMilestones || (Boolean(pId) && !canEdit));
     
     // Connection test
     const testConnection = async () => {
@@ -186,6 +237,23 @@ export default function App() {
       }
     };
     testConnection();
+
+    if (showGlobalMilestones && isFirebaseConfigured) {
+      const globalMilestonesQuery = query(collection(db, 'projects'), orderBy('updatedAt', 'desc'));
+      const unsub = onSnapshot(globalMilestonesQuery, (snapshot) => {
+        const projects = snapshot.docs.map((snapshotDoc) =>
+          withProjectId(snapshotDoc.data() as Partial<Project>, snapshotDoc.id),
+        );
+        setProject(buildGlobalMilestonesProject(projects));
+        setExpandedTasks(new Set());
+        setUndoStack([]);
+        setIsLoading(false);
+      }, () => {
+        setProject(buildGlobalMilestonesProject([]));
+        setIsLoading(false);
+      });
+      return () => unsub();
+    }
 
     if (pId && isFirebaseConfigured) {
       const unsub = onSnapshot(doc(db, 'projects', pId), (docSnap) => {
@@ -202,6 +270,9 @@ export default function App() {
       });
       return () => unsub();
     } else {
+      if (showGlobalMilestones) {
+        setProject(buildGlobalMilestonesProject([]));
+      }
       setIsLoading(false);
     }
   }, []);
@@ -452,6 +523,7 @@ export default function App() {
     window.history.pushState({}, '', `${window.location.origin}${window.location.pathname}`);
     setProjectId(null);
     setIsReadOnly(false);
+    setIsGlobalMilestonesView(false);
     setIsShareOpen(false);
   };
 
@@ -493,7 +565,7 @@ export default function App() {
     );
   }
 
-  if (!projectId) {
+  if (!projectId && !isGlobalMilestonesView) {
     return <AdminDashboard />;
   }
 
@@ -534,6 +606,7 @@ export default function App() {
               onDeleteTask={deleteTask}
               onMoveTask={moveTask}
               readOnly={isReadOnly}
+              showProjectName={isGlobalMilestonesView}
             />
             <GanttView 
               tasks={flattenedTasks.map(t => t.task)}
@@ -554,6 +627,7 @@ export default function App() {
             onDeleteTask={deleteTask}
             onMoveTask={moveTask}
             readOnly={isReadOnly}
+            showProjectName={isGlobalMilestonesView}
           />
         )}
       </main>

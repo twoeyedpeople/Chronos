@@ -12,6 +12,9 @@ export interface Task {
   isExternal?: boolean;
   dependencyId?: string;
   dependencyType?: DependencyType;
+  sourceProjectId?: string;
+  sourceProjectName?: string;
+  sourceClientName?: string;
 }
 
 export interface Project {

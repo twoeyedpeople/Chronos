@@ -35,6 +35,7 @@ interface SortableSidebarRowProps {
   onDeleteTask: (id: string) => void;
   isOver?: boolean;
   readOnly?: boolean;
+  showProjectName?: boolean;
 }
 
 const SortableSidebarRow: React.FC<SortableSidebarRowProps> = ({
@@ -48,7 +49,8 @@ const SortableSidebarRow: React.FC<SortableSidebarRowProps> = ({
   onUpdateTask,
   onDeleteTask,
   isOver,
-  readOnly
+  readOnly,
+  showProjectName
 }) => {
   const {
     attributes,
@@ -70,7 +72,7 @@ const SortableSidebarRow: React.FC<SortableSidebarRowProps> = ({
     <div
       ref={setNodeRef}
       style={style}
-      className={`group flex items-center h-8 transition-all border-b border-gray-50/50 ${
+      className={`group flex items-center ${showProjectName ? 'min-h-12 py-1.5' : 'h-8'} transition-all border-b border-gray-50/50 ${
         isDragging ? 'opacity-50 bg-blue-50/50 z-50' : 'bg-white hover:bg-gray-50'
       } ${isOver ? 'bg-blue-100/50 ring-1 ring-blue-500/20' : ''}`}
     >
@@ -101,14 +103,21 @@ const SortableSidebarRow: React.FC<SortableSidebarRowProps> = ({
             <div className={`w-1 h-1 rounded-full ${task.isExternal ? 'bg-[#FFF3FC] ring-2 ring-pink-200' : 'bg-[#5F7CFF]'}`} />
           </div>
         )}
-        <input
-          type="text"
-          value={task.name}
-          onChange={(e) => onUpdateTask(task.id, { name: e.target.value })}
-          readOnly={readOnly}
-          className={`bg-transparent border-none focus:ring-0 text-[10px] w-full truncate p-0 ${hasSubtasks ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-700'}`}
-          placeholder={hasSubtasks ? "Folder..." : "Task..."}
-        />
+        <div className="min-w-0 flex-1">
+          {showProjectName && task.sourceProjectName && (
+            <div className="text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] truncate mb-0.5">
+              {task.sourceProjectName}
+            </div>
+          )}
+          <input
+            type="text"
+            value={task.name}
+            onChange={(e) => onUpdateTask(task.id, { name: e.target.value })}
+            readOnly={readOnly}
+            className={`bg-transparent border-none focus:ring-0 text-[10px] w-full truncate p-0 leading-tight ${hasSubtasks ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-700'}`}
+            placeholder={hasSubtasks ? "Folder..." : "Task..."}
+          />
+        </div>
       </div>
 
       {readOnly && (
@@ -153,6 +162,7 @@ interface SidebarProps {
   onDeleteTask: (id: string) => void;
   onMoveTask: (id: string, newParentId: string | undefined) => void;
   readOnly?: boolean;
+  showProjectName?: boolean;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ 
@@ -164,7 +174,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   onUpdateTask, 
   onDeleteTask,
   onMoveTask,
-  readOnly
+  readOnly,
+  showProjectName
 }) => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
@@ -225,11 +236,13 @@ const Sidebar: React.FC<SidebarProps> = ({
   }, [tasks]);
 
   return (
-    <aside className={`${readOnly ? 'w-[440px]' : 'w-64'} border-r border-gray-100 bg-white flex flex-col shrink-0 z-10 transition-all`}>
+    <aside className={`${readOnly ? (showProjectName ? 'w-[520px]' : 'w-[440px]') : 'w-64'} border-r border-gray-100 bg-white flex flex-col shrink-0 z-10 transition-all`}>
       <div className="h-16 flex items-end justify-between px-4 pb-3 border-b border-gray-50 bg-gray-50/30">
         {readOnly ? (
           <div className="w-full flex items-center">
-            <span className="flex-1 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Tasks</span>
+            <span className="flex-1 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
+              {showProjectName ? 'Project / Milestone' : 'Tasks'}
+            </span>
             <span className="w-24 px-2 text-[8px] font-black text-gray-400 uppercase tracking-widest">Start</span>
             <span className="w-24 px-2 text-[8px] font-black text-gray-400 uppercase tracking-widest">End</span>
           </div>
@@ -270,6 +283,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   onDeleteTask={onDeleteTask}
                   isOver={overId === task.id && activeId !== task.id}
                   readOnly={readOnly}
+                  showProjectName={showProjectName}
                 />
               ))}
             </div>

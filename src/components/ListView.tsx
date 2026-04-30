@@ -36,6 +36,7 @@ interface SortableTaskRowProps {
   isOver?: boolean;
   tasks: Task[];
   readOnly?: boolean;
+  showProjectName?: boolean;
 }
 
 const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
@@ -50,7 +51,8 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
   onDeleteTask,
   isOver,
   tasks,
-  readOnly
+  readOnly,
+  showProjectName
 }) => {
   const {
     attributes,
@@ -129,7 +131,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
     <div
       ref={setNodeRef}
       style={style}
-      className={`group flex items-center h-10 border-b border-gray-100 px-4 transition-all ${
+      className={`group flex items-center ${showProjectName ? 'min-h-14 py-2' : 'h-10'} border-b border-gray-100 px-4 transition-all ${
         isDragging ? 'opacity-50 bg-blue-50/50 z-50' : task.isExternal ? 'bg-[#FFF3FC] hover:bg-[#ffedf9]' : 'bg-white hover:bg-gray-50/80'
       } ${isOver ? 'bg-blue-100/50 ring-2 ring-blue-500/20' : ''}`}
     >
@@ -164,14 +166,21 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
             <div className={`w-1 h-1 rounded-full ${task.isExternal ? 'bg-[#FFF3FC] ring-2 ring-pink-200' : 'bg-[#5F7CFF]'}`} />
           </div>
         )}
-        <input
-          type="text"
-          value={task.name}
-          onChange={(e) => onUpdateTask(task.id, { name: e.target.value })}
-          readOnly={readOnly}
-          className={`bg-transparent border-none focus:ring-0 text-[13px] w-full truncate p-0 ${isFolder ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-800'}`}
-          placeholder={isFolder ? "Folder name..." : "Task name..."}
-        />
+        <div className="min-w-0 flex-1">
+          {showProjectName && task.sourceProjectName && (
+            <div className="text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] truncate mb-0.5">
+              {task.sourceProjectName}
+            </div>
+          )}
+          <input
+            type="text"
+            value={task.name}
+            onChange={(e) => onUpdateTask(task.id, { name: e.target.value })}
+            readOnly={readOnly}
+            className={`bg-transparent border-none focus:ring-0 text-[13px] w-full truncate p-0 leading-tight ${isFolder ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-800'}`}
+            placeholder={isFolder ? "Folder name..." : "Task name..."}
+          />
+        </div>
         {!isFolder && !readOnly && (
           <>
             <label className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[9px] font-black text-gray-400 uppercase tracking-widest shrink-0">
@@ -311,6 +320,7 @@ interface ListViewProps {
   onDeleteTask: (id: string) => void;
   onMoveTask: (id: string, newParentId: string | undefined) => void;
   readOnly?: boolean;
+  showProjectName?: boolean;
 }
 
 const ListView: React.FC<ListViewProps> = ({
@@ -322,6 +332,7 @@ const ListView: React.FC<ListViewProps> = ({
   onDeleteTask,
   onMoveTask,
   readOnly,
+  showProjectName,
 }) => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
@@ -414,14 +425,15 @@ const ListView: React.FC<ListViewProps> = ({
         <div className="w-8 shrink-0 text-[9px] font-black text-gray-400 uppercase tracking-widest text-center">ID</div>
         <div className="flex-1 flex items-center gap-2 text-[9px] font-black text-gray-400 uppercase tracking-widest pl-2">
           <span>Task Name</span>
-          <button
-            onClick={() => onAddTask()}
-            disabled={readOnly}
-            className="p-1 text-gray-400 hover:text-blue-500 hover:bg-white rounded transition-all shadow-sm"
-            title="Add root task"
-          >
-            <Plus size={12} />
-          </button>
+          {!readOnly && (
+            <button
+              onClick={() => onAddTask()}
+              className="p-1 text-gray-400 hover:text-blue-500 hover:bg-white rounded transition-all shadow-sm"
+              title="Add root task"
+            >
+              <Plus size={12} />
+            </button>
+          )}
         </div>
         <div className="w-32 px-2 text-[9px] font-black text-gray-400 uppercase tracking-widest">Start Date</div>
         <div className="w-20 px-2 text-[9px] font-black text-gray-400 uppercase tracking-widest">Days</div>
@@ -468,6 +480,7 @@ const ListView: React.FC<ListViewProps> = ({
                       isOver={overId === task.id && activeId !== task.id}
                       tasks={orderedTasks}
                       readOnly={readOnly}
+                      showProjectName={showProjectName}
                     />
                   ))}
                 </>

@@ -4,6 +4,9 @@ import { collection, onSnapshot, query, orderBy, doc, setDoc, deleteDoc, updateD
 import { Project } from '../types';
 import { Plus, Folder, Calendar, User, ExternalLink, Search, Trash2, Pencil } from 'lucide-react';
 import { format } from 'date-fns';
+
+const GLOBAL_MILESTONES_SEARCH_TEXT = 'global milestones agency overview milestone tracker';
+
 const AdminDashboard: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -109,6 +112,8 @@ const AdminDashboard: React.FC = () => {
     p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.clientName.toLowerCase().includes(searchQuery.toLowerCase())
   );
+  const showGlobalMilestonesCard =
+    searchQuery.trim() === '' || GLOBAL_MILESTONES_SEARCH_TEXT.includes(searchQuery.trim().toLowerCase());
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans p-8">
@@ -146,6 +151,47 @@ const AdminDashboard: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {showGlobalMilestonesCard && (
+            <div
+              onClick={() => window.open(`${window.location.origin}${window.location.pathname}?global=milestones`, '_blank')}
+              className="group bg-[#FFF3FC] border border-pink-100 rounded-3xl p-6 hover:shadow-2xl hover:shadow-pink-200/40 transition-all cursor-pointer relative overflow-hidden"
+            >
+              <div className="flex flex-col gap-4 relative z-10">
+                <div className="flex items-start justify-between">
+                  <div className="w-12 h-12 rounded-2xl bg-white/80 flex items-center justify-center text-pink-500 group-hover:scale-110 transition-transform border border-pink-100">
+                    <Calendar size={24} />
+                  </div>
+                  <span className="px-3 py-1 rounded-full bg-white/80 border border-pink-100 text-[9px] font-black uppercase tracking-[0.2em] text-pink-500">
+                    Read Only
+                  </span>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-black text-gray-900 tracking-tight mb-1 group-hover:text-pink-600 transition-colors">
+                    Global Milestones
+                  </h3>
+                  <div className="flex items-center gap-2 text-pink-300">
+                    <User size={12} />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Agency Overview</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-4 border-t border-pink-100/70">
+                  <div className="flex items-center gap-2 text-pink-300">
+                    <Calendar size={12} />
+                    <span className="text-[10px] font-bold">All active project milestones</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-pink-500 font-black text-[10px] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
+                    <span>Open</span>
+                    <ExternalLink size={10} />
+                  </div>
+                </div>
+              </div>
+
+              <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-pink-200/30 rounded-full blur-2xl group-hover:bg-pink-200/50 transition-colors" />
+            </div>
+          )}
+
           {filteredProjects.map((project) => (
             <div
               key={project.id}
@@ -202,7 +248,7 @@ const AdminDashboard: React.FC = () => {
             </div>
           ))}
 
-          {filteredProjects.length === 0 && (
+          {filteredProjects.length === 0 && !showGlobalMilestonesCard && (
             <div className="col-span-full py-24 flex flex-col items-center justify-center text-gray-300 gap-4">
               <Folder size={64} className="opacity-10" />
               <p className="text-sm font-bold tracking-tight">No projects found matching your search.</p>
