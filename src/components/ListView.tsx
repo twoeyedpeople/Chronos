@@ -283,8 +283,8 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
           {!isGlobalMilestonesView && (
             <div className="w-20 px-2 shrink-0">
               {readOnly ? (
-                <div className="h-[30px] w-full rounded-lg border border-gray-100 bg-white flex items-center justify-center text-[11px] font-bold">
-                  <span className={task.isMilestone ? (task.isExternal ? 'text-pink-300' : 'text-gray-900') : 'text-gray-600'}>
+                <div className="h-[30px] w-full rounded-lg border border-gray-100 bg-white flex items-center px-3 text-[11px] font-bold">
+                  <span className={`block w-full text-left ${task.isMilestone ? (task.isExternal ? 'text-pink-300' : 'text-gray-900') : 'text-gray-600'}`}>
                     {task.isMilestone ? '◆' : days}
                   </span>
                 </div>
