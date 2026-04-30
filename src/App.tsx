@@ -279,15 +279,9 @@ export default function App() {
       const unsub = onSnapshot(doc(db, 'projects', pId), (docSnap) => {
         if (docSnap.exists()) {
           const remoteProject = withProjectId(docSnap.data() as Partial<Project>, docSnap.id);
-          const localDraft = getLocalProjectDraft(docSnap.id);
-          const effectiveProject =
-            localDraft && localDraft.updatedAt > remoteProject.updatedAt
-              ? withProjectId(localDraft, docSnap.id)
-              : remoteProject;
-
-          setProject(effectiveProject);
+          setProject(remoteProject);
           setUndoStack([]);
-          setHasUnsavedChanges(Boolean(localDraft && localDraft.updatedAt > remoteProject.updatedAt));
+          setHasUnsavedChanges(false);
         } else {
           const localDraft = getLocalProjectDraft(pId);
           if (localDraft) {
@@ -324,10 +318,10 @@ export default function App() {
 
   // Auto-save to local storage (and Firestore every 2 mins)
   useEffect(() => {
-    if (projectId && !isReadOnly) {
+    if (projectId && !isReadOnly && !isLoading && project.id === projectId) {
       localStorage.setItem(`project_${projectId}`, JSON.stringify(project));
     }
-  }, [project, projectId, isReadOnly]);
+  }, [project, projectId, isReadOnly, isLoading]);
 
   // Autosave unsaved changes to Firestore quickly so new projects survive refreshes.
   useEffect(() => {
@@ -562,6 +556,12 @@ export default function App() {
     if (!projectId) {
       console.error('Cannot save project without a project id.');
       window.alert('This timeline could not be saved because the project ID is missing.');
+      return false;
+    }
+
+    if (isLoading || projectRef.current.id !== projectId) {
+      console.error('Project is not fully loaded yet.');
+      window.alert('This timeline is still loading. Please wait a moment and try save/share again.');
       return false;
     }
 
