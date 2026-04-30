@@ -181,9 +181,41 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
     }
   }, [minDate, dayWidth]);
 
-  const months = useMemo(() => {
-    return eachMonthOfInterval({ start: minDate, end: maxDate });
-  }, [minDate, maxDate]);
+  const monthHeaderSegments = useMemo(() => {
+    if (viewMode === 'month') {
+      return eachMonthOfInterval({ start: minDate, end: maxDate }).map((month) => {
+        const monthStart = startOfMonth(month);
+        const monthEnd = endOfMonth(month);
+        const displayStart = monthStart < minDate ? minDate : monthStart;
+        const displayEnd = monthEnd > maxDate ? maxDate : monthEnd;
+        const daysInSegment = differenceInDays(addDays(displayEnd, 1), displayStart);
+
+        return {
+          key: month.toISOString(),
+          label: format(month, 'MMMM yyyy'),
+          width: daysInSegment * dayWidth,
+        };
+      });
+    }
+
+    const weekStarts = eachWeekOfInterval(
+      { start: minDate, end: maxDate },
+      { weekStartsOn: 1 },
+    );
+
+    return weekStarts.map((weekStart) => {
+      const visibleStart = weekStart < minDate ? minDate : weekStart;
+      const visibleEnd = addDays(weekStart, 6) > maxDate ? maxDate : addDays(weekStart, 6);
+      const daysInSegment = differenceInDays(addDays(visibleEnd, 1), visibleStart);
+      const labelDate = addDays(weekStart, 3);
+
+      return {
+        key: weekStart.toISOString(),
+        label: format(labelDate, 'MMMM yyyy'),
+        width: daysInSegment * dayWidth,
+      };
+    });
+  }, [minDate, maxDate, viewMode, dayWidth]);
 
   return (
     <div 
@@ -194,25 +226,15 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
       <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-gray-100 flex flex-col">
         {/* Month Row */}
         <div className="flex h-8 border-b border-gray-50">
-          {months.map((month, i) => {
-            const monthStart = startOfMonth(month);
-            const monthEnd = endOfMonth(month);
-            // Calculate width based on days in month that are within our range
-            const displayStart = monthStart < minDate ? minDate : monthStart;
-            const displayEnd = monthEnd > maxDate ? maxDate : monthEnd;
-            const daysInMonth = differenceInDays(addDays(displayEnd, 1), displayStart);
-            const width = daysInMonth * dayWidth;
-
-            return (
-              <div
-                key={i}
-                className="border-r border-gray-50 flex items-center justify-start px-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 shrink-0"
-                style={{ width }}
-              >
-                {format(month, 'MMMM yyyy')}
-              </div>
-            );
-          })}
+          {monthHeaderSegments.map((segment) => (
+            <div
+              key={segment.key}
+              className="border-r border-gray-50 flex items-center justify-start px-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 shrink-0"
+              style={{ width: segment.width }}
+            >
+              {segment.label}
+            </div>
+          ))}
         </div>
         {/* Day/Week Row */}
         <div className="flex h-8">
