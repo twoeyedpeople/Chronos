@@ -297,7 +297,15 @@ export default function App() {
             setHasUnsavedChanges(true);
             console.warn(`Project ${pId} missing in Firebase. Restored local draft.`);
           } else {
-            console.error(`Project ${pId} not found. Loading default project.`);
+            console.error(`Project ${pId} not found. Returning to dashboard.`);
+            window.alert('This project could not be found in the cloud. Returning to the dashboard so we do not overwrite anything.');
+            window.history.replaceState({}, '', `${window.location.origin}${window.location.pathname}`);
+            setProjectId(null);
+            setIsReadOnly(false);
+            setIsGlobalMilestonesView(false);
+            setProject(DEFAULT_PROJECT);
+            setUndoStack([]);
+            setHasUnsavedChanges(false);
           }
         }
         setIsLoading(false);
