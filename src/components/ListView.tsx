@@ -586,27 +586,20 @@ const ListView: React.FC<ListViewProps> = ({
                 <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 via-white to-blue-50/10 pointer-events-none" />
 
                 <div className="relative z-10 flex flex-col items-start gap-3 w-full">
-                  <span className="text-[14px] font-black text-gray-500 uppercase tracking-[0.08em] leading-none text-left">Project Details</span>
+                  <span className="text-[14px] font-black text-gray-500 uppercase tracking-[0.06em] leading-none text-left">Project Details</span>
 
                   <div className="flex items-end gap-6 w-full">
-                    <div className="flex flex-col gap-2 min-w-[132px]">
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-[11px] font-medium text-gray-500 tracking-[0.01em]">Working days:</span>
-                        <span className="text-[16px] font-black text-gray-900 tracking-tight leading-none">{totalBusinessDays}</span>
-                      </div>
-
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-[11px] font-medium text-gray-500 tracking-[0.01em]">Total Tasks:</span>
-                        <span className="text-[16px] font-black text-gray-900 tracking-tight leading-none">{tasks.length}</span>
-                      </div>
+                    <div className="flex items-baseline gap-2 min-w-[154px]">
+                      <span className="text-[14px] font-medium text-gray-500">Working days:</span>
+                      <span className="text-[14px] font-black text-gray-900">{totalBusinessDays}</span>
                     </div>
 
                     <div className="flex items-start gap-4 min-w-0">
                       {tasks.length > 0 ? (
                         <>
-                          <div className="flex flex-col gap-1 min-w-[140px]">
-                            <span className="text-[8px] font-black text-gray-300 uppercase tracking-[0.08em] leading-none">Start</span>
-                            <div className="bg-gray-50/80 px-3 py-1.5 rounded-xl border border-gray-100 text-[14px] font-black text-gray-700 shadow-sm flex items-center gap-2">
+                          <div className="flex flex-col gap-1 min-w-[154px]">
+                            <span className="text-[14px] font-medium text-gray-500">Start</span>
+                            <div className="bg-gray-50/80 px-3 py-1.5 rounded-xl border border-gray-100 text-[14px] font-black text-gray-700 shadow-sm flex items-center gap-2 leading-none">
                               <Calendar size={10} className="text-blue-400" />
                               {format(new Date(Math.min(...tasks.map(t => parseISO(t.startDate).getTime()))), 'MMM dd, yyyy')}
                             </div>
@@ -614,9 +607,9 @@ const ListView: React.FC<ListViewProps> = ({
                           <div className="mt-4 flex items-center justify-center w-6 h-6 rounded-full bg-gray-50 border border-gray-100 shrink-0">
                             <ChevronRight size={12} className="text-gray-300" />
                           </div>
-                          <div className="flex flex-col gap-1 min-w-[140px]">
-                            <span className="text-[8px] font-black text-gray-300 uppercase tracking-[0.08em] leading-none">End</span>
-                            <div className="bg-gray-50/80 px-3 py-1.5 rounded-xl border border-gray-100 text-[14px] font-black text-gray-700 shadow-sm flex items-center gap-2">
+                          <div className="flex flex-col gap-1 min-w-[154px]">
+                            <span className="text-[14px] font-medium text-gray-500">End</span>
+                            <div className="bg-gray-50/80 px-3 py-1.5 rounded-xl border border-gray-100 text-[14px] font-black text-gray-700 shadow-sm flex items-center gap-2 leading-none">
                               <Calendar size={10} className="text-red-400" />
                               {format(new Date(Math.max(...tasks.map(t => parseISO(t.endDate).getTime()))), 'MMM dd, yyyy')}
                             </div>
