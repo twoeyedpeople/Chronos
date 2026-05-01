@@ -54,15 +54,16 @@ const Header: React.FC<HeaderProps> = ({
 }) => {
   return (
     <header className="h-20 px-4 md:px-8 bg-white/95 backdrop-blur-2xl border-b border-gray-100 flex items-center justify-between sticky top-0 z-50 shadow-sm gap-4 overflow-x-auto no-scrollbar">
-      <div className="flex items-center gap-4 md:gap-6 shrink-0">
-        <img 
-          src="https://twoeyedpeople.com/img/2EP_Logotype.svg" 
-          alt="Two-Eyed People" 
-          className="h-4 object-contain opacity-70 shrink-0"
-          referrerPolicy="no-referrer"
-        />
+      <div className="flex items-center gap-4 md:gap-5 shrink-0">
+        <div className="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center shrink-0">
+          <img
+            src="/twoeyedpeople-icon.png"
+            alt="Two-Eyed People"
+            className="w-7 h-7 md:w-8 md:h-8 object-contain"
+          />
+        </div>
 
-        <div className="flex flex-col items-start gap-1 min-w-[170px]">
+        <div className="flex flex-col items-start justify-center gap-1 min-w-[170px]">
           <input
             type="text"
             value={projectName}
@@ -76,7 +77,7 @@ const Header: React.FC<HeaderProps> = ({
             value={clientName}
             onChange={(e) => onClientNameChange(e.target.value)}
             readOnly={readOnly}
-            className="text-[9px] font-black text-gray-400 bg-transparent border-none focus:ring-0 placeholder-gray-200 uppercase tracking-[0.18em] p-0 leading-none min-w-[80px] max-w-[220px]"
+            className="text-[9px] font-black text-gray-400 bg-transparent border-none focus:ring-0 placeholder-gray-200 uppercase tracking-[0.14em] p-0 leading-none min-w-[80px] max-w-[220px]"
             placeholder="Client..."
           />
         </div>

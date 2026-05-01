@@ -145,15 +145,18 @@ const AdminDashboard: React.FC = () => {
     <div className="min-h-screen bg-gray-50 font-sans p-8">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
-          <div>
-            <img 
-              src="https://twoeyedpeople.com/img/2EP_Logotype.svg" 
-              alt="Two-Eyed People" 
-              className="h-6 mb-4 opacity-80"
-              referrerPolicy="no-referrer"
-            />
-            <h1 className="text-4xl font-black text-gray-900 tracking-tight">Project Dashboard</h1>
-            <p className="text-gray-500 font-medium mt-1 uppercase text-[10px] tracking-[0.12em]">Live project timelines and key milestones</p>
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-white border border-gray-100 flex items-center justify-center shadow-sm shrink-0">
+              <img
+                src="/twoeyedpeople-icon.png"
+                alt="Two-Eyed People"
+                className="w-8 h-8 object-contain"
+              />
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-4xl font-black text-gray-900 tracking-tight">Project Dashboard</h1>
+              <p className="text-gray-500 font-medium mt-1 uppercase text-[10px] tracking-[0.08em]">Live project timelines and key milestones</p>
+            </div>
           </div>
           
           <button
