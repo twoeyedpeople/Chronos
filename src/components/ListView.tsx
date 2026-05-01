@@ -676,11 +676,36 @@ const ListView: React.FC<ListViewProps> = ({
   refreshTick,
   isKioskView,
 }) => {
+  const GLOBAL_MILESTONE_MESSAGES = [
+    'The deadlines are humming softly in the walls.',
+    'A brave milestone has entered the chat.',
+    'Somewhere, a producer just whispered "on track."',
+    'Tiny calendar goblins are moving things into place.',
+    'This timeline has opinions and several dramatic reveals.',
+    'Progress is real, even when it looks suspiciously elegant.',
+    'The future is colour-coded and mildly theatrical.',
+    'A milestone is just a secret with a date attached.',
+    'The agency machine purrs, blinks, and requests snacks.',
+    'Everything is unfolding exactly as mysteriously intended.',
+    'Momentum has put on a nice jacket today.',
+    'Several important things are happening, probably on purpose.',
+  ];
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
   const isGlobalMilestonesView = Boolean(readOnly && showProjectName);
   const isGlobalMilestonesKioskView = Boolean(isGlobalMilestonesView && isKioskView);
   const NEST_DRAG_THRESHOLD = 28;
+  const [globalMilestoneMessage, setGlobalMilestoneMessage] = useState(
+    GLOBAL_MILESTONE_MESSAGES[0],
+  );
+
+  useEffect(() => {
+    if (!isGlobalMilestonesView) return;
+
+    const nextMessage =
+      GLOBAL_MILESTONE_MESSAGES[Math.floor(Math.random() * GLOBAL_MILESTONE_MESSAGES.length)];
+    setGlobalMilestoneMessage(nextMessage);
+  }, [isGlobalMilestonesView, refreshTick]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -938,45 +963,55 @@ const ListView: React.FC<ListViewProps> = ({
 
           {flattenedTasks.length > 0 && (
             <div className="mt-4 mx-8 pb-20">
-              <div className="bg-white border border-gray-100 rounded-[24px] px-6 py-3 shadow-sm overflow-hidden relative min-h-[66px]">
-                {/* Subtle background pattern/gradient */}
-                <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 via-white to-blue-50/10 pointer-events-none" />
+              {isGlobalMilestonesView ? (
+                <div className="bg-[#FFF3FC] border border-pink-100 rounded-[24px] px-6 py-6 shadow-sm overflow-hidden relative min-h-[140px]">
+                  <div className="absolute inset-0 bg-gradient-to-br from-pink-50/70 via-[#FFF3FC] to-white pointer-events-none" />
+                  <div className="relative z-10">
+                    <p className="text-black font-black tracking-tight leading-[0.95] text-[30px] md:text-[48px]">
+                      {globalMilestoneMessage}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-white border border-gray-100 rounded-[24px] px-6 py-3 shadow-sm overflow-hidden relative min-h-[66px]">
+                  <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 via-white to-blue-50/10 pointer-events-none" />
 
-                <div className="relative z-10 flex flex-col items-start gap-2 w-full">
-                  <span className="text-[10px] font-black text-gray-500 uppercase tracking-[0.06em] leading-none text-left">Project Details</span>
+                  <div className="relative z-10 flex flex-col items-start gap-2 w-full">
+                    <span className="text-[10px] font-black text-gray-500 uppercase tracking-[0.06em] leading-none text-left">Project Details</span>
 
-                  <div className="flex items-center gap-4 w-full">
-                    <div className="flex items-baseline gap-1.5 min-w-[102px]">
-                      <span className="text-[10px] font-medium text-gray-500">Working days:</span>
-                      <span className="text-[10px] font-black text-gray-900">{totalBusinessDays}</span>
-                    </div>
+                    <div className="flex items-center gap-4 w-full">
+                      <div className="flex items-baseline gap-1.5 min-w-[102px]">
+                        <span className="text-[10px] font-medium text-gray-500">Working days:</span>
+                        <span className="text-[10px] font-black text-gray-900">{totalBusinessDays}</span>
+                      </div>
 
-                    <div className="flex items-center gap-3 min-w-0">
-                      {tasks.length > 0 ? (
-                        <>
-                          <div className="min-w-[122px]">
-                            <div className="bg-gray-50/80 px-2.5 py-1.5 rounded-xl border border-gray-100 text-[10px] font-black text-gray-700 shadow-sm flex items-center gap-1.5 leading-none">
-                              <Calendar size={10} className="text-blue-400" />
-                              {format(new Date(Math.min(...tasks.map(t => parseISO(t.startDate).getTime()))), 'MMM dd, yyyy')}
+                      <div className="flex items-center gap-3 min-w-0">
+                        {tasks.length > 0 ? (
+                          <>
+                            <div className="min-w-[122px]">
+                              <div className="bg-gray-50/80 px-2.5 py-1.5 rounded-xl border border-gray-100 text-[10px] font-black text-gray-700 shadow-sm flex items-center gap-1.5 leading-none">
+                                <Calendar size={10} className="text-blue-400" />
+                                {format(new Date(Math.min(...tasks.map(t => parseISO(t.startDate).getTime()))), 'MMM dd, yyyy')}
+                              </div>
                             </div>
-                          </div>
-                          <div className="flex items-center justify-center w-5 h-5 rounded-full bg-gray-50 border border-gray-100 shrink-0">
-                            <ChevronRight size={10} className="text-gray-300" />
-                          </div>
-                          <div className="min-w-[122px]">
-                            <div className="bg-gray-50/80 px-2.5 py-1.5 rounded-xl border border-gray-100 text-[10px] font-black text-gray-700 shadow-sm flex items-center gap-1.5 leading-none">
-                              <Calendar size={10} className="text-red-400" />
-                              {format(new Date(Math.max(...tasks.map(t => parseISO(t.endDate).getTime()))), 'MMM dd, yyyy')}
+                            <div className="flex items-center justify-center w-5 h-5 rounded-full bg-gray-50 border border-gray-100 shrink-0">
+                              <ChevronRight size={10} className="text-gray-300" />
                             </div>
-                          </div>
-                        </>
-                      ) : (
-                        <span className="text-sm font-bold text-gray-300 italic">No timeline data available</span>
-                      )}
+                            <div className="min-w-[122px]">
+                              <div className="bg-gray-50/80 px-2.5 py-1.5 rounded-xl border border-gray-100 text-[10px] font-black text-gray-700 shadow-sm flex items-center gap-1.5 leading-none">
+                                <Calendar size={10} className="text-red-400" />
+                                {format(new Date(Math.max(...tasks.map(t => parseISO(t.endDate).getTime()))), 'MMM dd, yyyy')}
+                              </div>
+                            </div>
+                          </>
+                        ) : (
+                          <span className="text-sm font-bold text-gray-300 italic">No timeline data available</span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           )}
 
