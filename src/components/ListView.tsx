@@ -393,19 +393,21 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
           </div>
         )}
 
-        <div className="w-24 px-2 shrink-0 text-right">
-          {!readOnly && (
-            <div className="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button
-                onClick={() => onDeleteTask(task.id)}
-                className="p-1.5 hover:bg-red-50 hover:text-red-500 rounded-lg transition-all"
-                title="Delete task"
-              >
-                <Trash2 size={14} />
-              </button>
-            </div>
-          )}
-        </div>
+        {!isGlobalMilestonesView && (
+          <div className="w-24 px-2 shrink-0 text-right">
+            {!readOnly && (
+              <div className="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                  onClick={() => onDeleteTask(task.id)}
+                  className="p-1.5 hover:bg-red-50 hover:text-red-500 rounded-lg transition-all"
+                  title="Delete task"
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="md:hidden px-3 py-3">
@@ -860,7 +862,9 @@ const ListView: React.FC<ListViewProps> = ({
             )}
           </>
         )}
-        <div className="w-24 px-2 text-right text-[9px] font-black text-gray-400 uppercase tracking-widest">Actions</div>
+        {!isGlobalMilestonesView && (
+          <div className="w-24 px-2 text-right text-[9px] font-black text-gray-400 uppercase tracking-widest">Actions</div>
+        )}
       </div>
 
       <div className="md:hidden flex items-center justify-between border-b border-gray-100 bg-gray-50/50 px-4 py-3 sticky top-0 z-20">
