@@ -964,7 +964,7 @@ const ListView: React.FC<ListViewProps> = ({
           {flattenedTasks.length > 0 && (
             <div className="mt-4 mx-8 pb-20">
               {isGlobalMilestonesView ? (
-                <div className="flex items-center gap-4 min-h-[56px] px-2">
+                <div className="flex items-end gap-4 min-h-[56px] px-2">
                   <img
                     src="/apple-touch-icon.png"
                     alt="Chronos"
