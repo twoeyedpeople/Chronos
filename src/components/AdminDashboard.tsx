@@ -142,10 +142,10 @@ const AdminDashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans p-8">
+    <div className="min-h-screen bg-gray-50 font-sans px-8 pt-8 pb-10">
       <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
-          <div className="flex items-center gap-4">
+        <div className="flex items-start justify-between gap-6 mb-6">
+          <div className="flex items-start gap-4 min-w-0">
             <div className="w-12 h-12 rounded-2xl bg-white border border-gray-100 flex items-center justify-center shadow-sm shrink-0">
               <img
                 src="/twoeyedpeople-icon.png"
@@ -153,29 +153,29 @@ const AdminDashboard: React.FC = () => {
                 className="w-8 h-8 object-contain"
               />
             </div>
-            <div className="min-w-0">
-              <h1 className="text-4xl font-black text-gray-900 tracking-tight">Project Dashboard</h1>
-              <p className="text-gray-500 font-medium mt-1 uppercase text-[10px] tracking-[0.08em]">Live project timelines and key milestones</p>
+            <div className="min-w-0 pt-0.5">
+              <h1 className="text-[24px] leading-10 font-black text-gray-900 tracking-[-0.045em]">Chronos</h1>
+              <p className="text-gray-500 font-medium uppercase text-[10px] tracking-[0.08em] -mt-1">Projects Dashboard</p>
             </div>
           </div>
           
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-3 px-6 py-4 bg-blue-500 text-white rounded-2xl font-black text-sm shadow-xl shadow-blue-200 hover:scale-105 transition-all active:scale-95 shrink-0"
+            className="flex items-center gap-2 px-[18px] py-[10px] bg-pink-400 text-white rounded-xl font-black text-[15px] leading-4 shadow-sm hover:scale-[1.02] transition-all active:scale-95 shrink-0"
           >
-            <Plus size={20} />
-            <span>Create New Project</span>
+            <Plus size={15} strokeWidth={3} />
+            <span className="uppercase tracking-tight">Spawn</span>
           </button>
         </div>
 
-        <div className="relative mb-8">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+        <div className="relative mb-6">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} strokeWidth={2} />
           <input
             type="text"
             placeholder="Search projects or clients..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold text-gray-800 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all shadow-sm"
+            className="w-full h-[54px] bg-white border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold text-gray-800 placeholder:text-slate-400 placeholder:font-bold focus:ring-4 focus:ring-pink-500/5 outline-none transition-all shadow-sm"
           />
         </div>
 
