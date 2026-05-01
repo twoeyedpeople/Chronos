@@ -411,7 +411,9 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
               {/* Permanent Label to the right as requested */}
               {!isDraggingThis && (
                 <div 
-                  className={`absolute text-[10px] whitespace-nowrap ${parentIds.has(task.id) ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-400'}`}
+                  className={`absolute text-[10px] whitespace-nowrap ${parentIds.has(task.id) ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-400'} ${
+                    task.isDone && isGlobalMilestonesView ? 'opacity-50' : ''
+                  }`}
                   style={{ left: parentIds.has(task.id) ? 12 : left + width + 8 }}
                 >
                   {task.name}

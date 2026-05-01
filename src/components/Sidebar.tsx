@@ -133,7 +133,9 @@ const SortableSidebarRow: React.FC<SortableSidebarRowProps> = ({
               }
             }}
             readOnly={readOnly}
-            className={`bg-transparent border-none focus:ring-0 text-[10px] w-full truncate p-0 leading-tight ${hasSubtasks ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-700'}`}
+            className={`bg-transparent border-none focus:ring-0 text-[10px] w-full truncate p-0 leading-tight ${hasSubtasks ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-700'} ${
+              task.isDone && isGlobalMilestonesView ? 'opacity-50' : ''
+            }`}
             placeholder={hasSubtasks ? "Folder..." : "Task..."}
           />
         </div>

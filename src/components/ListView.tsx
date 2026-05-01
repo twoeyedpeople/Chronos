@@ -214,12 +214,24 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
               readOnly={readOnly}
               className={`bg-transparent border-none focus:ring-0 w-full truncate p-0 leading-tight ${
                 isGlobalMilestonesKioskView ? 'text-[17px]' : 'text-[13px]'
-              } ${isFolder ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-800'}`}
+              } ${isFolder ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-800'} ${
+                task.isDone && (!readOnly || isGlobalMilestonesView) ? 'opacity-50' : ''
+              }`}
               placeholder={isFolder ? "Folder name..." : "Task name..."}
             />
           </div>
           {!isFolder && !readOnly && (
             <>
+              <label className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[9px] font-black text-gray-400 uppercase tracking-widest shrink-0">
+                <input
+                  type="checkbox"
+                  checked={Boolean(task.isDone)}
+                  onChange={(e) => onUpdateTask(task.id, { isDone: e.target.checked })}
+                  disabled={readOnly}
+                  className="w-3 h-3 rounded border-gray-200 accent-gray-500"
+                />
+                <span>Done</span>
+              </label>
               <label className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[9px] font-black text-gray-400 uppercase tracking-widest shrink-0">
                 <input
                   type="checkbox"
@@ -455,12 +467,24 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                     }
                   }}
                   readOnly={readOnly}
-                  className={`bg-transparent border-none focus:ring-0 text-[14px] w-full p-0 leading-tight ${isFolder ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-800'}`}
+                  className={`bg-transparent border-none focus:ring-0 text-[14px] w-full p-0 leading-tight ${isFolder ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-800'} ${
+                    task.isDone && (!readOnly || isGlobalMilestonesView) ? 'opacity-50' : ''
+                  }`}
                   placeholder={isFolder ? "Folder name..." : "Task name..."}
                 />
 
                 {!isFolder && !readOnly && (
                   <div className="flex flex-wrap gap-2 mt-2">
+                    <label className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[9px] font-black text-gray-400 uppercase tracking-widest shrink-0">
+                      <input
+                        type="checkbox"
+                        checked={Boolean(task.isDone)}
+                        onChange={(e) => onUpdateTask(task.id, { isDone: e.target.checked })}
+                        disabled={readOnly}
+                        className="w-3 h-3 rounded border-gray-200 accent-gray-500"
+                      />
+                      <span>Done</span>
+                    </label>
                     <label className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[9px] font-black text-gray-400 uppercase tracking-widest shrink-0">
                       <input
                         type="checkbox"

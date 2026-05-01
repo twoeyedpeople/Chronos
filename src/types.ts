@@ -10,6 +10,7 @@ export interface Task {
   isExpanded?: boolean;
   isMilestone?: boolean;
   isExternal?: boolean;
+  isDone?: boolean;
   dependencyId?: string;
   dependencyType?: DependencyType;
   sourceProjectId?: string;
