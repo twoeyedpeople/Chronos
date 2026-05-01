@@ -8,7 +8,7 @@ import ShareModal from './components/ShareModal';
 import { v4 as uuidv4 } from 'uuid';
 import { format, parseISO, addBusinessDays, differenceInBusinessDays, differenceInDays, addDays, eachDayOfInterval, startOfDay } from 'date-fns';
 import AdminDashboard from './components/AdminDashboard';
-import { collection, doc, setDoc, onSnapshot, getDocFromServer, query, updateDoc, orderBy } from 'firebase/firestore';
+import { collection, doc, setDoc, onSnapshot, getDocFromServer, getDocsFromServer, query, updateDoc, orderBy } from 'firebase/firestore';
 import { db, auth } from './firebase';
 import firebaseConfig from '../firebase-applet-config.json';
 import { jsPDF } from 'jspdf';
@@ -261,6 +261,35 @@ export default function App() {
 
     return () => window.clearInterval(interval);
   }, [isGlobalMilestonesView]);
+
+  useEffect(() => {
+    if (!isGlobalMilestonesKioskView || !isFirebaseConfigured) return;
+
+    let cancelled = false;
+    const globalMilestonesQuery = query(collection(db, 'projects'), orderBy('updatedAt', 'desc'));
+
+    const refreshFromServer = async () => {
+      try {
+        const snapshot = await getDocsFromServer(globalMilestonesQuery);
+        if (cancelled) return;
+
+        const projects = snapshot.docs.map((snapshotDoc) =>
+          withProjectId(snapshotDoc.data() as Partial<Project>, snapshotDoc.id),
+        );
+        setProject(buildGlobalMilestonesProject(projects));
+      } catch (error) {
+        handleFirestoreError(error, OperationType.LIST, 'projects');
+      }
+    };
+
+    refreshFromServer();
+    const interval = window.setInterval(refreshFromServer, 60_000);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(interval);
+    };
+  }, [isGlobalMilestonesKioskView]);
 
   // Expand all parents when changing main view mode or zoom/view settings
   useEffect(() => {
