@@ -967,7 +967,7 @@ const ListView: React.FC<ListViewProps> = ({
                 <div className="bg-[#FFF3FC] border border-pink-100 rounded-[24px] px-6 py-6 shadow-sm overflow-hidden relative min-h-[140px]">
                   <div className="absolute inset-0 bg-gradient-to-br from-pink-50/70 via-[#FFF3FC] to-white pointer-events-none" />
                   <div className="relative z-10">
-                    <p className="text-black font-black tracking-tight leading-[0.95] text-[30px] md:text-[48px]">
+                    <p className="text-black font-black tracking-tight leading-[1.02] text-[24px]">
                       {globalMilestoneMessage}
                     </p>
                   </div>
