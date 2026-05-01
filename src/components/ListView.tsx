@@ -977,7 +977,7 @@ const ListView: React.FC<ListViewProps> = ({
                   <img
                     src="/twoeyedpeople-logo-black.png"
                     alt="Two-Eyed People"
-                    className="h-6 w-auto shrink-0 object-contain"
+                    className="h-12 w-auto shrink-0 object-contain"
                   />
                 </div>
               ) : (
