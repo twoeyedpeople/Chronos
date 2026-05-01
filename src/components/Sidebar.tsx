@@ -34,6 +34,7 @@ interface SortableSidebarRowProps {
   onUpdateTask: (id: string, updates: Partial<Task>) => void;
   onDeleteTask: (id: string) => void;
   onUnnestTask: (id: string) => void;
+  onToggleDone: (id: string, nextDone: boolean) => void;
   isOver?: boolean;
   readOnly?: boolean;
   showProjectName?: boolean;
@@ -50,6 +51,7 @@ const SortableSidebarRow: React.FC<SortableSidebarRowProps> = ({
   onUpdateTask,
   onDeleteTask,
   onUnnestTask,
+  onToggleDone,
   isOver,
   readOnly,
   showProjectName
@@ -70,6 +72,7 @@ const SortableSidebarRow: React.FC<SortableSidebarRowProps> = ({
   const isGlobalMilestonesView = Boolean(readOnly && showProjectName);
   const taskStartDate = format(parseISO(task.startDate), isGlobalMilestonesView ? 'EEE, dd MMM yy' : 'dd MMM yyyy');
   const taskEndDate = format(parseISO(task.endDate), 'dd MMM yyyy');
+  const canToggleDoneFromDot = isGlobalMilestonesView && !hasSubtasks;
 
   return (
     <div
@@ -104,14 +107,26 @@ const SortableSidebarRow: React.FC<SortableSidebarRowProps> = ({
         ) : (
           <button
             type="button"
-            onClick={() => task.parentId && onUnnestTask(task.id)}
-            disabled={readOnly || !task.parentId}
+            onClick={() => {
+              if (canToggleDoneFromDot) {
+                onToggleDone(task.id, !Boolean(task.isDone));
+                return;
+              }
+              if (task.parentId && !readOnly) {
+                onUnnestTask(task.id);
+              }
+            }}
+            disabled={readOnly ? !canToggleDoneFromDot : !task.parentId}
             className={`w-3 h-3 flex items-center justify-center shrink-0 rounded-full transition-all group/dot ${
-              task.parentId && !readOnly ? 'hover:bg-blue-50 cursor-pointer' : 'cursor-default'
+              canToggleDoneFromDot || (task.parentId && !readOnly) ? 'hover:bg-blue-50 cursor-pointer' : 'cursor-default'
             }`}
-            title={task.parentId && !readOnly ? 'Move task out of parent' : undefined}
+            title={
+              canToggleDoneFromDot
+                ? task.isDone ? 'Mark milestone as not done' : 'Mark milestone as done'
+                : task.parentId && !readOnly ? 'Move task out of parent' : undefined
+            }
           >
-            {task.parentId && !readOnly ? (
+            {task.parentId && !readOnly && !canToggleDoneFromDot ? (
               <>
                 <div className={`w-1.5 h-1.5 rounded-full group-hover/dot:hidden ${task.isExternal ? 'bg-pink-300' : 'bg-[#5F7CFF]'}`} />
                 <ArrowLeft size={9} className="hidden group-hover/dot:block text-[#5F7CFF]" />
@@ -354,6 +369,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                           onUpdateTask={onUpdateTask}
                           onDeleteTask={onDeleteTask}
                           onUnnestTask={unnestTask}
+                          onToggleDone={(taskId, nextDone) => onUpdateTask(taskId, { isDone: nextDone })}
                           isOver={overId === task.id && activeId !== task.id}
                           readOnly={readOnly}
                           showProjectName={showProjectName}
@@ -376,6 +392,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     onUpdateTask={onUpdateTask}
                     onDeleteTask={onDeleteTask}
                     onUnnestTask={unnestTask}
+                    onToggleDone={(taskId, nextDone) => onUpdateTask(taskId, { isDone: nextDone })}
                     isOver={overId === task.id && activeId !== task.id}
                     readOnly={readOnly}
                     showProjectName={showProjectName}

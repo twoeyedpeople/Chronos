@@ -467,6 +467,53 @@ export default function App() {
   };
 
   const updateTask = (id: string, updates: Partial<Task>) => {
+    if (isGlobalMilestonesView) {
+      const globalTask = project.tasks.find((task) => task.id === id);
+      const sourceProjectId = globalTask?.sourceProjectId;
+      const sourceTaskId = id.includes('::') ? id.split('::')[1] : id;
+
+      if (!globalTask || !sourceProjectId) {
+        return;
+      }
+
+      const previousTask = { ...globalTask };
+
+      setProject((prev) => ({
+        ...prev,
+        tasks: prev.tasks.map((task) => (task.id === id ? { ...task, ...updates } : task)),
+      }));
+
+      void (async () => {
+        try {
+          const sourceProjectRef = doc(db, 'projects', sourceProjectId);
+          const sourceSnapshot = await getDocFromServer(sourceProjectRef);
+
+          if (!sourceSnapshot.exists()) {
+            throw new Error(`Source project ${sourceProjectId} not found`);
+          }
+
+          const sourceProject = withProjectId(sourceSnapshot.data() as Partial<Project>, sourceSnapshot.id);
+          const updatedTasks = sourceProject.tasks.map((task) =>
+            task.id === sourceTaskId ? { ...task, ...updates } : task,
+          );
+
+          await updateDoc(sourceProjectRef, {
+            tasks: updatedTasks,
+            updatedAt: Date.now(),
+          });
+        } catch (error) {
+          handleFirestoreError(error, OperationType.UPDATE, `projects/${sourceProjectId}`);
+          setProject((prev) => ({
+            ...prev,
+            tasks: prev.tasks.map((task) => (task.id === id ? previousTask : task)),
+          }));
+          window.alert('That milestone could not be updated right now. Please try again.');
+        }
+      })();
+
+      return;
+    }
+
     applyProjectChange((prev) => {
       // Check for circular dependency if dependencyId is being updated
       if (updates.dependencyId) {

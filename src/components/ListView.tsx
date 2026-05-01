@@ -34,6 +34,7 @@ interface SortableTaskRowProps {
   onUpdateTask: (id: string, updates: Partial<Task>) => void;
   onDeleteTask: (id: string) => void;
   onUnnestTask: (id: string) => void;
+  onToggleDone: (id: string, nextDone: boolean) => void;
   isOver?: boolean;
   tasks: Task[];
   readOnly?: boolean;
@@ -52,6 +53,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
   onUpdateTask,
   onDeleteTask,
   onUnnestTask,
+  onToggleDone,
   isOver,
   tasks,
   readOnly,
@@ -85,6 +87,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
   }, [days, task.isMilestone]);
 
   const isFolder = hasSubtasks;
+  const canToggleDoneFromDot = isGlobalMilestonesView && !isFolder;
 
   const handleDaysChange = (val: string) => {
     if (task.isMilestone && (val === '' || /^\d*$/.test(val))) {
@@ -183,14 +186,30 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
           ) : (
             <button
               type="button"
-              onClick={() => task.parentId && onUnnestTask(task.id)}
-              disabled={readOnly || !task.parentId}
+              onClick={() => {
+                if (canToggleDoneFromDot) {
+                  onToggleDone(task.id, !Boolean(task.isDone));
+                  return;
+                }
+                if (task.parentId && !readOnly) {
+                  onUnnestTask(task.id);
+                }
+              }}
+              disabled={readOnly ? !canToggleDoneFromDot : !task.parentId}
               className={`w-6 h-6 rounded-full border flex items-center justify-center shrink-0 transition-all group/dot ${
                 task.isExternal ? 'border-pink-100 text-pink-300' : 'border-blue-100 text-[#5F7CFF]'
-              } ${task.parentId && !readOnly ? 'hover:border-blue-200 hover:bg-blue-50/60 cursor-pointer' : 'cursor-default'}`}
-              title={task.parentId && !readOnly ? 'Move task out of parent' : undefined}
+              } ${
+                canToggleDoneFromDot || (task.parentId && !readOnly)
+                  ? 'hover:border-blue-200 hover:bg-blue-50/60 cursor-pointer'
+                  : 'cursor-default'
+              }`}
+              title={
+                canToggleDoneFromDot
+                  ? task.isDone ? 'Mark milestone as not done' : 'Mark milestone as done'
+                  : task.parentId && !readOnly ? 'Move task out of parent' : undefined
+              }
             >
-              {task.parentId && !readOnly ? (
+              {task.parentId && !readOnly && !canToggleDoneFromDot ? (
                 <>
                   <div className={`w-1.5 h-1.5 rounded-full group-hover/dot:hidden ${task.isExternal ? 'bg-pink-300' : 'bg-[#5F7CFF]'}`} />
                   <ArrowLeft size={11} className="hidden group-hover/dot:block text-[#5F7CFF]" />
@@ -440,13 +459,30 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
               ) : (
                 <button
                   type="button"
-                  onClick={() => task.parentId && onUnnestTask(task.id)}
-                  disabled={readOnly || !task.parentId}
+                  onClick={() => {
+                    if (canToggleDoneFromDot) {
+                      onToggleDone(task.id, !Boolean(task.isDone));
+                      return;
+                    }
+                    if (task.parentId && !readOnly) {
+                      onUnnestTask(task.id);
+                    }
+                  }}
+                  disabled={readOnly ? !canToggleDoneFromDot : !task.parentId}
                   className={`w-6 h-6 rounded-full border flex items-center justify-center shrink-0 transition-all group/dot ${
                     task.isExternal ? 'border-pink-100 text-pink-300' : 'border-blue-100 text-[#5F7CFF]'
-                  } ${task.parentId && !readOnly ? 'hover:border-blue-200 hover:bg-blue-50/60 cursor-pointer' : 'cursor-default'}`}
+                  } ${
+                    canToggleDoneFromDot || (task.parentId && !readOnly)
+                      ? 'hover:border-blue-200 hover:bg-blue-50/60 cursor-pointer'
+                      : 'cursor-default'
+                  }`}
+                  title={
+                    canToggleDoneFromDot
+                      ? task.isDone ? 'Mark milestone as not done' : 'Mark milestone as done'
+                      : task.parentId && !readOnly ? 'Move task out of parent' : undefined
+                  }
                 >
-                  {task.parentId && !readOnly ? (
+                  {task.parentId && !readOnly && !canToggleDoneFromDot ? (
                     <>
                       <div className={`w-1.5 h-1.5 rounded-full group-hover/dot:hidden ${task.isExternal ? 'bg-pink-300' : 'bg-[#5F7CFF]'}`} />
                       <ArrowLeft size={11} className="hidden group-hover/dot:block text-[#5F7CFF]" />
@@ -928,6 +964,7 @@ const ListView: React.FC<ListViewProps> = ({
                               onUpdateTask={onUpdateTask}
                               onDeleteTask={onDeleteTask}
                               onUnnestTask={unnestTask}
+                              onToggleDone={(taskId, nextDone) => onUpdateTask(taskId, { isDone: nextDone })}
                               isOver={overId === task.id && activeId !== task.id}
                               tasks={orderedTasks}
                               readOnly={readOnly}
@@ -952,6 +989,7 @@ const ListView: React.FC<ListViewProps> = ({
                         onUpdateTask={onUpdateTask}
                         onDeleteTask={onDeleteTask}
                         onUnnestTask={unnestTask}
+                        onToggleDone={(taskId, nextDone) => onUpdateTask(taskId, { isDone: nextDone })}
                         isOver={overId === task.id && activeId !== task.id}
                         tasks={orderedTasks}
                         readOnly={readOnly}
