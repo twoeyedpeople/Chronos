@@ -964,10 +964,14 @@ const ListView: React.FC<ListViewProps> = ({
           {flattenedTasks.length > 0 && (
             <div className="mt-4 mx-8 pb-20">
               {isGlobalMilestonesView ? (
-                <div className="bg-[#FFF3FC] border border-pink-100 rounded-[24px] px-6 py-4 shadow-sm overflow-hidden relative min-h-[84px]">
-                  <div className="absolute inset-0 bg-gradient-to-br from-pink-50/70 via-[#FFF3FC] to-white pointer-events-none" />
-                  <div className="relative z-10">
-                    <p className="text-black font-black tracking-tight leading-[1.05] text-[24px] line-clamp-2">
+                <div className="flex items-center gap-4 min-h-[56px] px-2">
+                  <img
+                    src="/apple-touch-icon.png"
+                    alt="Chronos"
+                    className="w-10 h-10 shrink-0"
+                  />
+                  <div className="min-w-0">
+                    <p className="text-[#FF69B4] font-black tracking-tight leading-[1.15] text-[24px] line-clamp-2">
                       {globalMilestoneMessage}
                     </p>
                   </div>
