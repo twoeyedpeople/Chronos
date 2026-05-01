@@ -118,6 +118,8 @@ const SortableSidebarRow: React.FC<SortableSidebarRowProps> = ({
             }}
             disabled={readOnly ? !canToggleDoneFromDot : !task.parentId}
             className={`w-3 h-3 flex items-center justify-center shrink-0 rounded-full transition-all group/dot ${
+              task.isDone ? 'border border-gray-200' : ''
+            } ${
               canToggleDoneFromDot || (task.parentId && !readOnly) ? 'hover:bg-blue-50 cursor-pointer' : 'cursor-default'
             }`}
             title={
@@ -125,14 +127,18 @@ const SortableSidebarRow: React.FC<SortableSidebarRowProps> = ({
                 ? task.isDone ? 'Mark milestone as not done' : 'Mark milestone as done'
                 : task.parentId && !readOnly ? 'Move task out of parent' : undefined
             }
-          >
-            {task.parentId && !readOnly && !canToggleDoneFromDot ? (
-              <>
-                <div className={`w-1.5 h-1.5 rounded-full group-hover/dot:hidden ${task.isExternal ? 'bg-pink-300' : 'bg-[#5F7CFF]'}`} />
+            >
+              {task.parentId && !readOnly && !canToggleDoneFromDot ? (
+                <>
+                <div className={`w-1.5 h-1.5 rounded-full group-hover/dot:hidden ${
+                  task.isDone ? 'bg-gray-300' : task.isExternal ? 'bg-pink-300' : 'bg-[#5F7CFF]'
+                }`} />
                 <ArrowLeft size={9} className="hidden group-hover/dot:block text-[#5F7CFF]" />
               </>
             ) : (
-              <div className={`w-1.5 h-1.5 rounded-full ${task.isExternal ? 'bg-pink-300' : 'bg-[#5F7CFF]'}`} />
+              <div className={`w-1.5 h-1.5 rounded-full ${
+                task.isDone ? 'bg-gray-300' : task.isExternal ? 'bg-pink-300' : 'bg-[#5F7CFF]'
+              }`} />
             )}
           </button>
         )}

@@ -197,7 +197,11 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
               }}
               disabled={readOnly ? !canToggleDoneFromDot : !task.parentId}
               className={`w-6 h-6 rounded-full border flex items-center justify-center shrink-0 transition-all group/dot ${
-                task.isExternal ? 'border-pink-100 text-pink-300' : 'border-blue-100 text-[#5F7CFF]'
+                task.isDone
+                  ? 'border-gray-200 text-gray-300'
+                  : task.isExternal
+                    ? 'border-pink-100 text-pink-300'
+                    : 'border-blue-100 text-[#5F7CFF]'
               } ${
                 canToggleDoneFromDot || (task.parentId && !readOnly)
                   ? 'hover:border-blue-200 hover:bg-blue-50/60 cursor-pointer'
@@ -211,11 +215,15 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
             >
               {task.parentId && !readOnly && !canToggleDoneFromDot ? (
                 <>
-                  <div className={`w-1.5 h-1.5 rounded-full group-hover/dot:hidden ${task.isExternal ? 'bg-pink-300' : 'bg-[#5F7CFF]'}`} />
+                  <div className={`w-1.5 h-1.5 rounded-full group-hover/dot:hidden ${
+                    task.isDone ? 'bg-gray-300' : task.isExternal ? 'bg-pink-300' : 'bg-[#5F7CFF]'
+                  }`} />
                   <ArrowLeft size={11} className="hidden group-hover/dot:block text-[#5F7CFF]" />
                 </>
               ) : (
-                <div className={`w-1.5 h-1.5 rounded-full ${task.isExternal ? 'bg-pink-300' : 'bg-[#5F7CFF]'}`} />
+                <div className={`w-1.5 h-1.5 rounded-full ${
+                  task.isDone ? 'bg-gray-300' : task.isExternal ? 'bg-pink-300' : 'bg-[#5F7CFF]'
+                }`} />
               )}
             </button>
           )}
@@ -470,7 +478,11 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                   }}
                   disabled={readOnly ? !canToggleDoneFromDot : !task.parentId}
                   className={`w-6 h-6 rounded-full border flex items-center justify-center shrink-0 transition-all group/dot ${
-                    task.isExternal ? 'border-pink-100 text-pink-300' : 'border-blue-100 text-[#5F7CFF]'
+                    task.isDone
+                      ? 'border-gray-200 text-gray-300'
+                      : task.isExternal
+                        ? 'border-pink-100 text-pink-300'
+                        : 'border-blue-100 text-[#5F7CFF]'
                   } ${
                     canToggleDoneFromDot || (task.parentId && !readOnly)
                       ? 'hover:border-blue-200 hover:bg-blue-50/60 cursor-pointer'
@@ -484,11 +496,15 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                 >
                   {task.parentId && !readOnly && !canToggleDoneFromDot ? (
                     <>
-                      <div className={`w-1.5 h-1.5 rounded-full group-hover/dot:hidden ${task.isExternal ? 'bg-pink-300' : 'bg-[#5F7CFF]'}`} />
+                      <div className={`w-1.5 h-1.5 rounded-full group-hover/dot:hidden ${
+                        task.isDone ? 'bg-gray-300' : task.isExternal ? 'bg-pink-300' : 'bg-[#5F7CFF]'
+                      }`} />
                       <ArrowLeft size={11} className="hidden group-hover/dot:block text-[#5F7CFF]" />
                     </>
                   ) : (
-                    <div className={`w-1.5 h-1.5 rounded-full ${task.isExternal ? 'bg-pink-300' : 'bg-[#5F7CFF]'}`} />
+                    <div className={`w-1.5 h-1.5 rounded-full ${
+                      task.isDone ? 'bg-gray-300' : task.isExternal ? 'bg-pink-300' : 'bg-[#5F7CFF]'
+                    }`} />
                   )}
                 </button>
               )}
