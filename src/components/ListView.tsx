@@ -968,7 +968,7 @@ const ListView: React.FC<ListViewProps> = ({
           {flattenedTasks.length > 0 && (
             <div className="mt-4 mx-8 pb-20">
               {isGlobalMilestonesView ? (
-                <div className="flex items-end justify-between gap-6 min-h-[40px] px-2">
+                <div className="flex items-center justify-between gap-6 min-h-[40px] px-2">
                   <div className="min-w-0 flex-1">
                     <p className="text-[#FF69B4] font-black tracking-tight leading-[1.15] text-[24px] line-clamp-2 text-left">
                       {globalMilestoneMessage}
@@ -977,7 +977,7 @@ const ListView: React.FC<ListViewProps> = ({
                   <img
                     src="/twoeyedpeople-logo-black.png"
                     alt="Two-Eyed People"
-                    className="h-12 w-auto shrink-0 object-contain"
+                    className="h-10 w-auto shrink-0 object-contain"
                   />
                 </div>
               ) : (
