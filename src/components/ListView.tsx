@@ -79,7 +79,12 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
   const isGlobalMilestonesView = Boolean(readOnly && showProjectName);
   const isGlobalMilestonesKioskView = Boolean(isGlobalMilestonesView && isKioskView);
   const globalMilestoneDateText = format(parseISO(task.startDate), 'EEE, dd MMM yy');
-  const globalMilestoneDateNode = isGlobalMilestonesKioskView ? (
+  const now = startOfDay(new Date());
+  const thisWeekEnd = endOfWeek(now, { weekStartsOn: 1 });
+  const taskDate = startOfDay(parseISO(task.startDate));
+  const isThisWeek = taskDate <= thisWeekEnd;
+  
+  const globalMilestoneDateNode = isGlobalMilestonesKioskView && isThisWeek ? (
     <>
       <span className="text-[130%]">{format(parseISO(task.startDate), 'EEEE')}</span>, {format(parseISO(task.startDate), 'dd MMM yy')}
     </>
