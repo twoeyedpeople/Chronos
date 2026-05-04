@@ -88,31 +88,31 @@ const PeopleView: React.FC<PeopleViewProps> = ({
       </header>
 
       <main className="flex-1 overflow-y-auto p-4 md:p-8">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl">
           {people.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-gray-400 font-bold text-sm">No people added yet.</p>
             </div>
           ) : (
             <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
-              <div className="grid grid-cols-[auto_1fr_auto] items-center px-6 py-3 border-b border-gray-100 bg-gray-50/50">
-                <div className="w-12 text-[10px] font-black text-gray-400 uppercase tracking-widest">Color</div>
-                <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Name</div>
-                <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Actions</div>
+              <div className="grid grid-cols-[auto_1fr_auto] px-6 border-b border-gray-100 bg-gray-50/50">
+                <div className="w-16 py-3 pr-4 border-r border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center">Color</div>
+                <div className="pl-4 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center">Name</div>
+                <div className="py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center justify-end">Actions</div>
               </div>
               <div className="divide-y divide-gray-50">
                 {people.map((person) => (
-                  <div key={person.id} className="grid grid-cols-[auto_1fr_auto] items-center px-6 py-4 hover:bg-gray-50/50 transition-colors group">
-                    <div className="w-12">
+                  <div key={person.id} className="grid grid-cols-[auto_1fr_auto] px-6 hover:bg-gray-50/50 transition-colors group border-b border-gray-50 last:border-b-0">
+                    <div className="w-16 py-4 pr-4 border-r border-gray-100 flex items-center">
                       <div 
                         className="w-5 h-5 rounded-full shadow-sm"
                         style={{ backgroundColor: person.color }}
                       />
                     </div>
-                    <div className="font-bold text-gray-800 text-[15px]">
+                    <div className="pl-4 py-4 font-bold text-gray-800 text-[15px] flex items-center">
                       {person.name}
                     </div>
-                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="py-4 flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         onClick={() => openEditModal(person)}
                         className="p-2 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-xl transition-all"
