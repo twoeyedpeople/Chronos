@@ -1207,7 +1207,7 @@ export default function App() {
         showFiltersButton={isGlobalMilestonesView}
         activeFilterCount={activeMilestoneFilterCount}
         isMobile={isMobile}
-        hideMainViewToggle={isGlobalMilestonesKioskView}
+        isKioskView={isGlobalMilestonesKioskView}
       />
 
       <main className="flex-1 flex overflow-hidden">

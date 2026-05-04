@@ -26,6 +26,7 @@ interface HeaderProps {
   activeFilterCount?: number;
   isMobile?: boolean;
   hideMainViewToggle?: boolean;
+  isKioskView?: boolean;
 }
 
 const Header: React.FC<HeaderProps> = ({ 
@@ -51,6 +52,7 @@ const Header: React.FC<HeaderProps> = ({
   showFiltersButton,
   isMobile,
   hideMainViewToggle,
+  isKioskView,
 }) => {
   return (
     <header className="h-20 px-4 md:px-8 bg-white/95 backdrop-blur-2xl border-b border-gray-100 flex items-center justify-between sticky top-0 z-50 shadow-sm gap-4 overflow-x-auto no-scrollbar">
@@ -149,20 +151,16 @@ const Header: React.FC<HeaderProps> = ({
           <div className="flex items-center gap-1">
             <button
               onClick={() => {
-                if (hideMainViewToggle) {
+                if (isKioskView) {
                   window.location.assign(`${window.location.origin}${window.location.pathname}?global=milestones`);
                 } else {
                   window.location.assign(`${window.location.origin}${window.location.pathname}?global=milestones-kiosk`);
                 }
               }}
-              className={`w-9 h-9 rounded-xl border border-gray-100 flex items-center justify-center relative shrink-0 transition-all ${
-                hideMainViewToggle
-                  ? 'bg-blue-50 text-blue-600 shadow-sm border-blue-100'
-                  : 'bg-gray-50 text-gray-500 hover:text-gray-800 hover:bg-white hover:shadow-sm'
-              }`}
-              title={hideMainViewToggle ? "Exit Kiosk View" : "Kiosk View"}
+              className="w-9 h-9 rounded-xl border border-gray-100 bg-gray-50 text-gray-500 hover:text-gray-800 hover:bg-white hover:shadow-sm transition-all flex items-center justify-center relative shrink-0"
+              title={isKioskView ? "Exit Kiosk View" : "Kiosk View"}
             >
-              <Search size={15} />
+              {isKioskView ? <ZoomOut size={15} /> : <ZoomIn size={15} />}
             </button>
             <button
               onClick={onOpenFilters}
