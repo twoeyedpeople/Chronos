@@ -297,7 +297,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
               <span
                 onClick={() => {
                   if (task.sourceProjectId) {
-                    window.location.assign(`${window.location.origin}${window.location.pathname}?p=${task.sourceProjectId}`);
+                    window.location.assign(`${window.location.origin}${window.location.pathname}?p=${task.sourceProjectId}&edit=1`);
                   }
                 }}
                 className={`truncate p-0 leading-tight transition-colors ${

@@ -131,15 +131,17 @@ const Header: React.FC<HeaderProps> = ({
             >
               <User size={15} />
             </button>
-            <button
-              onClick={() => {
-                window.location.assign(`${window.location.origin}${window.location.pathname}?global=milestones`);
-              }}
-              className="w-9 h-9 rounded-full border border-gray-100 flex items-center justify-center transition-all shrink-0 bg-gray-50/80 text-gray-400 hover:text-gray-700 hover:bg-white hover:shadow-sm"
-              title="Milestone View"
-            >
-              <div className="w-3.5 h-3.5 border-[1.5px] border-current rounded-[1.5px] rotate-45" />
-            </button>
+            {!readOnly && (
+              <button
+                onClick={() => {
+                  window.location.assign(`${window.location.origin}${window.location.pathname}?global=milestones`);
+                }}
+                className="w-9 h-9 rounded-full border border-gray-100 flex items-center justify-center transition-all shrink-0 bg-gray-50/80 text-gray-400 hover:text-gray-700 hover:bg-white hover:shadow-sm"
+                title="Milestone View"
+              >
+                <div className="w-3.5 h-3.5 border-[1.5px] border-current rounded-[1.5px] rotate-45" />
+              </button>
+            )}
           </div>
         )}
 
