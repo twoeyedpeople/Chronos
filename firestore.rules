@@ -18,5 +18,9 @@ service cloud.firestore {
                              request.resource.data.id == projectId;
       allow delete: if true;
     }
+
+    match /people/{personId} {
+      allow read, write: if true;
+    }
   }
 }
