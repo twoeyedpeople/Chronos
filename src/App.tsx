@@ -222,7 +222,7 @@ export default function App() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [selectedMilestoneProjectIds, setSelectedMilestoneProjectIds] = useState<string[] | null>(null);
-  const [selectedMilestonePersonIds, setSelectedMilestonePersonIds] = useState<string[] | null>(null);
+  const [selectedMilestonePersonIds, setSelectedMilestonePersonIds] = useState<string[]>([]);
   const [dashboardPasswordInput, setDashboardPasswordInput] = useState('');
   const [dashboardPasswordError, setDashboardPasswordError] = useState('');
   const [isDashboardUnlocked, setIsDashboardUnlocked] = useState(() => {
@@ -888,7 +888,7 @@ export default function App() {
         }
       }
 
-      if (selectedMilestonePersonIds !== null) {
+      if (selectedMilestonePersonIds.length > 0) {
         personMatch = !!task.assigneeId && selectedMilestonePersonIds.includes(task.assigneeId);
       }
 
@@ -1333,7 +1333,7 @@ export default function App() {
                 <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.18em] mb-3">People</h3>
                 <div className="flex flex-col gap-2">
                   {people.map(person => {
-                    const checked = selectedMilestonePersonIds?.includes(person.id) ?? true;
+                    const checked = selectedMilestonePersonIds.includes(person.id);
                     return (
                       <label
                         key={person.id}
@@ -1348,8 +1348,7 @@ export default function App() {
                             type="checkbox"
                             checked={checked}
                             onChange={(event) => {
-                              setSelectedMilestonePersonIds((previous) => {
-                                const current = previous ?? people.map(p => p.id);
+                              setSelectedMilestonePersonIds((current) => {
                                 if (event.target.checked) {
                                   return current.includes(person.id) ? current : [...current, person.id];
                                 }
