@@ -148,7 +148,14 @@ const Header: React.FC<HeaderProps> = ({
         )}
 
         {showFiltersButton && (
-          <div className="flex items-center gap-1">
+          <>
+            <button
+              onClick={onOpenFilters}
+              className="w-9 h-9 rounded-xl border border-gray-100 bg-gray-50 text-gray-500 hover:text-gray-800 hover:bg-white hover:shadow-sm transition-all flex items-center justify-center relative shrink-0"
+              title="Filters"
+            >
+              <SlidersHorizontal size={15} />
+            </button>
             <button
               onClick={() => {
                 if (isKioskView) {
@@ -162,14 +169,7 @@ const Header: React.FC<HeaderProps> = ({
             >
               {isKioskView ? <ZoomOut size={15} /> : <ZoomIn size={15} />}
             </button>
-            <button
-              onClick={onOpenFilters}
-              className="w-9 h-9 rounded-xl border border-gray-100 bg-gray-50 text-gray-500 hover:text-gray-800 hover:bg-white hover:shadow-sm transition-all flex items-center justify-center relative shrink-0"
-              title="Filters"
-            >
-              <SlidersHorizontal size={15} />
-            </button>
-          </div>
+          </>
         )}
       </div>
 
