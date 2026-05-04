@@ -1165,7 +1165,7 @@ const ListView: React.FC<ListViewProps> = ({
               {isGlobalMilestonesView ? (
                 <div className="flex items-center justify-between gap-6 min-h-[40px] px-2">
                   <div className="flex items-center gap-4 min-w-0 flex-1">
-                    <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 border border-gray-100 shadow-sm bg-white">
+                    <div className="w-[50px] h-[50px] rounded-full overflow-hidden shrink-0 border border-gray-100 shadow-sm bg-white">
                       <img
                         src="/pink-mascot.png"
                         alt="Mascot"
