@@ -86,7 +86,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
   
   const globalMilestoneDateNode = isGlobalMilestonesKioskView && isThisWeek ? (
     <>
-      <span className="text-[130%]">{format(parseISO(task.startDate), 'EEEE')}</span>, {format(parseISO(task.startDate), 'dd MMM yy')}
+      <span className="text-[130%]">{format(parseISO(task.startDate), 'EEE')}</span>, {format(parseISO(task.startDate), 'dd MMM yy')}
     </>
   ) : (
     <>{globalMilestoneDateText}</>
