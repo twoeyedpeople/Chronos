@@ -1161,7 +1161,7 @@ const ListView: React.FC<ListViewProps> = ({
           </SortableContext>
 
           {flattenedTasks.length > 0 && (
-            <div className="mt-[66px] mx-8 pb-20">
+            <div className="mt-[41px] mx-8 pb-20">
               {isGlobalMilestonesView ? (
                 <div className="flex items-center justify-between gap-6 min-h-[40px] px-2">
                   <div className="flex items-center gap-4 min-w-0 flex-1">
