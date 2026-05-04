@@ -204,7 +204,7 @@ const AdminDashboard: React.FC = () => {
                       <h3 className="text-[16px] font-black text-[#C21A88] tracking-tight leading-tight mb-1 transition-colors truncate">
                         All Milestones
                       </h3>
-                      <div className="flex items-center gap-2 text-[#FFC2E8]">
+                      <div className="flex items-center gap-2 text-[#C21A88]">
                         <User size={12} />
                         <span className="text-[10px] font-black uppercase tracking-[0.18em] truncate">Agency View</span>
                       </div>
@@ -257,7 +257,9 @@ const AdminDashboard: React.FC = () => {
                       }`}>
                         {project.name}
                       </h3>
-                      <div className="flex items-center gap-2 text-gray-400">
+                      <div className={`flex items-center gap-2 ${
+                        project.name === FEATURED_PROJECT_NAME ? 'text-[#1E8A49]' : 'text-gray-900 group-hover:text-[#C21A88]'
+                      }`}>
                         <User size={12} />
                         <span className="text-[10px] font-black uppercase tracking-[0.18em] truncate">{project.clientName}</span>
                       </div>
