@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
-import { Task, ViewMode } from '../types';
+import { Task, ViewMode, Person } from '../types';
 import { format, addDays, differenceInDays, startOfDay, isWithinInterval, parseISO, startOfWeek, endOfWeek, eachDayOfInterval, eachWeekOfInterval, startOfMonth, endOfMonth, eachMonthOfInterval, isWeekend, addBusinessDays, differenceInBusinessDays, addWeeks } from 'date-fns';
 import { motion } from 'motion/react';
 
@@ -12,6 +12,7 @@ interface GanttViewProps {
   readOnly?: boolean;
   showProjectName?: boolean;
   refreshTick?: number;
+  people?: Person[];
 }
 
 type DragType = 'move' | 'resize-start' | 'resize-end';
@@ -26,7 +27,7 @@ interface DragState {
 
 const MILESTONE_SIZE = 14;
 
-const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, onUpdateTask, readOnly, showProjectName, refreshTick }) => {
+const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, onUpdateTask, readOnly, showProjectName, refreshTick, people = [] }) => {
   const [dragState, setDragState] = useState<DragState | null>(null);
   const [previewDelta, setPreviewDelta] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -377,22 +378,33 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
                     animate={{ opacity: 1, scale: 1 }}
                     title={`${task.name} milestone`}
                   />
-                ) : (
-                  <motion.div
-                    layoutId={task.id}
-                    onMouseDown={(e) => handleMouseDown(e, task.id, 'move')}
-                    className={`absolute h-4.5 rounded-full flex items-center px-2 shadow-xs select-none ${
-                      readOnly ? 'cursor-default' : 'cursor-move'
-                    } ${
-                      isDraggingThis
-                        ? task.isExternal ? 'bg-[#FFF3FC] border border-pink-200 z-30' : 'bg-[#5F7CFF] z-30'
-                        : task.isExternal ? 'bg-[#FFF3FC] border border-pink-200' : 'bg-[#5F7CFF]/20 border border-[#5F7CFF]/30'
-                    }`}
-                    style={{ left, width }}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                  >
-                    {/* Resize Handles */}
+                ) : (() => {
+                  const assignee = people.find(p => p.id === task.assigneeId);
+                  return (
+                    <motion.div
+                      layoutId={task.id}
+                      onMouseDown={(e) => handleMouseDown(e, task.id, 'move')}
+                      className={`absolute h-4.5 rounded-full flex items-center justify-center px-1 shadow-xs select-none overflow-hidden ${
+                        readOnly ? 'cursor-default' : 'cursor-move'
+                      } ${
+                        isDraggingThis
+                          ? task.isExternal ? 'bg-[#FFF3FC] border border-pink-200 z-30' : (assignee ? 'z-30 opacity-90' : 'bg-[#5F7CFF] z-30')
+                          : task.isExternal ? 'bg-[#FFF3FC] border border-pink-200' : (assignee ? 'border border-black/10' : 'bg-[#5F7CFF]/20 border border-[#5F7CFF]/30')
+                      }`}
+                      style={{ 
+                        left, 
+                        width, 
+                        ...(assignee ? { backgroundColor: assignee.color } : {}) 
+                      }}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                    >
+                      {assignee && width > 40 && (
+                        <span className="text-[8px] font-bold text-white truncate z-10 pointer-events-none drop-shadow-sm px-1">
+                          {assignee.name}
+                        </span>
+                      )}
+                      {/* Resize Handles */}
                     <div 
                       onMouseDown={(e) => handleMouseDown(e, task.id, 'resize-start')}
                       className={`absolute left-0 top-0 bottom-0 w-1.5 rounded-l-full ${
@@ -406,7 +418,8 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
                       }`}
                     />
                   </motion.div>
-                )
+                  );
+                })()
               )}
               {/* Permanent Label to the right as requested */}
               {!isDraggingThis && (

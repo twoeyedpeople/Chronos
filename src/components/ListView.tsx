@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Task } from '../types';
+import { Task, Person } from '../types';
 import { format, parseISO, addBusinessDays, differenceInBusinessDays, isWeekend, startOfDay, addDays, startOfWeek, endOfWeek, addWeeks } from 'date-fns';
 import { Calendar, Trash2, Plus, ChevronRight, ChevronDown, GripVertical, FolderMinus, ArrowLeft } from 'lucide-react';
 import {
@@ -40,7 +40,59 @@ interface SortableTaskRowProps {
   readOnly?: boolean;
   showProjectName?: boolean;
   isKioskView?: boolean;
+  people: Person[];
 }
+
+const AssigneeDropdown: React.FC<{ task: Task, people: Person[], onAssign: (personId: string | null) => void, readOnly?: boolean }> = ({ task, people, onAssign, readOnly }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const assignee = people.find(p => p.id === task.assigneeId);
+
+  return (
+    <div className="relative flex items-center">
+      <button 
+        onClick={() => !readOnly && setIsOpen(!isOpen)}
+        disabled={readOnly}
+        className={`flex items-center justify-center border transition-all ${
+          assignee 
+            ? 'h-[20px] px-2 rounded-md border-transparent text-[9px] font-bold text-white shadow-sm hover:opacity-90' 
+            : 'h-[20px] px-2 rounded-md border-gray-200 bg-white text-[9px] font-bold text-gray-400 hover:border-gray-300 hover:text-gray-500 uppercase'
+        }`}
+        style={assignee ? { backgroundColor: assignee.color } : {}}
+      >
+        {assignee ? assignee.name : 'ASSIGN'}
+      </button>
+
+      {isOpen && !readOnly && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
+          <div className="absolute top-full left-0 mt-1 w-32 bg-white rounded-lg shadow-xl border border-gray-100 z-50 py-1 overflow-hidden">
+            {people.map(person => (
+              <button
+                key={person.id}
+                onClick={() => { onAssign(person.id); setIsOpen(false); }}
+                className="w-full text-left px-3 py-1.5 text-[11px] font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors"
+              >
+                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: person.color }} />
+                {person.name}
+              </button>
+            ))}
+            {task.assigneeId && (
+              <>
+                <div className="h-px bg-gray-100 my-1" />
+                <button
+                  onClick={() => { onAssign(null); setIsOpen(false); }}
+                  className="w-full text-left px-3 py-1.5 text-[11px] font-bold text-red-500 hover:bg-red-50 transition-colors"
+                >
+                  Clear
+                </button>
+              </>
+            )}
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
 
 const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
   task,
@@ -58,7 +110,8 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
   tasks,
   readOnly,
   showProjectName,
-  isKioskView
+  isKioskView,
+  people
 }) => {
   const {
     attributes,
@@ -321,6 +374,17 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
             </button>
           )}
         </div>
+
+        {!isFolder && !isGlobalMilestonesView && (
+          <div className="w-24 px-2 shrink-0">
+            <AssigneeDropdown 
+              task={task} 
+              people={people} 
+              onAssign={(personId) => onUpdateTask(task.id, { assigneeId: personId || undefined })} 
+              readOnly={readOnly} 
+            />
+          </div>
+        )}
 
         {!isFolder ? (
           <>
@@ -733,6 +797,7 @@ interface ListViewProps {
   isMobile?: boolean;
   refreshTick?: number;
   isKioskView?: boolean;
+  people: Person[];
 }
 
 const ListView: React.FC<ListViewProps> = ({
@@ -747,6 +812,7 @@ const ListView: React.FC<ListViewProps> = ({
   showProjectName,
   refreshTick,
   isKioskView,
+  people,
 }) => {
   const GLOBAL_MILESTONE_MESSAGES = [
     'The deadlines are humming softly in the walls.',
@@ -940,6 +1006,9 @@ const ListView: React.FC<ListViewProps> = ({
             </button>
           )}
         </div>
+        {!isGlobalMilestonesView && (
+          <div className="w-24 px-2 text-[9px] font-black text-gray-400 uppercase tracking-widest">Assignee</div>
+        )}
         <div className={`${isGlobalMilestonesKioskView ? 'w-48' : 'w-32'} px-2 text-[9px] font-black text-gray-400 uppercase tracking-widest`}>
           {isGlobalMilestonesView ? 'Date' : 'Start Date'}
         </div>
@@ -1024,6 +1093,7 @@ const ListView: React.FC<ListViewProps> = ({
                               readOnly={readOnly}
                               showProjectName={showProjectName}
                               isKioskView={isKioskView}
+                              people={people}
                             />
                           );
                         })}
@@ -1049,6 +1119,7 @@ const ListView: React.FC<ListViewProps> = ({
                         readOnly={readOnly}
                         showProjectName={showProjectName}
                         isKioskView={isKioskView}
+                        people={people}
                       />
                     ))
                   )}

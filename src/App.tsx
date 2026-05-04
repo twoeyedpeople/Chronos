@@ -1235,6 +1235,7 @@ export default function App() {
               readOnly={isReadOnly}
               showProjectName={isGlobalMilestonesView}
               refreshTick={globalMilestonesRefreshTick}
+              people={people}
             />
           </>
         ) : (
@@ -1251,6 +1252,7 @@ export default function App() {
             isMobile={isMobile}
             refreshTick={globalMilestonesRefreshTick}
             isKioskView={isGlobalMilestonesKioskView}
+            people={people}
           />
         )}
       </main>

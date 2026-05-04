@@ -16,6 +16,7 @@ export interface Task {
   sourceProjectId?: string;
   sourceProjectName?: string;
   sourceClientName?: string;
+  assigneeId?: string;
 }
 
 export interface Project {
