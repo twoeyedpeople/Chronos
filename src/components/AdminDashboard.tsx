@@ -192,7 +192,7 @@ const AdminDashboard: React.FC = () => {
           {showGlobalMilestonesCard && (
             <div
               onClick={() => navigateToProject(`${window.location.origin}${window.location.pathname}?global=milestones`)}
-              className="group bg-[#FFC2E8]/10 border border-[#FFC2E8] rounded-[24px] p-4 hover:opacity-75 transition-all cursor-pointer relative overflow-hidden min-h-[146px]"
+              className="group bg-[#FFC2E8]/5 border border-[#FFC2E8] rounded-[24px] p-4 hover:opacity-75 transition-all cursor-pointer relative overflow-hidden min-h-[146px]"
             >
               <div className="flex flex-col gap-2 relative z-10 h-full">
                 <div className="flex items-start justify-between">
@@ -228,8 +228,6 @@ const AdminDashboard: React.FC = () => {
                   </div>
                 </div>
               </div>
-
-              <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-[#FFC2E8]/30 rounded-full blur-2xl group-hover:bg-[#FFC2E8]/50 transition-colors" />
             </div>
           )}
 
@@ -239,7 +237,7 @@ const AdminDashboard: React.FC = () => {
               onClick={() => navigateToProject(`${window.location.origin}${window.location.pathname}?p=${project.id}&edit=1`)}
               className={`group border rounded-[24px] p-4 transition-all cursor-pointer relative overflow-hidden min-h-[146px] ${
                 project.name === FEATURED_PROJECT_NAME
-                  ? 'bg-[#3DDA7B]/10 border-[#3DDA7B] hover:opacity-75'
+                  ? 'bg-[#3DDA7B]/5 border-[#3DDA7B] hover:opacity-75'
                   : 'bg-white border-gray-100 hover:shadow-2xl hover:shadow-[#FFC2E8]/20'
               }`}
             >
@@ -316,13 +314,6 @@ const AdminDashboard: React.FC = () => {
                   </div>
                 </div>
               </div>
-              
-              {/* Decorative background */}
-              <div className={`absolute -right-4 -bottom-4 w-24 h-24 rounded-full blur-2xl transition-colors ${
-                project.name === FEATURED_PROJECT_NAME
-                  ? 'bg-[#3DDA7B]/30 group-hover:bg-[#3DDA7B]/50'
-                  : 'bg-transparent group-hover:bg-[#FFC2E8]/10'
-              }`} />
             </div>
           ))}
 
