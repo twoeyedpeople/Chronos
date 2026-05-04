@@ -497,8 +497,9 @@ export default function App() {
             task.id === sourceTaskId ? { ...task, ...updates } : task,
           );
 
+          const safeTasks = JSON.parse(JSON.stringify(updatedTasks));
           await updateDoc(sourceProjectRef, {
-            tasks: updatedTasks,
+            tasks: safeTasks,
             updatedAt: Date.now(),
           });
         } catch (error) {
@@ -719,11 +720,14 @@ export default function App() {
         updatedAt: Date.now(),
       };
 
-      await setDoc(doc(db, 'projects', projectId), projectToPersist);
+      // Strip any undefined values (like dependencyId: undefined) before saving to Firestore
+      const safeProjectToPersist = JSON.parse(JSON.stringify(projectToPersist));
+
+      await setDoc(doc(db, 'projects', projectId), safeProjectToPersist);
       projectRef.current = projectToPersist;
       setProject(projectToPersist);
       setHasUnsavedChanges(false);
-      localStorage.setItem(`project_${projectId}`, JSON.stringify(projectToPersist));
+      localStorage.setItem(`project_${projectId}`, JSON.stringify(safeProjectToPersist));
       return true;
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, `projects/${projectId}`);
