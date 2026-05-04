@@ -71,17 +71,21 @@ const Header: React.FC<HeaderProps> = ({
             value={projectName}
             onChange={(e) => onProjectNameChange(e.target.value)}
             readOnly={readOnly}
-            className="text-[15px] md:text-[16px] font-black text-gray-900 bg-transparent border-none focus:ring-0 placeholder-gray-300 tracking-tight p-0 leading-none min-w-[150px] max-w-[240px] md:max-w-[320px]"
+            className={`font-black text-gray-900 bg-transparent border-none focus:ring-0 placeholder-gray-300 tracking-tight p-0 leading-none min-w-[150px] max-w-[240px] md:max-w-[320px] ${
+              projectName === 'Milestones' ? 'text-[18px] md:text-[20px]' : 'text-[15px] md:text-[16px]'
+            }`}
             placeholder="Project Name..."
           />
-          <input
-            type="text"
-            value={clientName}
-            onChange={(e) => onClientNameChange(e.target.value)}
-            readOnly={readOnly}
-            className="text-[9px] font-black text-gray-400 bg-transparent border-none focus:ring-0 placeholder-gray-200 uppercase tracking-[0.14em] p-0 leading-none min-w-[80px] max-w-[220px]"
-            placeholder="Client..."
-          />
+          {(clientName || !readOnly) && (
+            <input
+              type="text"
+              value={clientName}
+              onChange={(e) => onClientNameChange(e.target.value)}
+              readOnly={readOnly}
+              className="text-[9px] font-black text-gray-400 bg-transparent border-none focus:ring-0 placeholder-gray-200 uppercase tracking-[0.14em] p-0 leading-none min-w-[80px] max-w-[220px]"
+              placeholder="Client..."
+            />
+          )}
         </div>
 
         <button

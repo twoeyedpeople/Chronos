@@ -166,8 +166,8 @@ function buildGlobalMilestonesProject(projects: Project[]): Project {
 
   return {
     id: GLOBAL_MILESTONES_ID,
-    name: 'Global Milestones',
-    clientName: GLOBAL_MILESTONES_CLIENT,
+    name: 'Milestones',
+    clientName: '',
     tasks: milestones,
     createdAt: updatedAt,
     updatedAt,
