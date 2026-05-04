@@ -1165,13 +1165,11 @@ const ListView: React.FC<ListViewProps> = ({
               {isGlobalMilestonesView ? (
                 <div className="flex items-center justify-between gap-6 min-h-[40px] px-2">
                   <div className="flex items-center gap-4 min-w-0 flex-1">
-                    <div className="w-[62px] h-[62px] rounded-full overflow-hidden shrink-0 border border-gray-100 shadow-sm bg-white flex items-center justify-center p-1">
-                      <img
-                        src="/pink-mascot.png"
-                        alt="Mascot"
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
+                    <img
+                      src="/mascot-circle.png"
+                      alt="Mascot"
+                      className="w-[62px] h-[62px] shrink-0 object-contain drop-shadow-sm"
+                    />
                     <p className="text-[#FFC2E8] font-black tracking-tight leading-[1.15] text-[24px] line-clamp-2 text-left">
                       {globalMilestoneMessage}
                     </p>
