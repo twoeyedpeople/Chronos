@@ -203,10 +203,10 @@ const Header: React.FC<HeaderProps> = ({
               </span>
               <button
                 onClick={onDownloadPdf}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-950 hover:bg-black text-white rounded-xl text-xs font-bold transition-all shadow-lg hover:shadow-xl active:scale-95 whitespace-nowrap"
+                className="flex items-center justify-center w-8 h-8 bg-gray-950 hover:bg-black text-white rounded-xl transition-all shadow-lg hover:shadow-xl active:scale-95 shrink-0"
+                title="Download PDF"
               >
                 <Download size={14} />
-                <span>Download PDF</span>
               </button>
             </>
           )}
