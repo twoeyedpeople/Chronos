@@ -1284,7 +1284,7 @@ export default function App() {
           onClick={() => setIsFiltersOpen(false)}
         >
           <div
-            className="absolute right-4 top-[5.25rem] md:right-8 w-[min(560px,calc(100vw-2rem))] rounded-[28px] border border-gray-200/80 bg-white/98 shadow-[0_24px_80px_rgba(15,23,42,0.14)] overflow-hidden"
+            className="absolute right-4 top-[5.25rem] md:right-8 w-[min(720px,calc(100vw-2rem))] rounded-[28px] border border-gray-200/80 bg-white/98 shadow-[0_24px_80px_rgba(15,23,42,0.14)] overflow-hidden"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="px-5 py-4 border-b border-gray-100 flex items-start justify-between gap-4">
@@ -1337,30 +1337,24 @@ export default function App() {
                     return (
                       <label
                         key={person.id}
-                        className={`flex items-center justify-between gap-3 rounded-2xl border px-3.5 py-3 transition-all cursor-pointer ${
-                          checked
-                            ? 'border-[#FF7119]/30 bg-[#FF7119]/10 shadow-[inset_0_0_0_1px_rgba(255,113,25,0.3)]'
-                            : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50/40'
-                        }`}
+                        className="flex items-center gap-3 py-1.5 transition-all cursor-pointer hover:opacity-75"
                       >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <input
-                            type="checkbox"
-                            checked={checked}
-                            onChange={(event) => {
-                              setSelectedMilestonePersonIds((current) => {
-                                if (event.target.checked) {
-                                  return current.includes(person.id) ? current : [...current, person.id];
-                                }
-                                return current.filter((id) => id !== person.id);
-                              });
-                            }}
-                            className="h-3.5 w-3.5 rounded border-gray-300 accent-[#FF7119] shrink-0"
-                          />
-                          <div className="flex items-center gap-2 min-w-0">
-                            <div className="w-4 h-4 rounded-full shrink-0" style={{ backgroundColor: person.color }} />
-                            <div className="text-[13px] font-bold text-gray-900 truncate leading-tight">{person.name}</div>
-                          </div>
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={(event) => {
+                            setSelectedMilestonePersonIds((current) => {
+                              if (event.target.checked) {
+                                return current.includes(person.id) ? current : [...current, person.id];
+                              }
+                              return current.filter((id) => id !== person.id);
+                            });
+                          }}
+                          className="h-3.5 w-3.5 rounded border-gray-300 accent-[#FF7119] shrink-0"
+                        />
+                        <div className="flex items-center gap-2 min-w-0">
+                          <div className="w-4 h-4 rounded-full shrink-0" style={{ backgroundColor: person.color }} />
+                          <div className="text-[13px] font-bold text-gray-900 truncate leading-tight">{person.name}</div>
                         </div>
                       </label>
                     );
@@ -1374,38 +1368,30 @@ export default function App() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                   {milestoneFilterProjects.map((filterProject) => {
                     const checked = selectedMilestoneProjectIds?.includes(filterProject.id) ?? true;
-                    const milestoneCount = project.tasks.filter((task) => task.sourceProjectId === filterProject.id).length;
 
                     return (
                       <label
                         key={filterProject.id}
-                        className={`flex items-center justify-between gap-3 rounded-2xl border px-3.5 py-3 transition-all cursor-pointer ${
-                          checked
-                            ? 'border-[#FF7119]/30 bg-[#FF7119]/10 shadow-[inset_0_0_0_1px_rgba(255,113,25,0.3)]'
-                            : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50/40'
-                        }`}
+                        className="flex items-center gap-3 py-1.5 transition-all cursor-pointer hover:opacity-75"
                       >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <input
-                            type="checkbox"
-                            checked={checked}
-                            onChange={(event) => {
-                              setSelectedMilestoneProjectIds((previous) => {
-                                const current = previous ?? milestoneFilterProjects.map((item) => item.id);
-                                if (event.target.checked) {
-                                  return current.includes(filterProject.id) ? current : [...current, filterProject.id];
-                                }
-                                return current.filter((id) => id !== filterProject.id);
-                              });
-                            }}
-                            className="h-3.5 w-3.5 rounded border-gray-300 accent-[#FF7119] shrink-0"
-                          />
-                          <div className="min-w-0">
-                            <div className="text-[13px] font-bold text-gray-900 truncate leading-tight">{filterProject.name}</div>
-                            <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-gray-400 mt-1">{milestoneCount} milestones</div>
-                          </div>
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={(event) => {
+                            setSelectedMilestoneProjectIds((previous) => {
+                              const current = previous ?? milestoneFilterProjects.map((item) => item.id);
+                              if (event.target.checked) {
+                                return current.includes(filterProject.id) ? current : [...current, filterProject.id];
+                              }
+                              return current.filter((id) => id !== filterProject.id);
+                            });
+                          }}
+                          className="h-3.5 w-3.5 rounded border-gray-300 accent-[#FF7119] shrink-0"
+                        />
+                        <div className="flex items-center gap-2 min-w-0">
+                          <div className={`h-2.5 w-2.5 rounded-full shrink-0 transition-colors ${checked ? 'bg-[#FF7119]' : 'bg-gray-200'}`} />
+                          <div className="text-[13px] font-bold text-gray-900 truncate leading-tight">{filterProject.name}</div>
                         </div>
-                        <div className={`h-2.5 w-2.5 rounded-full shrink-0 transition-colors ${checked ? 'bg-[#FF7119]' : 'bg-gray-200'}`} />
                       </label>
                     );
                   })}
