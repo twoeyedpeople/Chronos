@@ -1172,7 +1172,7 @@ const ListView: React.FC<ListViewProps> = ({
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    <p className="text-[#3DDA7B] font-black tracking-tight leading-[1.15] text-[24px] line-clamp-2 text-left">
+                    <p className="text-[#FFC2E8] font-black tracking-tight leading-[1.15] text-[24px] line-clamp-2 text-left">
                       {globalMilestoneMessage}
                     </p>
                   </div>
