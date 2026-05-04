@@ -3,18 +3,6 @@ import { Task, ViewMode, Person } from '../types';
 import { format, addDays, differenceInDays, startOfDay, isWithinInterval, parseISO, startOfWeek, endOfWeek, eachDayOfInterval, eachWeekOfInterval, startOfMonth, endOfMonth, eachMonthOfInterval, isWeekend, addBusinessDays, differenceInBusinessDays, addWeeks } from 'date-fns';
 import { motion } from 'motion/react';
 
-const DARK_COLORS: Record<string, string> = {
-  '#FF7119': '#B84A0A',
-  '#FFC2E8': '#C21A88',
-  '#FCB928': '#B07C10',
-  '#F3F3F3': '#6B7280',
-  '#3DDA7B': '#1E8A49',
-  '#A663FF': '#5B24A6',
-  '#95E6E6': '#2E9999',
-};
-
-const getDarkColor = (hex: string) => DARK_COLORS[hex] || '#111827';
-
 
 interface GanttViewProps {
   tasks: Task[];
@@ -415,7 +403,7 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
                       animate={{ opacity: 1, x: 0 }}
                     >
                       {assignee && width > 40 && (
-                        <span className="text-[8px] font-bold truncate z-10 pointer-events-none drop-shadow-sm px-1" style={{ color: getDarkColor(assignee.color) }}>
+                        <span className="text-[8px] font-bold text-white truncate z-10 pointer-events-none drop-shadow-sm px-1">
                           {assignee.name}
                         </span>
                       )}
