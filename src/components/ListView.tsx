@@ -2,6 +2,19 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Task, Person } from '../types';
 import { format, parseISO, addBusinessDays, differenceInBusinessDays, isWeekend, startOfDay, addDays, startOfWeek, endOfWeek, addWeeks } from 'date-fns';
 import { Calendar, Trash2, Plus, ChevronRight, ChevronDown, GripVertical, FolderMinus, ArrowLeft } from 'lucide-react';
+
+const DARK_COLORS: Record<string, string> = {
+  '#FF7119': '#B84A0A',
+  '#FFC2E8': '#C21A88',
+  '#FCB928': '#B07C10',
+  '#F3F3F3': '#6B7280',
+  '#3DDA7B': '#1E8A49',
+  '#A663FF': '#5B24A6',
+  '#95E6E6': '#2E9999',
+};
+
+const getDarkColor = (hex: string) => DARK_COLORS[hex] || '#111827';
+
 import {
   DndContext,
   rectIntersection,
@@ -54,10 +67,10 @@ const AssigneeDropdown: React.FC<{ task: Task, people: Person[], onAssign: (pers
         disabled={readOnly}
         className={`flex items-center justify-center border transition-all ${
           assignee 
-            ? 'h-[20px] px-2 rounded-md border-transparent text-[9px] font-bold text-white shadow-sm hover:opacity-90' 
+            ? 'h-[20px] px-2 rounded-md border-transparent text-[9px] font-bold shadow-sm hover:opacity-90' 
             : 'h-[20px] px-2 rounded-md border-gray-200 bg-white text-[9px] font-bold text-gray-400 hover:border-gray-300 hover:text-gray-500 uppercase'
         }`}
-        style={assignee ? { backgroundColor: assignee.color } : {}}
+        style={assignee ? { backgroundColor: assignee.color, color: getDarkColor(assignee.color) } : {}}
       >
         {assignee ? assignee.name : 'ASSIGN'}
       </button>
@@ -337,7 +350,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
               return (
                 <div 
                   className="px-1.5 py-0.5 rounded text-[9px] font-bold text-white shrink-0 shadow-sm"
-                  style={{ backgroundColor: assignee.color }}
+                  style={{ backgroundColor: assignee.color, color: getDarkColor(assignee.color) }}
                 >
                   {assignee.name}
                 </div>
