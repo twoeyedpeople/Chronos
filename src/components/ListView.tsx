@@ -293,24 +293,36 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
             </button>
           )}
           <div className="min-w-0 flex-1 flex items-center gap-2">
-            <input
-              type="text"
-              value={isGlobalMilestonesView && task.sourceProjectName ? `${task.sourceProjectName} / ${task.name}` : task.name}
-              onChange={(e) => onUpdateTask(task.id, { name: e.target.value })}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  e.currentTarget.blur();
-                }
-              }}
-              readOnly={readOnly}
-              className={`bg-transparent border-none focus:ring-0 w-full truncate p-0 leading-tight ${
-                isGlobalMilestonesKioskView ? 'text-[17px]' : 'text-[13px]'
-              } ${isFolder ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-800'} ${
-                task.isDone && (!readOnly || isGlobalMilestonesView) ? 'opacity-50' : ''
-              }`}
-              placeholder={isFolder ? "Folder name..." : "Task name..."}
-            />
+            {isGlobalMilestonesView ? (
+              <span
+                className={`truncate p-0 leading-tight ${
+                  isGlobalMilestonesKioskView ? 'text-[17px]' : 'text-[13px]'
+                } ${isFolder ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-800'} ${
+                  task.isDone ? 'opacity-50' : ''
+                }`}
+              >
+                {task.sourceProjectName ? `${task.sourceProjectName} / ${task.name}` : task.name}
+              </span>
+            ) : (
+              <input
+                type="text"
+                value={task.name}
+                onChange={(e) => onUpdateTask(task.id, { name: e.target.value })}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    e.currentTarget.blur();
+                  }
+                }}
+                readOnly={readOnly}
+                className={`bg-transparent border-none focus:ring-0 w-full truncate p-0 leading-tight ${
+                  isGlobalMilestonesKioskView ? 'text-[17px]' : 'text-[13px]'
+                } ${isFolder ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-800'} ${
+                  task.isDone && !readOnly ? 'opacity-50' : ''
+                }`}
+                placeholder={isFolder ? "Folder name..." : "Task name..."}
+              />
+            )}
             {isGlobalMilestonesView && task.assigneeId && (() => {
               const assignee = people.find(p => p.id === task.assigneeId);
               if (!assignee) return null;
