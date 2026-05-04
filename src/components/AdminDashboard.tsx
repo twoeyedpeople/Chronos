@@ -192,7 +192,7 @@ const AdminDashboard: React.FC = () => {
           {showGlobalMilestonesCard && (
             <div
               onClick={() => navigateToProject(`${window.location.origin}${window.location.pathname}?global=milestones`)}
-              className="group bg-[#FFC2E8]/20 border border-[#FFC2E8] rounded-[24px] p-4 hover:shadow-2xl hover:shadow-[#FFC2E8]/40 transition-all cursor-pointer relative overflow-hidden min-h-[146px]"
+              className="group bg-[#FFC2E8]/20 border border-[#FFC2E8] rounded-[24px] p-4 hover:opacity-75 transition-all cursor-pointer relative overflow-hidden min-h-[146px]"
             >
               <div className="flex flex-col gap-2 relative z-10 h-full">
                 <div className="flex items-start justify-between">
@@ -239,7 +239,7 @@ const AdminDashboard: React.FC = () => {
               onClick={() => navigateToProject(`${window.location.origin}${window.location.pathname}?p=${project.id}&edit=1`)}
               className={`group border rounded-[24px] p-4 transition-all cursor-pointer relative overflow-hidden min-h-[146px] ${
                 project.name === FEATURED_PROJECT_NAME
-                  ? 'bg-[#3DDA7B]/20 border-[#3DDA7B] hover:shadow-2xl hover:shadow-[#3DDA7B]/40'
+                  ? 'bg-[#3DDA7B]/20 border-[#3DDA7B] hover:opacity-75'
                   : 'bg-white border-gray-100 hover:shadow-2xl hover:shadow-[#FFC2E8]/20'
               }`}
             >
