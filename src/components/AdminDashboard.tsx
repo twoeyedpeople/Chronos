@@ -6,7 +6,7 @@ import { Plus, Folder, Calendar, User, ExternalLink, Search, Trash2, Pencil } fr
 import { format } from 'date-fns';
 
 const GLOBAL_MILESTONES_SEARCH_TEXT = 'global milestones agency overview milestone tracker';
-const FEATURED_PROJECT_NAME = '2-EP New Business';
+const FEATURED_PROJECT_NAME = 'New Business';
 
 const AdminDashboard: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -239,21 +239,21 @@ const AdminDashboard: React.FC = () => {
               onClick={() => navigateToProject(`${window.location.origin}${window.location.pathname}?p=${project.id}&edit=1`)}
               className={`group border rounded-[24px] p-4 transition-all cursor-pointer relative overflow-hidden min-h-[146px] ${
                 project.name === FEATURED_PROJECT_NAME
-                  ? 'bg-[#FFFBE8] border-yellow-100 hover:shadow-2xl hover:shadow-yellow-200/40'
+                  ? 'bg-[#F0FDF4] border-green-100 hover:shadow-2xl hover:shadow-green-200/40'
                   : 'bg-white border-gray-100 hover:shadow-2xl hover:shadow-blue-500/5'
               }`}
             >
               <div className="flex flex-col gap-2 relative z-10 h-full">
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-3 min-w-0 flex-1 pr-3">
-                    <div className={`w-9 h-9 rounded-2xl flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform shrink-0 ${
-                      project.name === FEATURED_PROJECT_NAME ? 'bg-yellow-50' : 'bg-blue-50'
+                    <div className={`w-9 h-9 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shrink-0 ${
+                      project.name === FEATURED_PROJECT_NAME ? 'bg-green-50 text-green-500' : 'bg-blue-50 text-blue-500'
                     }`}>
                       <Folder size={18} />
                     </div>
                     <div className="min-w-0 pt-0.5">
                       <h3 className={`text-[16px] font-black text-gray-900 tracking-tight leading-tight mb-1 transition-colors truncate ${
-                        project.name === FEATURED_PROJECT_NAME ? 'group-hover:text-yellow-600' : 'group-hover:text-blue-600'
+                        project.name === FEATURED_PROJECT_NAME ? 'group-hover:text-green-600' : 'group-hover:text-blue-600'
                       }`}>
                         {project.name}
                       </h3>
@@ -282,7 +282,7 @@ const AdminDashboard: React.FC = () => {
                 </div>
 
                 <div className={`mt-auto flex items-end justify-between pt-2 ${
-                  project.name === FEATURED_PROJECT_NAME ? 'border-t border-yellow-100/70' : 'border-t border-gray-50'
+                  project.name === FEATURED_PROJECT_NAME ? 'border-t border-green-100/70' : 'border-t border-gray-50'
                 }`}>
                   <div className="flex flex-col gap-1.5 text-gray-400">
                     {(() => {
@@ -307,7 +307,7 @@ const AdminDashboard: React.FC = () => {
                     })()}
                   </div>
                   <div className={`flex items-center gap-1 font-black text-[9px] uppercase tracking-[0.16em] opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0 ${
-                    project.name === FEATURED_PROJECT_NAME ? 'text-yellow-600' : 'text-blue-500'
+                    project.name === FEATURED_PROJECT_NAME ? 'text-green-600' : 'text-blue-500'
                   }`}>
                     <span>Open</span>
                     <ExternalLink size={10} />
@@ -318,7 +318,7 @@ const AdminDashboard: React.FC = () => {
               {/* Decorative background */}
               <div className={`absolute -right-4 -bottom-4 w-24 h-24 rounded-full blur-2xl transition-colors ${
                 project.name === FEATURED_PROJECT_NAME
-                  ? 'bg-yellow-200/30 group-hover:bg-yellow-200/50'
+                  ? 'bg-green-200/30 group-hover:bg-green-200/50'
                   : 'bg-blue-500/5 group-hover:bg-blue-500/10'
               }`} />
             </div>
