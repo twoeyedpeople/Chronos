@@ -295,7 +295,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                   className="w-3 h-3 rounded border-gray-200 accent-gray-700"
                 />
                 <div className="flex items-center gap-1" title="Milestone">
-                  <span className="block h-2.5 w-2.5 rotate-45 rounded-[1px] bg-gray-900 ml-0.5" />
+                  <span className="block h-2.5 w-2.5 rotate-45 rounded-[1px] bg-gray-900/50 ml-0.5" />
                   <span>?</span>
                 </div>
               </label>
@@ -578,7 +578,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                         className="w-3 h-3 rounded border-gray-200 accent-gray-700"
                       />
                       <div className="flex items-center gap-1" title="Milestone">
-                        <span className="block h-2.5 w-2.5 rotate-45 rounded-[1px] bg-gray-900 ml-0.5" />
+                        <span className="block h-2.5 w-2.5 rotate-45 rounded-[1px] bg-gray-900/50 ml-0.5" />
                         <span>?</span>
                       </div>
                     </label>
