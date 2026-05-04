@@ -1168,7 +1168,7 @@ const ListView: React.FC<ListViewProps> = ({
                     <img
                       src="/mascot-circle.png"
                       alt="Mascot"
-                      className="w-[62px] h-[62px] shrink-0 object-contain drop-shadow-sm"
+                      className="w-[62px] h-[62px] shrink-0 object-contain"
                     />
                     <p className="text-[#FFC2E8] font-black tracking-tight leading-[1.15] text-[24px] line-clamp-2 text-left">
                       {globalMilestoneMessage}
