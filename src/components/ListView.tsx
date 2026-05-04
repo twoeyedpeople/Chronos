@@ -321,9 +321,9 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
 
         {!isFolder ? (
           <>
-            <div className={`${isGlobalMilestonesView ? 'w-32' : 'w-32'} px-2 shrink-0`}>
+            <div className={`${isGlobalMilestonesKioskView ? 'w-48' : 'w-32'} px-2 shrink-0`}>
               {isGlobalMilestonesView ? (
-                <div className={`${isGlobalMilestonesKioskView ? 'text-[14px]' : 'text-[11px]'} text-gray-600 font-bold w-full tabular-nums`}>
+                <div className={`${isGlobalMilestonesKioskView ? 'text-[14px]' : 'text-[11px]'} text-gray-600 font-bold w-full tabular-nums whitespace-nowrap`}>
                   {globalMilestoneDateNode}
                 </div>
               ) : (
@@ -934,7 +934,7 @@ const ListView: React.FC<ListViewProps> = ({
             </button>
           )}
         </div>
-        <div className="w-32 px-2 text-[9px] font-black text-gray-400 uppercase tracking-widest">
+        <div className={`${isGlobalMilestonesKioskView ? 'w-48' : 'w-32'} px-2 text-[9px] font-black text-gray-400 uppercase tracking-widest`}>
           {isGlobalMilestonesView ? 'Date' : 'Start Date'}
         </div>
         {!isGlobalMilestonesView && (
