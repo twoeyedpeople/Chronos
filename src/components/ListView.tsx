@@ -79,6 +79,13 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
   const isGlobalMilestonesView = Boolean(readOnly && showProjectName);
   const isGlobalMilestonesKioskView = Boolean(isGlobalMilestonesView && isKioskView);
   const globalMilestoneDateText = format(parseISO(task.startDate), 'EEE, dd MMM yy');
+  const globalMilestoneDateNode = isGlobalMilestonesKioskView ? (
+    <>
+      <span className="text-[130%]">{format(parseISO(task.startDate), 'EEEE')}</span>, {format(parseISO(task.startDate), 'dd MMM yy')}
+    </>
+  ) : (
+    <>{globalMilestoneDateText}</>
+  );
   const mobileStartDateText = format(parseISO(task.startDate), 'dd MMM yy');
   const mobileEndDateText = format(parseISO(task.endDate), 'dd MMM yy');
 
@@ -312,7 +319,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
             <div className={`${isGlobalMilestonesView ? 'w-32' : 'w-32'} px-2 shrink-0`}>
               {isGlobalMilestonesView ? (
                 <div className={`${isGlobalMilestonesKioskView ? 'text-[14px]' : 'text-[11px]'} text-gray-600 font-bold w-full tabular-nums`}>
-                  {globalMilestoneDateText}
+                  {globalMilestoneDateNode}
                 </div>
               ) : (
                 <input
@@ -594,7 +601,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                 {readOnly ? (
                   isGlobalMilestonesView ? (
                     <div className="text-[12px] font-bold text-gray-600 tabular-nums leading-tight">
-                      {globalMilestoneDateText}
+                      {globalMilestoneDateNode}
                     </div>
                   ) : (
                     <div className="flex items-center gap-2 text-[12px] font-bold text-gray-600 tabular-nums leading-tight whitespace-nowrap overflow-x-auto no-scrollbar">
@@ -619,7 +626,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                   <div className="rounded-xl border border-gray-100 bg-white px-3 py-2">
                     <div className="text-[8px] font-black uppercase tracking-[0.12em] text-gray-400 mb-1">Date</div>
                     <div className="text-[12px] font-bold text-gray-600 tabular-nums">
-                      {globalMilestoneDateText}
+                      {globalMilestoneDateNode}
                     </div>
                   </div>
                 ) : (
