@@ -306,33 +306,35 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
         </div>
       </div>
 
-      {/* Grid Lines */}
-      <div className="absolute inset-0 pointer-events-none flex" style={{ width: totalWidth }}>
-        {eachDayOfInterval({ start: minDate, end: maxDate }).map((date, i) => {
-          const isWeekend = format(date, 'i') === '6' || format(date, 'i') === '7';
-          const isMonday = format(date, 'i') === '1';
-          return (
-            <div
-              key={i}
-              className={`h-full border-r border-gray-50/50 ${
-                isMonday ? 'border-l border-l-gray-300 z-10' : ''
-              } ${isWeekend ? 'bg-gray-50/40' : ''}`}
-              style={{ width: dayWidth }}
-            />
-          );
-        })}
-      </div>
+      {/* Content Wrapper */}
+      <div className="relative" style={{ width: totalWidth, minHeight: 'calc(100% - 4rem)' }}>
+        {/* Grid Lines */}
+        <div className="absolute inset-0 pointer-events-none flex">
+          {eachDayOfInterval({ start: minDate, end: maxDate }).map((date, i) => {
+            const isWeekend = format(date, 'i') === '6' || format(date, 'i') === '7';
+            const isMonday = format(date, 'i') === '1';
+            return (
+              <div
+                key={i}
+                className={`h-full border-r border-gray-50/50 ${
+                  isMonday ? 'border-l border-l-gray-300 z-10' : ''
+                } ${isWeekend ? 'bg-gray-50/40' : ''}`}
+                style={{ width: dayWidth }}
+              />
+            );
+          })}
+        </div>
 
-      {/* Today Line */}
-      <div
-        className="absolute top-0 bottom-0 w-px bg-red-400 z-10"
-        style={{ left: differenceInDays(startOfDay(new Date()), minDate) * dayWidth }}
-      >
-        <div className="w-2 h-2 rounded-full bg-red-400 -ml-[3.5px] mt-[-4px]" />
-      </div>
+        {/* Today Line */}
+        <div
+          className="absolute top-0 bottom-0 w-px bg-red-400 z-10"
+          style={{ left: differenceInDays(startOfDay(new Date()), minDate) * dayWidth }}
+        >
+          <div className="w-2 h-2 rounded-full bg-red-400 -ml-[3.5px] mt-[-4px]" />
+        </div>
 
-      {/* Tasks */}
-      <div className="relative pt-2 pb-20" style={{ width: totalWidth }}>
+        {/* Tasks */}
+        <div className="relative pt-2 pb-20 w-full">
         {(isGlobalMilestonesView && globalMilestoneSections
           ? globalMilestoneSections.flatMap((section) => [{ kind: 'divider' as const, id: section.id, label: section.label }, ...section.items.map((task) => ({ kind: 'task' as const, task }))])
           : tasks.map((task) => ({ kind: 'task' as const, task }))
@@ -435,6 +437,7 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
             </div>
           );
         })}
+      </div>
       </div>
     </div>
   );
