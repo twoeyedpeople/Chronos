@@ -72,7 +72,7 @@ const Header: React.FC<HeaderProps> = ({
             onChange={(e) => onProjectNameChange(e.target.value)}
             readOnly={readOnly}
             className={`font-black text-gray-900 bg-transparent border-none focus:ring-0 placeholder-gray-300 tracking-tight p-0 leading-none min-w-[150px] max-w-[240px] md:max-w-[320px] ${
-              projectName === 'Milestones' ? 'text-[18px] md:text-[20px]' : 'text-[15px] md:text-[16px]'
+              projectName === 'All Milestones' ? 'text-[22px] md:text-[25px]' : 'text-[15px] md:text-[16px]'
             }`}
             placeholder="Project Name..."
           />
