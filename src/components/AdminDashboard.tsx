@@ -169,7 +169,7 @@ const AdminDashboard: React.FC = () => {
             </button>
             <button
               onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-2 px-[18px] py-[10px] bg-[#FFC2E8] text-gray-900 rounded-xl font-black text-[15px] leading-4 shadow-sm hover:scale-[1.02] transition-all active:scale-95 shrink-0"
+              className="flex items-center gap-2 px-[18px] py-[10px] bg-[#FFC2E8] text-[#C21A88] rounded-xl font-black text-[15px] leading-4 shadow-sm hover:scale-[1.02] transition-all active:scale-95 shrink-0"
             >
               <Plus size={15} strokeWidth={3} />
               <span className="uppercase tracking-tight">Spawn</span>
@@ -201,7 +201,7 @@ const AdminDashboard: React.FC = () => {
                       <Calendar size={18} />
                     </div>
                     <div className="min-w-0 pt-0.5">
-                      <h3 className="text-[16px] font-black text-gray-900 tracking-tight leading-tight mb-1 group-hover:text-[#FFC2E8] transition-colors truncate">
+                      <h3 className="text-[16px] font-black text-[#C21A88] tracking-tight leading-tight mb-1 transition-colors truncate">
                         All Milestones
                       </h3>
                       <div className="flex items-center gap-2 text-[#FFC2E8]">
@@ -240,20 +240,20 @@ const AdminDashboard: React.FC = () => {
               className={`group border rounded-[24px] p-4 transition-all cursor-pointer relative overflow-hidden min-h-[146px] ${
                 project.name === FEATURED_PROJECT_NAME
                   ? 'bg-[#3DDA7B]/20 border-[#3DDA7B] hover:shadow-2xl hover:shadow-[#3DDA7B]/40'
-                  : 'bg-white border-gray-100 hover:shadow-2xl hover:shadow-blue-500/5'
+                  : 'bg-white border-gray-100 hover:shadow-2xl hover:shadow-[#FFC2E8]/20'
               }`}
             >
               <div className="flex flex-col gap-2 relative z-10 h-full">
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-3 min-w-0 flex-1 pr-3">
                     <div className={`w-9 h-9 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shrink-0 ${
-                      project.name === FEATURED_PROJECT_NAME ? 'bg-[#3DDA7B]/20 text-[#3DDA7B]' : 'bg-blue-50 text-blue-500'
+                      project.name === FEATURED_PROJECT_NAME ? 'bg-[#3DDA7B]/20 text-[#3DDA7B]' : 'bg-gray-50 text-gray-400 group-hover:bg-[#FFC2E8]/20 group-hover:text-[#C21A88]'
                     }`}>
                       <Folder size={18} />
                     </div>
                     <div className="min-w-0 pt-0.5">
-                      <h3 className={`text-[16px] font-black text-gray-900 tracking-tight leading-tight mb-1 transition-colors truncate ${
-                        project.name === FEATURED_PROJECT_NAME ? 'group-hover:text-[#3DDA7B]' : 'group-hover:text-blue-600'
+                      <h3 className={`text-[16px] font-black tracking-tight leading-tight mb-1 transition-colors truncate ${
+                        project.name === FEATURED_PROJECT_NAME ? 'text-[#1E8A49]' : 'text-gray-900 group-hover:text-[#C21A88]'
                       }`}>
                         {project.name}
                       </h3>
@@ -266,7 +266,7 @@ const AdminDashboard: React.FC = () => {
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
                     <button
                       onClick={(e) => openEditModal(e, project)}
-                      className="p-2 text-gray-300 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-all"
+                      className="p-2 text-gray-300 hover:text-[#C21A88] hover:bg-[#FFC2E8]/20 rounded-lg transition-all"
                       title="Edit project"
                     >
                       <Pencil size={14} />
@@ -290,7 +290,7 @@ const AdminDashboard: React.FC = () => {
                       return timeline ? (
                         <>
                           <div className="flex items-center gap-2">
-                            <Calendar size={11} className="text-blue-400" />
+                            <Calendar size={11} className="text-[#C21A88]/60" />
                             <span className="text-[9px] font-bold">{format(timeline.start, 'MMM dd, yyyy')}</span>
                           </div>
                           <div className="flex items-center gap-2">
@@ -307,7 +307,7 @@ const AdminDashboard: React.FC = () => {
                     })()}
                   </div>
                   <div className={`flex items-center gap-1 font-black text-[9px] uppercase tracking-[0.16em] opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0 ${
-                    project.name === FEATURED_PROJECT_NAME ? 'text-[#3DDA7B]' : 'text-blue-500'
+                    project.name === FEATURED_PROJECT_NAME ? 'text-[#3DDA7B]' : 'text-[#C21A88]'
                   }`}>
                     <span>Open</span>
                     <ExternalLink size={10} />
@@ -319,7 +319,7 @@ const AdminDashboard: React.FC = () => {
               <div className={`absolute -right-4 -bottom-4 w-24 h-24 rounded-full blur-2xl transition-colors ${
                 project.name === FEATURED_PROJECT_NAME
                   ? 'bg-[#3DDA7B]/30 group-hover:bg-[#3DDA7B]/50'
-                  : 'bg-blue-500/5 group-hover:bg-blue-500/10'
+                  : 'bg-transparent group-hover:bg-[#FFC2E8]/10'
               }`} />
             </div>
           ))}

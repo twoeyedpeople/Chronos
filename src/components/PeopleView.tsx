@@ -98,7 +98,7 @@ const PeopleView: React.FC<PeopleViewProps> = ({
 
         <button
           onClick={openAddModal}
-          className="flex items-center gap-2 px-[18px] py-[10px] bg-[#FFC2E8] text-gray-900 rounded-xl font-black text-[15px] leading-4 shadow-sm hover:scale-[1.02] transition-all active:scale-95 shrink-0"
+          className="flex items-center gap-2 px-[18px] py-[10px] bg-[#FFC2E8] text-[#C21A88] rounded-xl font-black text-[15px] leading-4 shadow-sm hover:scale-[1.02] transition-all active:scale-95 shrink-0"
         >
           <Plus size={15} strokeWidth={3} />
           <span className="uppercase tracking-tight">Add Person</span>
