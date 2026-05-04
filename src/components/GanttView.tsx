@@ -374,7 +374,7 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
                     onMouseDown={(e) => handleMouseDown(e, task.id, 'move')}
                     className={`absolute shadow-sm select-none rotate-45 ${
                       readOnly ? 'cursor-default' : 'cursor-move'
-                    } ${task.isExternal ? 'bg-pink-300' : 'bg-gray-950'} ${isDraggingThis ? 'z-30 ring-4 ring-gray-900/10' : ''}`}
+                    } ${task.isExternal ? 'bg-[#FFC2E8]' : 'bg-gray-950'} ${isDraggingThis ? 'z-30 ring-4 ring-gray-900/10' : ''}`}
                     style={{ left, width, height: MILESTONE_SIZE }}
                     initial={{ opacity: 0, scale: 0.7 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -390,8 +390,8 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
                         readOnly ? 'cursor-default' : 'cursor-move'
                       } ${
                         isDraggingThis
-                          ? task.isExternal ? 'bg-[#FFF3FC] border border-pink-200 z-30' : (assignee ? 'z-30 opacity-90' : 'bg-[#5F7CFF] z-30')
-                          : task.isExternal ? 'bg-[#FFF3FC] border border-pink-200' : (assignee ? 'border border-black/10' : 'bg-[#5F7CFF]/20 border border-[#5F7CFF]/30')
+                          ? task.isExternal ? 'bg-[#FFC2E8]/20 border border-[#FFC2E8] z-30' : (assignee ? 'z-30 opacity-90' : 'bg-[#5F7CFF] z-30')
+                          : task.isExternal ? 'bg-[#FFC2E8]/20 border border-[#FFC2E8]' : (assignee ? 'border border-black/10' : 'bg-[#5F7CFF]/20 border border-[#5F7CFF]/30')
                       }`}
                       style={{ 
                         left, 

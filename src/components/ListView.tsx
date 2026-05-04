@@ -220,7 +220,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
       ref={setNodeRef}
       style={style}
       className={`group border-b border-gray-100 transition-all ${
-        isDragging ? 'opacity-50 bg-blue-50/50 z-50' : task.isExternal ? 'bg-[#FFF3FC] hover:bg-[#ffedf9]' : 'bg-white hover:bg-gray-50/80'
+        isDragging ? 'opacity-50 bg-blue-50/50 z-50' : task.isExternal ? 'bg-[#FFC2E8]/20 hover:bg-[#ffedf9]' : 'bg-white hover:bg-gray-50/80'
       } ${isOver ? 'bg-blue-100/50 ring-2 ring-blue-500/20' : ''}`}
     >
       <div className={`hidden md:flex items-center px-4 ${isGlobalMilestonesKioskView ? 'h-12' : 'h-10'}`}>
@@ -265,7 +265,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                 task.isDone
                   ? 'border-gray-200 text-gray-300'
                   : task.isExternal
-                    ? 'border-pink-100 text-pink-300'
+                    ? 'border-[#FFC2E8] text-[#FFC2E8]'
                     : 'border-blue-100 text-[#5F7CFF]'
               } ${
                 canToggleDoneFromDot || (task.parentId && !readOnly)
@@ -281,13 +281,13 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
               {task.parentId && !readOnly && !canToggleDoneFromDot ? (
                 <>
                   <div className={`w-1.5 h-1.5 rounded-full group-hover/dot:hidden ${
-                    task.isDone ? 'bg-gray-300' : task.isExternal ? 'bg-pink-300' : 'bg-[#5F7CFF]'
+                    task.isDone ? 'bg-gray-300' : task.isExternal ? 'bg-[#FFC2E8]' : 'bg-[#5F7CFF]'
                   }`} />
                   <ArrowLeft size={11} className="hidden group-hover/dot:block text-[#5F7CFF]" />
                 </>
               ) : (
                 <div className={`w-1.5 h-1.5 rounded-full ${
-                  task.isDone ? 'bg-gray-300' : task.isExternal ? 'bg-pink-300' : 'bg-[#5F7CFF]'
+                  task.isDone ? 'bg-gray-300' : task.isExternal ? 'bg-[#FFC2E8]' : 'bg-[#5F7CFF]'
                 }`} />
               )}
             </button>
@@ -390,7 +390,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                   checked={Boolean(task.isExternal)}
                   onChange={(e) => onUpdateTask(task.id, { isExternal: e.target.checked })}
                   disabled={readOnly}
-                  className="w-3 h-3 rounded border-gray-200 accent-pink-300"
+                  className="w-3 h-3 rounded border-gray-200 accent-[#FFC2E8]"
                 />
                 <span>EXT</span>
               </label>
@@ -447,7 +447,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                       <span className="block w-full text-left">
                         <span
                           className={`ml-[2px] block h-2.5 w-2.5 rotate-45 rounded-[1px] ${
-                            task.isExternal ? 'bg-pink-300' : 'bg-gray-900'
+                            task.isExternal ? 'bg-[#FFC2E8]' : 'bg-gray-900'
                           }`}
                         />
                       </span>
@@ -478,7 +478,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                       className={`text-[11px] bg-white border border-gray-100 rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500/10 outline-none font-bold w-full ${
                         task.isMilestone
                           ? task.isExternal
-                            ? 'text-pink-300 text-center'
+                            ? 'text-[#FFC2E8] text-center'
                             : 'text-gray-900 text-center'
                           : 'text-gray-600 pr-6'
                       }`}
@@ -592,7 +592,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                     task.isDone
                       ? 'border-gray-200 text-gray-300'
                       : task.isExternal
-                        ? 'border-pink-100 text-pink-300'
+                        ? 'border-[#FFC2E8] text-[#FFC2E8]'
                         : 'border-blue-100 text-[#5F7CFF]'
                   } ${
                     canToggleDoneFromDot || (task.parentId && !readOnly)
@@ -608,13 +608,13 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                   {task.parentId && !readOnly && !canToggleDoneFromDot ? (
                     <>
                       <div className={`w-1.5 h-1.5 rounded-full group-hover/dot:hidden ${
-                        task.isDone ? 'bg-gray-300' : task.isExternal ? 'bg-pink-300' : 'bg-[#5F7CFF]'
+                        task.isDone ? 'bg-gray-300' : task.isExternal ? 'bg-[#FFC2E8]' : 'bg-[#5F7CFF]'
                       }`} />
                       <ArrowLeft size={11} className="hidden group-hover/dot:block text-[#5F7CFF]" />
                     </>
                   ) : (
                     <div className={`w-1.5 h-1.5 rounded-full ${
-                      task.isDone ? 'bg-gray-300' : task.isExternal ? 'bg-pink-300' : 'bg-[#5F7CFF]'
+                      task.isDone ? 'bg-gray-300' : task.isExternal ? 'bg-[#FFC2E8]' : 'bg-[#5F7CFF]'
                     }`} />
                   )}
                 </button>
@@ -684,7 +684,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                         checked={Boolean(task.isExternal)}
                         onChange={(e) => onUpdateTask(task.id, { isExternal: e.target.checked })}
                         disabled={readOnly}
-                        className="w-3 h-3 rounded border-gray-200 accent-pink-300"
+                        className="w-3 h-3 rounded border-gray-200 accent-[#FFC2E8]"
                       />
                       <span>EXT</span>
                     </label>
@@ -718,7 +718,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                         <span className="inline-flex items-center h-3.5 shrink-0">
                           <span
                             className={`block h-2.5 w-2.5 rotate-45 rounded-[1px] ${
-                              task.isExternal ? 'bg-pink-300' : 'bg-gray-900'
+                              task.isExternal ? 'bg-[#FFC2E8]' : 'bg-gray-900'
                             }`}
                           />
                         </span>
@@ -780,7 +780,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                           className={`text-[12px] bg-transparent border-none p-0 focus:ring-0 outline-none font-bold w-full ${
                             task.isMilestone
                               ? task.isExternal
-                                ? 'text-pink-300'
+                                ? 'text-[#FFC2E8]'
                                 : 'text-gray-900'
                               : 'text-gray-600'
                           }`}
@@ -865,7 +865,6 @@ const ListView: React.FC<ListViewProps> = ({
     'A single tear of joy was just shed over a spreadsheet.',
     'Please ensure all deadlines remain in their upright and locked positions.',
     'We are currently operating at maximum whimsy.',
-    'A designer is making something pop right now.',
     'Hold on, we are realigning the chakras of this Gantt chart.',
     'The strategic objective is currently wearing sunglasses.',
     'Just another day of turning caffeine into deliverables.',
@@ -1172,7 +1171,7 @@ const ListView: React.FC<ListViewProps> = ({
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    <p className="text-[#FF69B4] font-black tracking-tight leading-[1.15] text-[24px] line-clamp-2 text-left">
+                    <p className="text-[#FFC2E8] font-black tracking-tight leading-[1.15] text-[24px] line-clamp-2 text-left">
                       {globalMilestoneMessage}
                     </p>
                   </div>

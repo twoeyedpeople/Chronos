@@ -169,7 +169,7 @@ const AdminDashboard: React.FC = () => {
             </button>
             <button
               onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-2 px-[18px] py-[10px] bg-pink-400 text-white rounded-xl font-black text-[15px] leading-4 shadow-sm hover:scale-[1.02] transition-all active:scale-95 shrink-0"
+              className="flex items-center gap-2 px-[18px] py-[10px] bg-[#FFC2E8] text-gray-900 rounded-xl font-black text-[15px] leading-4 shadow-sm hover:scale-[1.02] transition-all active:scale-95 shrink-0"
             >
               <Plus size={15} strokeWidth={3} />
               <span className="uppercase tracking-tight">Spawn</span>
@@ -184,7 +184,7 @@ const AdminDashboard: React.FC = () => {
             placeholder="Search projects or clients..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-[54px] bg-white border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold text-gray-800 placeholder:text-slate-400 placeholder:font-bold focus:ring-4 focus:ring-pink-500/5 outline-none transition-all shadow-sm"
+            className="w-full h-[54px] bg-white border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold text-gray-800 placeholder:text-slate-400 placeholder:font-bold focus:ring-4 focus:ring-[#FFC2E8]/5 outline-none transition-all shadow-sm"
           />
         </div>
 
@@ -192,44 +192,44 @@ const AdminDashboard: React.FC = () => {
           {showGlobalMilestonesCard && (
             <div
               onClick={() => navigateToProject(`${window.location.origin}${window.location.pathname}?global=milestones`)}
-              className="group bg-[#FFF3FC] border border-pink-100 rounded-[24px] p-4 hover:shadow-2xl hover:shadow-pink-200/40 transition-all cursor-pointer relative overflow-hidden min-h-[146px]"
+              className="group bg-[#FFC2E8]/20 border border-[#FFC2E8] rounded-[24px] p-4 hover:shadow-2xl hover:shadow-[#FFC2E8]/40 transition-all cursor-pointer relative overflow-hidden min-h-[146px]"
             >
               <div className="flex flex-col gap-2 relative z-10 h-full">
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-3 min-w-0 flex-1 pr-3">
-                    <div className="w-9 h-9 rounded-2xl bg-white/80 flex items-center justify-center text-pink-500 group-hover:scale-110 transition-transform border border-pink-100 shrink-0">
+                    <div className="w-9 h-9 rounded-2xl bg-white/80 flex items-center justify-center text-[#FFC2E8] group-hover:scale-110 transition-transform border border-[#FFC2E8] shrink-0">
                       <Calendar size={18} />
                     </div>
                     <div className="min-w-0 pt-0.5">
-                      <h3 className="text-[16px] font-black text-gray-900 tracking-tight leading-tight mb-1 group-hover:text-pink-600 transition-colors truncate">
+                      <h3 className="text-[16px] font-black text-gray-900 tracking-tight leading-tight mb-1 group-hover:text-[#FFC2E8] transition-colors truncate">
                         All Milestones
                       </h3>
-                      <div className="flex items-center gap-2 text-pink-300">
+                      <div className="flex items-center gap-2 text-[#FFC2E8]">
                         <User size={12} />
                         <span className="text-[10px] font-black uppercase tracking-[0.18em] truncate">Agency View</span>
                       </div>
                     </div>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded-full bg-white/80 border border-pink-100 text-[8px] leading-none font-black uppercase tracking-[0.12em] text-pink-500">
+                  <span className="px-2.5 py-0.5 rounded-full bg-white/80 border border-[#FFC2E8] text-[8px] leading-none font-black uppercase tracking-[0.12em] text-[#FFC2E8]">
                     Read Only
                   </span>
                 </div>
 
-                <div className="mt-auto flex items-end justify-between pt-2 border-t border-pink-100/70">
-                  <div className="flex flex-col gap-1.5 text-pink-300">
+                <div className="mt-auto flex items-end justify-between pt-2 border-t border-[#FFC2E8]/70">
+                  <div className="flex flex-col gap-1.5 text-[#FFC2E8]">
                     <div className="flex items-center gap-2">
                       <Calendar size={11} />
                       <span className="text-[9px] font-bold">All active project milestones</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1 text-pink-500 font-black text-[9px] uppercase tracking-[0.16em] opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
+                  <div className="flex items-center gap-1 text-[#FFC2E8] font-black text-[9px] uppercase tracking-[0.16em] opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
                     <span>Open</span>
                     <ExternalLink size={10} />
                   </div>
                 </div>
               </div>
 
-              <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-pink-200/30 rounded-full blur-2xl group-hover:bg-pink-200/50 transition-colors" />
+              <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-[#FFC2E8]/30 rounded-full blur-2xl group-hover:bg-[#FFC2E8]/50 transition-colors" />
             </div>
           )}
 
@@ -239,7 +239,7 @@ const AdminDashboard: React.FC = () => {
               onClick={() => navigateToProject(`${window.location.origin}${window.location.pathname}?p=${project.id}&edit=1`)}
               className={`group border rounded-[24px] p-4 transition-all cursor-pointer relative overflow-hidden min-h-[146px] ${
                 project.name === FEATURED_PROJECT_NAME
-                  ? 'bg-[#F0FDF4] border-green-100 hover:shadow-2xl hover:shadow-green-200/40'
+                  ? 'bg-[#3DDA7B]/20 border-[#3DDA7B] hover:shadow-2xl hover:shadow-[#3DDA7B]/40'
                   : 'bg-white border-gray-100 hover:shadow-2xl hover:shadow-blue-500/5'
               }`}
             >
@@ -247,13 +247,13 @@ const AdminDashboard: React.FC = () => {
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-3 min-w-0 flex-1 pr-3">
                     <div className={`w-9 h-9 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shrink-0 ${
-                      project.name === FEATURED_PROJECT_NAME ? 'bg-green-50 text-green-500' : 'bg-blue-50 text-blue-500'
+                      project.name === FEATURED_PROJECT_NAME ? 'bg-[#3DDA7B]/20 text-[#3DDA7B]' : 'bg-blue-50 text-blue-500'
                     }`}>
                       <Folder size={18} />
                     </div>
                     <div className="min-w-0 pt-0.5">
                       <h3 className={`text-[16px] font-black text-gray-900 tracking-tight leading-tight mb-1 transition-colors truncate ${
-                        project.name === FEATURED_PROJECT_NAME ? 'group-hover:text-green-600' : 'group-hover:text-blue-600'
+                        project.name === FEATURED_PROJECT_NAME ? 'group-hover:text-[#3DDA7B]' : 'group-hover:text-blue-600'
                       }`}>
                         {project.name}
                       </h3>
@@ -282,7 +282,7 @@ const AdminDashboard: React.FC = () => {
                 </div>
 
                 <div className={`mt-auto flex items-end justify-between pt-2 ${
-                  project.name === FEATURED_PROJECT_NAME ? 'border-t border-green-100/70' : 'border-t border-gray-50'
+                  project.name === FEATURED_PROJECT_NAME ? 'border-t border-[#3DDA7B]/70' : 'border-t border-gray-50'
                 }`}>
                   <div className="flex flex-col gap-1.5 text-gray-400">
                     {(() => {
@@ -307,7 +307,7 @@ const AdminDashboard: React.FC = () => {
                     })()}
                   </div>
                   <div className={`flex items-center gap-1 font-black text-[9px] uppercase tracking-[0.16em] opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0 ${
-                    project.name === FEATURED_PROJECT_NAME ? 'text-green-600' : 'text-blue-500'
+                    project.name === FEATURED_PROJECT_NAME ? 'text-[#3DDA7B]' : 'text-blue-500'
                   }`}>
                     <span>Open</span>
                     <ExternalLink size={10} />
@@ -318,7 +318,7 @@ const AdminDashboard: React.FC = () => {
               {/* Decorative background */}
               <div className={`absolute -right-4 -bottom-4 w-24 h-24 rounded-full blur-2xl transition-colors ${
                 project.name === FEATURED_PROJECT_NAME
-                  ? 'bg-green-200/30 group-hover:bg-green-200/50'
+                  ? 'bg-[#3DDA7B]/30 group-hover:bg-[#3DDA7B]/50'
                   : 'bg-blue-500/5 group-hover:bg-blue-500/10'
               }`} />
             </div>

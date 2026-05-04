@@ -1353,7 +1353,7 @@ export default function App() {
 
       {/* Subtle Background Accents */}
       <div className="fixed top-0 right-0 -z-10 w-[500px] h-[500px] bg-blue-500/5 blur-[120px] rounded-full pointer-events-none" />
-      <div className="fixed bottom-0 left-0 -z-10 w-[500px] h-[500px] bg-pink-500/5 blur-[120px] rounded-full pointer-events-none" />
+      <div className="fixed bottom-0 left-0 -z-10 w-[500px] h-[500px] bg-[#FFC2E8]/5 blur-[120px] rounded-full pointer-events-none" />
     </div>
   );
 }

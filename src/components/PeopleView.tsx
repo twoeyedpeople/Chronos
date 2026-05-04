@@ -1,7 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Person } from '../types';
 import { Plus, Pencil, ArrowLeft, Trash2, X } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
+
+const PRESET_COLORS = [
+  '#FF7119', // Orange
+  '#FFC2E8', // Pink
+  '#FCB928', // Yellow
+  '#F3F3F3', // Gray/White
+  '#3DDA7B', // Green
+  '#A663FF', // Purple
+  '#95E6E6', // Cyan
+];
 
 interface PeopleViewProps {
   people: Person[];
@@ -21,12 +31,20 @@ const PeopleView: React.FC<PeopleViewProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPerson, setEditingPerson] = useState<Person | null>(null);
   const [name, setName] = useState('');
-  const [color, setColor] = useState('#3B82F6');
+  const [color, setColor] = useState(PRESET_COLORS[0]);
+
+  useEffect(() => {
+    people.forEach((person, index) => {
+      if (!PRESET_COLORS.includes(person.color)) {
+        onUpdatePerson(person.id, { color: PRESET_COLORS[index % PRESET_COLORS.length] });
+      }
+    });
+  }, [people, onUpdatePerson]);
 
   const openAddModal = () => {
     setEditingPerson(null);
     setName('');
-    setColor('#3B82F6');
+    setColor(PRESET_COLORS[0]);
     setIsModalOpen(true);
   };
 
@@ -80,7 +98,7 @@ const PeopleView: React.FC<PeopleViewProps> = ({
 
         <button
           onClick={openAddModal}
-          className="flex items-center gap-2 px-[18px] py-[10px] bg-pink-400 text-white rounded-xl font-black text-[15px] leading-4 shadow-sm hover:scale-[1.02] transition-all active:scale-95 shrink-0"
+          className="flex items-center gap-2 px-[18px] py-[10px] bg-[#FFC2E8] text-gray-900 rounded-xl font-black text-[15px] leading-4 shadow-sm hover:scale-[1.02] transition-all active:scale-95 shrink-0"
         >
           <Plus size={15} strokeWidth={3} />
           <span className="uppercase tracking-tight">Add Person</span>
@@ -170,23 +188,21 @@ const PeopleView: React.FC<PeopleViewProps> = ({
                   <label className="block text-[11px] font-black text-gray-500 uppercase tracking-widest mb-2">
                     Color
                   </label>
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="color"
-                      value={color}
-                      onChange={(e) => setColor(e.target.value)}
-                      className="w-12 h-12 rounded-xl border border-gray-200 cursor-pointer overflow-hidden p-1 bg-white shadow-sm hover:shadow transition-all"
-                    />
-                    <div className="flex-1">
-                      <input
-                        type="text"
-                        value={color}
-                        onChange={(e) => setColor(e.target.value)}
-                        className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold text-gray-800 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-mono"
-                        pattern="^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
-                        required
+                  <div className="flex items-center gap-3 flex-wrap">
+                    {PRESET_COLORS.map((presetColor) => (
+                      <button
+                        key={presetColor}
+                        type="button"
+                        onClick={() => setColor(presetColor)}
+                        className={`w-10 h-10 rounded-xl transition-all ${
+                          color === presetColor
+                            ? 'ring-4 ring-blue-500/20 scale-110 shadow-md'
+                            : 'hover:scale-105 border border-gray-100/50 shadow-sm'
+                        }`}
+                        style={{ backgroundColor: presetColor }}
+                        title={presetColor}
                       />
-                    </div>
+                    ))}
                   </div>
                 </div>
               </div>
