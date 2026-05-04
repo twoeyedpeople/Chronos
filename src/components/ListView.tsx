@@ -292,7 +292,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
               )}
             </button>
           )}
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0 flex-1 flex items-center gap-2">
             <input
               type="text"
               value={isGlobalMilestonesView && task.sourceProjectName ? `${task.sourceProjectName} / ${task.name}` : task.name}
@@ -311,6 +311,18 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
               }`}
               placeholder={isFolder ? "Folder name..." : "Task name..."}
             />
+            {isGlobalMilestonesView && task.assigneeId && (() => {
+              const assignee = people.find(p => p.id === task.assigneeId);
+              if (!assignee) return null;
+              return (
+                <div 
+                  className="px-1.5 py-0.5 rounded text-[9px] font-bold text-white shrink-0 shadow-sm"
+                  style={{ backgroundColor: assignee.color }}
+                >
+                  {assignee.name}
+                </div>
+              );
+            })()}
           </div>
           {!isFolder && !readOnly && (
             <>
