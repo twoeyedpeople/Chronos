@@ -295,11 +295,19 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
           <div className="min-w-0 flex-1 flex items-center gap-2">
             {isGlobalMilestonesView ? (
               <span
-                className={`truncate p-0 leading-tight ${
+                onClick={() => {
+                  if (task.sourceProjectId) {
+                    window.location.assign(`${window.location.origin}${window.location.pathname}?p=${task.sourceProjectId}`);
+                  }
+                }}
+                className={`truncate p-0 leading-tight transition-colors ${
+                  task.sourceProjectId ? 'cursor-pointer hover:text-blue-600' : ''
+                } ${
                   isGlobalMilestonesKioskView ? 'text-[17px]' : 'text-[13px]'
                 } ${isFolder ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-800'} ${
                   task.isDone ? 'opacity-50' : ''
                 }`}
+                title={task.sourceProjectId ? "Go to project timeline" : undefined}
               >
                 {task.sourceProjectName ? `${task.sourceProjectName} / ${task.name}` : task.name}
               </span>
