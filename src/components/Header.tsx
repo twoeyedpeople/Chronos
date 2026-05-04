@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, RotateCcw, Share2, ZoomIn, ZoomOut, LayoutList, GanttChart, Download, SlidersHorizontal, User } from 'lucide-react';
+import { Home, RotateCcw, Share2, ZoomIn, ZoomOut, LayoutList, GanttChart, Download, SlidersHorizontal, User, Search } from 'lucide-react';
 import { MainViewMode, ViewMode } from '../types';
 
 interface HeaderProps {
@@ -146,13 +146,32 @@ const Header: React.FC<HeaderProps> = ({
         )}
 
         {showFiltersButton && (
-          <button
-            onClick={onOpenFilters}
-            className="w-9 h-9 rounded-xl border border-gray-100 bg-gray-50 text-gray-500 hover:text-gray-800 hover:bg-white hover:shadow-sm transition-all flex items-center justify-center relative shrink-0"
-            title="Filters"
-          >
-            <SlidersHorizontal size={15} />
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => {
+                if (hideMainViewToggle) {
+                  window.location.assign(`${window.location.origin}${window.location.pathname}?global=milestones`);
+                } else {
+                  window.location.assign(`${window.location.origin}${window.location.pathname}?global=milestones-kiosk`);
+                }
+              }}
+              className={`w-9 h-9 rounded-xl border border-gray-100 flex items-center justify-center relative shrink-0 transition-all ${
+                hideMainViewToggle
+                  ? 'bg-blue-50 text-blue-600 shadow-sm border-blue-100'
+                  : 'bg-gray-50 text-gray-500 hover:text-gray-800 hover:bg-white hover:shadow-sm'
+              }`}
+              title={hideMainViewToggle ? "Exit Kiosk View" : "Kiosk View"}
+            >
+              <Search size={15} />
+            </button>
+            <button
+              onClick={onOpenFilters}
+              className="w-9 h-9 rounded-xl border border-gray-100 bg-gray-50 text-gray-500 hover:text-gray-800 hover:bg-white hover:shadow-sm transition-all flex items-center justify-center relative shrink-0"
+              title="Filters"
+            >
+              <SlidersHorizontal size={15} />
+            </button>
+          </div>
         )}
       </div>
 
