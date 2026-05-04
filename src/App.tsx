@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Project, Task, ViewMode, MainViewMode } from './types';
+import { Project, Task, ViewMode, MainViewMode, Person } from './types';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import GanttView from './components/GanttView';
 import ListView from './components/ListView';
+import PeopleView from './components/PeopleView';
 import ShareModal from './components/ShareModal';
 import { v4 as uuidv4 } from 'uuid';
 import { format, parseISO, addBusinessDays, differenceInBusinessDays, differenceInDays, addDays, eachDayOfInterval, startOfDay } from 'date-fns';
 import AdminDashboard from './components/AdminDashboard';
-import { collection, doc, setDoc, onSnapshot, getDocFromServer, getDocsFromServer, query, updateDoc, orderBy } from 'firebase/firestore';
+import { collection, doc, setDoc, onSnapshot, getDocFromServer, getDocsFromServer, query, updateDoc, orderBy, deleteDoc } from 'firebase/firestore';
 import { db, auth } from './firebase';
 import firebaseConfig from '../firebase-applet-config.json';
 import { jsPDF } from 'jspdf';
@@ -202,6 +203,7 @@ export default function App() {
     ((import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env?.VITE_DASHBOARD_PASSWORD ?? '').trim();
   const dashboardGateEnabled = dashboardPassword.length > 0;
   const [project, setProject] = useState<Project>(DEFAULT_PROJECT);
+  const [people, setPeople] = useState<Person[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>('day');
   const [mainViewMode, setMainViewMode] = useState<MainViewMode>('list');
   const [isMobile, setIsMobile] = useState(false);
@@ -316,6 +318,11 @@ export default function App() {
     const canEdit = params.get('edit') === '1';
     const showGlobalMilestones = globalView === GLOBAL_MILESTONES_ROUTE || globalView === GLOBAL_MILESTONES_KIOSK_ROUTE;
     const showGlobalMilestonesKiosk = globalView === GLOBAL_MILESTONES_KIOSK_ROUTE;
+    const initialView = params.get('view');
+
+    if (initialView === 'people') {
+      setMainViewMode('people');
+    }
 
     setProjectId(showGlobalMilestones ? null : pId);
     setIsGlobalMilestonesView(showGlobalMilestones);
@@ -432,6 +439,57 @@ export default function App() {
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [hasUnsavedChanges, isReadOnly]);
+
+  useEffect(() => {
+    if (!isFirebaseConfigured) return;
+
+    const q = query(collection(db, 'people'), orderBy('createdAt', 'asc'));
+    const unsub = onSnapshot(q, (snapshot) => {
+      const peopleData = snapshot.docs.map(doc => ({
+        ...doc.data(),
+        id: doc.id
+      })) as Person[];
+      setPeople(peopleData);
+
+      if (snapshot.empty && peopleData.length === 0) {
+        const defaults = [
+          { id: uuidv4(), name: 'David', color: '#3B82F6', createdAt: Date.now() },
+          { id: uuidv4(), name: 'Erik', color: '#10B981', createdAt: Date.now() + 1 },
+          { id: uuidv4(), name: 'Josh', color: '#F59E0B', createdAt: Date.now() + 2 },
+          { id: uuidv4(), name: 'Alice', color: '#8B5CF6', createdAt: Date.now() + 3 },
+        ];
+        defaults.forEach(person => setDoc(doc(db, 'people', person.id), person));
+      }
+    }, (error) => {
+      handleFirestoreError(error, OperationType.LIST, 'people');
+    });
+
+    return () => unsub();
+  }, []);
+
+  const handleAddPerson = async (person: Person) => {
+    try {
+      await setDoc(doc(db, 'people', person.id), person);
+    } catch (error) {
+      handleFirestoreError(error, OperationType.CREATE, `people/${person.id}`);
+    }
+  };
+
+  const handleUpdatePerson = async (id: string, updates: Partial<Person>) => {
+    try {
+      await updateDoc(doc(db, 'people', id), updates);
+    } catch (error) {
+      handleFirestoreError(error, OperationType.UPDATE, `people/${id}`);
+    }
+  };
+
+  const handleDeletePerson = async (id: string) => {
+    try {
+      await deleteDoc(doc(db, 'people', id));
+    } catch (error) {
+      handleFirestoreError(error, OperationType.DELETE, `people/${id}`);
+    }
+  };
 
   const applyProjectChange = (updater: (prev: Project) => Project) => {
     if (isReadOnly) return;
@@ -1034,7 +1092,7 @@ export default function App() {
     );
   }
 
-  if (!projectId && !isGlobalMilestonesView) {
+  if (!projectId && !isGlobalMilestonesView && mainViewMode !== 'people') {
     if (dashboardGateEnabled && !isDashboardUnlocked) {
       return (
         <div className="min-h-screen bg-gray-50 font-sans flex items-center justify-center p-6">
@@ -1101,6 +1159,24 @@ export default function App() {
     }
 
     return <AdminDashboard />;
+  }
+
+  if (mainViewMode === 'people') {
+    return (
+      <PeopleView
+        people={people}
+        onAddPerson={handleAddPerson}
+        onUpdatePerson={handleUpdatePerson}
+        onDeletePerson={handleDeletePerson}
+        onClose={() => {
+          if (projectId || isGlobalMilestonesView) {
+            setMainViewMode('list');
+          } else {
+            window.location.assign(window.location.origin + window.location.pathname);
+          }
+        }}
+      />
+    );
   }
 
   const shareUrl = `${window.location.origin}${window.location.pathname}?p=${projectId}`;

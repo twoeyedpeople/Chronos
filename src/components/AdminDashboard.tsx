@@ -159,13 +159,22 @@ const AdminDashboard: React.FC = () => {
             </div>
           </div>
           
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 px-[18px] py-[10px] bg-pink-400 text-white rounded-xl font-black text-[15px] leading-4 shadow-sm hover:scale-[1.02] transition-all active:scale-95 shrink-0"
-          >
-            <Plus size={15} strokeWidth={3} />
-            <span className="uppercase tracking-tight">Spawn</span>
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigateToProject(`${window.location.origin}${window.location.pathname}?view=people`)}
+              className="w-10 h-10 rounded-full border border-gray-100 bg-white text-gray-400 hover:text-blue-600 hover:shadow-sm transition-all flex items-center justify-center shrink-0"
+              title="Manage People"
+            >
+              <User size={18} />
+            </button>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="flex items-center gap-2 px-[18px] py-[10px] bg-pink-400 text-white rounded-xl font-black text-[15px] leading-4 shadow-sm hover:scale-[1.02] transition-all active:scale-95 shrink-0"
+            >
+              <Plus size={15} strokeWidth={3} />
+              <span className="uppercase tracking-tight">Spawn</span>
+            </button>
+          </div>
         </div>
 
         <div className="relative mb-6">

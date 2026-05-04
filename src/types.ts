@@ -28,4 +28,11 @@ export interface Project {
 }
 
 export type ViewMode = 'day' | 'week' | 'month';
-export type MainViewMode = 'list' | 'gantt';
+export type MainViewMode = 'list' | 'gantt' | 'people';
+
+export interface Person {
+  id: string;
+  name: string;
+  color: string;
+  createdAt: number;
+}

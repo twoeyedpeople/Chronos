@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, RotateCcw, Share2, ZoomIn, ZoomOut, LayoutList, GanttChart, Download, SlidersHorizontal } from 'lucide-react';
+import { Home, RotateCcw, Share2, ZoomIn, ZoomOut, LayoutList, GanttChart, Download, SlidersHorizontal, User } from 'lucide-react';
 import { MainViewMode, ViewMode } from '../types';
 
 interface HeaderProps {
@@ -116,6 +116,20 @@ const Header: React.FC<HeaderProps> = ({
               <span>Gantt</span>
             </button>
           </div>
+        )}
+
+        {!isMobile && !hideMainViewToggle && (
+          <button
+            onClick={() => onMainViewModeChange('people')}
+            className={`w-9 h-9 rounded-full border border-gray-100 flex items-center justify-center transition-all shrink-0 ${
+              mainViewMode === 'people'
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'bg-gray-50/80 text-gray-400 hover:text-gray-700 hover:bg-white hover:shadow-sm'
+            }`}
+            title="Manage People"
+          >
+            <User size={15} />
+          </button>
         )}
 
         {showFiltersButton && (
