@@ -57,7 +57,7 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <header className="h-20 px-4 md:px-8 bg-white/95 backdrop-blur-2xl border-b border-gray-100 flex items-center justify-between sticky top-0 z-50 shadow-sm gap-4 overflow-x-auto no-scrollbar">
       <div className="flex items-center gap-4 md:gap-5 shrink-0">
-        <div className="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center shrink-0">
+        <div className="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-white border border-gray-100 flex items-center justify-center shrink-0">
           <img
             src="/apple-touch-icon.png"
             alt="Two-Eyed People"
