@@ -222,7 +222,7 @@ const Header: React.FC<HeaderProps> = ({
               </span>
               <button
                 onClick={onDownloadPdf}
-                className="w-8 h-8 bg-[#C21A88] rounded-xl transition-all shadow-sm hover:shadow-md active:scale-95 shrink-0 flex items-center justify-center hover:opacity-90 overflow-hidden"
+                className="w-8 h-8 bg-[#FFC2E8] rounded-xl transition-all shadow-sm hover:shadow-md active:scale-95 shrink-0 flex items-center justify-center hover:opacity-90 overflow-hidden"
                 title="Download PDF"
               >
                 <img 
