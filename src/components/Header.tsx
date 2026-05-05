@@ -82,7 +82,7 @@ const Header: React.FC<HeaderProps> = ({
               value={clientName}
               onChange={(e) => onClientNameChange(e.target.value)}
               readOnly={readOnly}
-              className="text-[16px] font-black text-gray-400 bg-transparent border-none focus:ring-0 placeholder-gray-200 uppercase tracking-normal p-0 leading-none min-w-[80px] max-w-[220px]"
+              className="text-[12px] font-black text-gray-400 bg-transparent border-none focus:ring-0 placeholder-gray-200 uppercase tracking-normal p-0 leading-none min-w-[80px] max-w-[220px]"
               placeholder="Client..."
             />
           )}
@@ -222,7 +222,7 @@ const Header: React.FC<HeaderProps> = ({
               </span>
               <button
                 onClick={onDownloadPdf}
-                className="w-8 h-8 bg-black rounded-xl transition-all shadow-sm hover:shadow-md active:scale-95 shrink-0 flex items-center justify-center hover:opacity-90"
+                className="w-8 h-8 bg-[#C21A88] rounded-xl transition-all shadow-sm hover:shadow-md active:scale-95 shrink-0 flex items-center justify-center hover:opacity-90 overflow-hidden"
                 title="Download PDF"
               >
                 <img 
