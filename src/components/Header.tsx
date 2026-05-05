@@ -67,7 +67,7 @@ const Header: React.FC<HeaderProps> = ({
           />
         </div>
 
-        <div className="flex flex-col items-start justify-center gap-0 min-w-[170px] -mt-0.5">
+        <div className="flex flex-col items-start justify-center gap-0 min-w-[170px] -mt-0.5 -ml-[15px]">
           <input
             type="text"
             value={projectName}
@@ -82,7 +82,7 @@ const Header: React.FC<HeaderProps> = ({
               value={clientName}
               onChange={(e) => onClientNameChange(e.target.value)}
               readOnly={readOnly}
-              className="-mt-1 text-[14px] font-arial font-medium text-gray-400 bg-transparent border-none focus:ring-0 placeholder-gray-200 tracking-normal p-0 leading-tight min-w-[80px] max-w-[220px]"
+              className="-mt-0.5 text-[14px] font-arial font-medium text-gray-400 bg-transparent border-none focus:ring-0 placeholder-gray-200 tracking-normal p-0 leading-tight min-w-[80px] max-w-[220px]"
               placeholder="Client..."
             />
           )}
@@ -263,10 +263,10 @@ const Header: React.FC<HeaderProps> = ({
             <button 
               onClick={onShare}
               disabled={isSaving}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-900 hover:bg-black text-white rounded-xl text-xs font-bold transition-all shadow-lg hover:shadow-xl active:scale-95 disabled:opacity-50 whitespace-nowrap"
+              className="flex items-center gap-2 px-4 py-2 bg-[#FFC2E8] hover:bg-[#ffb0df] text-[#C21A88] rounded-xl font-davinci text-[15px] transition-all shadow-lg hover:shadow-xl active:scale-95 disabled:opacity-50 whitespace-nowrap"
             >
               {isSaving ? (
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-[#C21A88]/30 border-t-[#C21A88] rounded-full animate-spin" />
               ) : (
                 <Share2 size={14} />
               )}

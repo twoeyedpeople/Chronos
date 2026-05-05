@@ -123,7 +123,7 @@ const PeopleView: React.FC<PeopleViewProps> = ({
             <ArrowLeft size={18} />
           </button>
           <div>
-            <h1 className="text-[20px] leading-tight font-black text-gray-900 tracking-tight">People Directory</h1>
+            <h1 className="text-[29px] leading-10 font-davinci font-normal text-gray-900 tracking-[-0.045em]">People</h1>
             <p className="text-gray-400 font-medium text-[11px] uppercase tracking-widest mt-0.5">Manage Team Resources</p>
           </div>
         </div>

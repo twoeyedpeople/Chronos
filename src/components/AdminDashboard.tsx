@@ -169,7 +169,7 @@ const AdminDashboard: React.FC = () => {
             </button>
             <button
               onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-2 px-[18px] py-[10px] bg-[#FFC2E8] text-[#C21A88] rounded-xl font-black text-[15px] leading-4 shadow-sm hover:scale-[1.02] transition-all active:scale-95 shrink-0"
+              className="flex items-center gap-2 px-[18px] py-[10px] bg-[#FFC2E8] text-[#C21A88] rounded-xl font-davinci text-[15px] leading-4 shadow-sm hover:scale-[1.02] transition-all active:scale-95 shrink-0"
             >
               <Plus size={15} strokeWidth={3} />
               <span className="uppercase tracking-tight">Add</span>
@@ -184,7 +184,7 @@ const AdminDashboard: React.FC = () => {
             placeholder="Search projects or clients..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-[54px] bg-white border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold text-gray-800 placeholder:text-slate-400 placeholder:font-bold focus:ring-4 focus:ring-[#FFC2E8]/5 outline-none transition-all shadow-sm"
+            className="w-full h-[54px] bg-white border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-sm font-medium text-gray-800 placeholder:text-slate-400 focus:ring-4 focus:ring-[#FFC2E8]/5 outline-none transition-all shadow-sm"
           />
         </div>
 

@@ -631,7 +631,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                     }
                   }}
                   readOnly={readOnly}
-                  className={`bg-transparent border-none focus:ring-0 text-[14px] w-full p-0 leading-tight ${isFolder ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-800'} ${
+                  className={`bg-transparent border-none focus:ring-0 text-[14px] w-full p-0 leading-tight ${isFolder ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-medium text-gray-800'} ${
                     task.isDone && (!readOnly || isGlobalMilestonesView) ? 'opacity-30 !text-[#F3F3F3]' : ''
                   }`}
                   placeholder={isFolder ? "Folder name..." : "Task name..."}
@@ -1189,8 +1189,8 @@ const ListView: React.FC<ListViewProps> = ({
 
                     <div className="flex items-center gap-4 w-full">
                       <div className="flex items-baseline gap-1.5 min-w-[102px]">
-                        <span className="text-[10px] font-medium text-gray-500">Working days:</span>
-                        <span className="text-[10px] font-black text-gray-900">{totalBusinessDays}</span>
+                        <span className="text-[15px] font-medium text-gray-500">Working days:</span>
+                        <span className="text-[15px] font-black text-gray-900">{totalBusinessDays}</span>
                       </div>
 
                       <div className="flex items-center gap-3 min-w-0">
