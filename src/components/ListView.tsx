@@ -57,8 +57,8 @@ const AssigneeDropdown: React.FC<{ task: Task, people: Person[], onAssign: (pers
           assignee 
             ? 'h-[20px] px-2 rounded-md border-transparent text-[9px] font-bold text-white shadow-sm hover:opacity-90' 
             : 'h-[20px] px-2 rounded-md border-gray-200 bg-white text-[9px] font-bold text-gray-400 hover:border-gray-300 hover:text-gray-500 uppercase'
-        } ${task.isDone ? 'opacity-30 grayscale' : ''}`}
-        style={assignee ? { backgroundColor: assignee.color } : {}}
+        }`}
+        style={assignee ? { backgroundColor: task.isDone ? '#E8E8E8' : assignee.color } : {}}
       >
         {assignee ? assignee.name : 'ASSIGN'}
       </button>
@@ -229,13 +229,13 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
           <div 
             {...attributes} 
             {...listeners}
-            className="p-1 text-gray-300 hover:text-gray-500 cursor-grab active:cursor-grabbing rounded transition-colors shrink-0"
+            className={`p-1 ${task.isDone ? '!text-[#E8E8E8]' : 'text-gray-300 hover:text-gray-500'} cursor-grab active:cursor-grabbing rounded transition-colors shrink-0`}
           >
             <GripVertical size={12} />
           </div>
         </div>
 
-        <div className="w-8 text-[9px] font-black text-gray-300 shrink-0 text-center">
+        <div className={`w-8 text-[9px] font-black ${task.isDone ? '!text-[#E8E8E8]' : 'text-gray-300'} shrink-0 text-center`}>
           {index + 1}
         </div>
 
@@ -264,7 +264,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
               disabled={readOnly ? !canToggleDoneFromDot : !task.parentId}
               className={`w-6 h-6 rounded-full border flex items-center justify-center shrink-0 transition-all group/dot ${
                 task.isDone
-                  ? 'border-gray-200 text-gray-300'
+                  ? 'border-[#E8E8E8] text-[#E8E8E8]'
                   : task.isExternal
                     ? 'border-[#FFC2E8] text-[#FFC2E8]'
                     : 'border-blue-100 text-[#5F7CFF]'
@@ -282,13 +282,13 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
               {task.parentId && !readOnly && !canToggleDoneFromDot ? (
                 <>
                   <div className={`w-1.5 h-1.5 rounded-full group-hover/dot:hidden ${
-                    task.isDone ? 'bg-gray-300' : task.isExternal ? 'bg-[#FFC2E8]' : 'bg-[#5F7CFF]'
+                    task.isDone ? 'bg-[#E8E8E8]' : task.isExternal ? 'bg-[#FFC2E8]' : 'bg-[#5F7CFF]'
                   }`} />
-                  <ArrowLeft size={11} className="hidden group-hover/dot:block text-[#5F7CFF]" />
+                  <ArrowLeft size={11} className={`hidden group-hover/dot:block ${task.isDone ? 'text-[#E8E8E8]' : 'text-[#5F7CFF]'}`} />
                 </>
               ) : (
                 <div className={`w-1.5 h-1.5 rounded-full ${
-                  task.isDone ? 'bg-gray-300' : task.isExternal ? 'bg-[#FFC2E8]' : 'bg-[#5F7CFF]'
+                  task.isDone ? 'bg-[#E8E8E8]' : task.isExternal ? 'bg-[#FFC2E8]' : 'bg-[#5F7CFF]'
                 }`} />
               )}
             </button>
@@ -306,7 +306,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                 } ${
                   isGlobalMilestonesKioskView ? 'text-[17px]' : 'text-[13px]'
                 } ${isFolder ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-800'} ${
-                  task.isDone ? 'opacity-30 !text-[#F3F3F3]' : ''
+                  task.isDone ? '!text-[#E8E8E8]' : ''
                 }`}
                 title={task.sourceProjectId ? "Go to project timeline" : undefined}
               >
@@ -327,7 +327,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                 className={`bg-transparent border-none focus:ring-0 w-full truncate p-0 leading-tight ${
                   isGlobalMilestonesKioskView ? 'text-[17px]' : 'text-[13px]'
                 } ${isFolder ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-800'} ${
-                  task.isDone && !readOnly ? 'opacity-30 !text-[#F3F3F3]' : ''
+                  task.isDone && !readOnly ? '!text-[#E8E8E8]' : ''
                 }`}
                 placeholder={isFolder ? "Folder name..." : "Task name..."}
               />
@@ -337,8 +337,8 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
               if (!assignee) return null;
               return (
                 <div 
-                  className={`px-1.5 py-0.5 rounded text-[9px] font-bold text-white shrink-0 shadow-sm ${task.isDone ? 'opacity-30 grayscale' : ''}`}
-                  style={{ backgroundColor: assignee.color }}
+                  className={`px-1.5 py-0.5 rounded text-[9px] font-bold text-white shrink-0 shadow-sm`}
+                  style={{ backgroundColor: task.isDone ? '#E8E8E8' : assignee.color }}
                 >
                   {assignee.name}
                 </div>
@@ -423,7 +423,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
           <>
             <div className={`${isGlobalMilestonesKioskView ? 'w-48' : 'w-32'} px-2 shrink-0`}>
               {isGlobalMilestonesView ? (
-                <div className={`${isGlobalMilestonesKioskView ? 'text-[14px]' : 'text-[11px]'} text-gray-600 font-bold w-full tabular-nums whitespace-nowrap`}>
+                <div className={`${isGlobalMilestonesKioskView ? 'text-[14px]' : 'text-[11px]'} ${task.isDone ? '!text-[#E8E8E8]' : 'text-gray-600'} font-bold w-full tabular-nums whitespace-nowrap`}>
                   {globalMilestoneDateNode}
                 </div>
               ) : (
@@ -435,7 +435,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                     ...(task.isMilestone ? { endDate: e.target.value } : {}),
                   })}
                   disabled={readOnly}
-                  className="text-[11px] bg-white border border-gray-100 rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500/10 outline-none text-gray-600 font-bold w-full"
+                  className={`text-[11px] bg-white border rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500/10 outline-none font-bold w-full ${task.isDone ? '!text-[#E8E8E8] border-[#E8E8E8]' : 'text-gray-600 border-gray-100'}`}
                 />
               )}
             </div>
@@ -497,7 +497,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
               <>
                 <div className="w-32 px-2 shrink-0">
                   {readOnly ? (
-                    <div className="text-[11px] text-gray-600 font-bold w-full tabular-nums">
+                    <div className={`text-[11px] ${task.isDone ? '!text-[#E8E8E8]' : 'text-gray-600'} font-bold w-full tabular-nums`}>
                       {format(parseISO(task.endDate), 'dd MMM yyyy')}
                     </div>
                   ) : (
@@ -506,7 +506,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                       value={task.endDate}
                       onChange={(e) => onUpdateTask(task.id, { endDate: e.target.value })}
                       disabled={readOnly}
-                      className="text-[11px] bg-white border border-gray-100 rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500/10 outline-none text-gray-600 font-bold w-full"
+                      className={`text-[11px] bg-white border rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500/10 outline-none font-bold w-full ${task.isDone ? '!text-[#E8E8E8] border-[#E8E8E8]' : 'text-gray-600 border-gray-100'}`}
                     />
                   )}
                 </div>
@@ -518,7 +518,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                         value={dependencyIndex}
                         onChange={(e) => handleDependencyChange(e.target.value)}
                         disabled={readOnly}
-                        className="text-[11px] bg-white border border-gray-100 rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500/10 outline-none text-gray-600 font-bold w-full text-center"
+                        className={`text-[11px] bg-white border rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500/10 outline-none font-bold w-full text-center ${task.isDone ? '!text-[#E8E8E8] border-[#E8E8E8]' : 'text-gray-600 border-gray-100'}`}
                         placeholder="-"
                       />
                   </div>
@@ -528,7 +528,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
           </>
         ) : (
           <div className="flex-1 flex items-center justify-center">
-            <span className="text-[9px] font-black text-gray-300 uppercase tracking-[0.2em]">Folder (No Dates)</span>
+            <span className={`text-[9px] font-black ${task.isDone ? '!text-[#E8E8E8]' : 'text-gray-300'} uppercase tracking-[0.2em]`}>Folder (No Dates)</span>
           </div>
         )}
 
