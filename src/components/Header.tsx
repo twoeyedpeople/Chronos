@@ -222,13 +222,13 @@ const Header: React.FC<HeaderProps> = ({
               </span>
               <button
                 onClick={onDownloadPdf}
-                className="flex items-center justify-center w-8 h-8 bg-gray-950 hover:bg-black text-white rounded-xl transition-all shadow-lg hover:shadow-xl active:scale-95 shrink-0"
+                className="w-8 h-8 rounded-xl transition-all shadow-lg hover:shadow-xl active:scale-95 shrink-0 overflow-hidden hover:opacity-90"
                 title="Download PDF"
               >
                 <img 
                   src="/download-icon.png" 
                   alt="Download" 
-                  className="w-[14px] h-[14px] object-contain mix-blend-screen" 
+                  className="w-full h-full object-contain" 
                 />
               </button>
             </>
