@@ -953,10 +953,9 @@ export default function App() {
       const margin = 26;
       const contentWidth = pageWidth - margin * 2;
       const contentHeight = pageHeight - margin * 2;
-      const softBlue = [95, 124, 255] as const;
-      const softPink = [255, 243, 252] as const;
-      const softPinkAccent = [249, 168, 212] as const;
-      const softBlueFill = [233, 238, 255] as const;
+      const brandPinkBg = [255, 237, 249] as const;
+      const brandPinkLight = [255, 194, 232] as const;
+      const brandPinkDark = [194, 26, 136] as const;
 
       const drawDiamond = (
         centerX: number,
@@ -990,13 +989,18 @@ export default function App() {
       };
 
       const drawPageHeading = (subhead: string) => {
+        const headingName = isGlobalMilestonesView ? 'Chronos' : project.name;
+        const headingSub = isGlobalMilestonesView ? 'Organisational Oracle' : project.clientName;
+
         pdf.setTextColor(17, 24, 39);
         pdf.setFont('helvetica', 'bold');
-        pdf.setFontSize(24);
-        pdf.text(project.name, margin, margin + 10);
+        pdf.setFontSize(28);
+        pdf.text(headingName, margin, margin + 12);
+        
         pdf.setTextColor(156, 163, 175);
+        pdf.setFont('helvetica', 'normal');
         pdf.setFontSize(10);
-        pdf.text(`${project.clientName} / ${subhead.toUpperCase()}`, margin, margin + 28);
+        pdf.text(`${headingSub} / ${subhead.toUpperCase()}`, margin, margin + 30);
       };
 
       const listTop = margin + 48;
@@ -1040,7 +1044,7 @@ export default function App() {
       exportTasksData.forEach(({ task, depth, index }, rowIndex) => {
         const y = listTop + listRowHeight * (rowIndex + 1);
         if (task.isExternal) {
-          pdf.setFillColor(...softPink);
+          pdf.setFillColor(...brandPinkBg);
           pdf.roundedRect(margin + 1, y, contentWidth - 2, listRowHeight, 0, 0, 'F');
         } else {
           pdf.setFillColor(255, 255, 255);
@@ -1049,9 +1053,14 @@ export default function App() {
 
         pdf.setDrawColor(243, 244, 246);
         pdf.line(margin, y, margin + contentWidth, y);
-        pdf.setFont('helvetica', 'bold');
+        pdf.setFont('helvetica', 'normal');
         pdf.setFontSize(listFontSize);
-        pdf.setTextColor(55, 65, 81);
+        
+        if (task.isExternal) {
+          pdf.setTextColor(...brandPinkDark);
+        } else {
+          pdf.setTextColor(55, 65, 81);
+        }
 
         let colX = margin;
         const taskLabel = isGlobalMilestonesView && task.sourceProjectName
@@ -1080,7 +1089,7 @@ export default function App() {
                 colX + col.width / 2,
                 y + listRowHeight / 2 + 0.5,
                 Math.max(8, Math.min(11, listRowHeight - 5)),
-                task.isExternal ? softPinkAccent : ([17, 24, 39] as const),
+                task.isExternal ? brandPinkDark : ([17, 24, 39] as const),
               );
             } else {
               pdf.text(value, colX + col.width / 2, textY, { align: 'center' });
