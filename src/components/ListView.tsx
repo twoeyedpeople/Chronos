@@ -306,7 +306,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                 } ${
                   isGlobalMilestonesKioskView ? 'text-[17px]' : 'text-[13px]'
                 } ${isFolder ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-800'} ${
-                  task.isDone ? 'opacity-30 !text-gray-400' : ''
+                  task.isDone ? 'opacity-30 !text-[#F3F3F3]' : ''
                 }`}
                 title={task.sourceProjectId ? "Go to project timeline" : undefined}
               >
@@ -327,7 +327,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                 className={`bg-transparent border-none focus:ring-0 w-full truncate p-0 leading-tight ${
                   isGlobalMilestonesKioskView ? 'text-[17px]' : 'text-[13px]'
                 } ${isFolder ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-800'} ${
-                  task.isDone && !readOnly ? 'opacity-30 !text-gray-400' : ''
+                  task.isDone && !readOnly ? 'opacity-30 !text-[#F3F3F3]' : ''
                 }`}
                 placeholder={isFolder ? "Folder name..." : "Task name..."}
               />
@@ -634,7 +634,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                   }}
                   readOnly={readOnly}
                   className={`bg-transparent border-none focus:ring-0 text-[14px] w-full p-0 leading-tight ${isFolder ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-800'} ${
-                    task.isDone && (!readOnly || isGlobalMilestonesView) ? 'opacity-30 !text-gray-400' : ''
+                    task.isDone && (!readOnly || isGlobalMilestonesView) ? 'opacity-30 !text-[#F3F3F3]' : ''
                   }`}
                   placeholder={isFolder ? "Folder name..." : "Task name..."}
                 />

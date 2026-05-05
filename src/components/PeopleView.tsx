@@ -7,7 +7,7 @@ const PRESET_COLORS = [
   '#FF7119', // Orange
   '#FFC2E8', // Pink
   '#FCB928', // Yellow
-  '#F3F3F3', // Gray/White
+  '#9CA3AF', // Gray
   '#3DDA7B', // Green
   '#A663FF', // Purple
   '#95E6E6', // Cyan
