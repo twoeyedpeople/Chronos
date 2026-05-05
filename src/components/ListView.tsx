@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Task, Person } from '../types';
 import { format, parseISO, addBusinessDays, differenceInBusinessDays, isWeekend, startOfDay, addDays, startOfWeek, endOfWeek, addWeeks } from 'date-fns';
-import { Calendar, Trash2, Plus, ChevronRight, ChevronDown, GripVertical, FolderMinus, ArrowLeft } from 'lucide-react';
+import { Calendar, Trash2, Plus, ChevronRight, ChevronDown, GripVertical, FolderMinus, ArrowLeft, Check } from 'lucide-react';
 
 import {
   DndContext,
@@ -357,34 +357,32 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                 />
                 <span>Done</span>
               </label>
-              <label className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[9px] font-black text-gray-400 uppercase tracking-widest shrink-0">
-                <input
-                  type="checkbox"
-                  checked={Boolean(task.isMilestone)}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      onUpdateTask(task.id, {
-                        isMilestone: true,
-                        endDate: task.startDate,
-                      });
-                      setDaysInput('0');
-                    } else {
-                      const newEndDate = format(addBusinessDays(parseISO(task.startDate), 0), 'yyyy-MM-dd');
-                      onUpdateTask(task.id, {
-                        isMilestone: false,
-                        endDate: newEndDate,
-                      });
-                      setDaysInput('1');
-                    }
-                  }}
-                  disabled={readOnly}
-                  className="w-3 h-3 rounded border-gray-200 accent-gray-700"
-                />
-                <div className="flex items-center gap-1" title="Milestone">
-                  <span className="block h-2.5 w-2.5 rotate-45 rounded-[1px] bg-gray-900/50 ml-0.5" />
-                  <span>?</span>
+              <button
+                type="button"
+                onClick={() => {
+                  if (!task.isMilestone) {
+                    onUpdateTask(task.id, {
+                      isMilestone: true,
+                      endDate: task.startDate,
+                    });
+                    setDaysInput('0');
+                  } else {
+                    const newEndDate = format(addBusinessDays(parseISO(task.startDate), 0), 'yyyy-MM-dd');
+                    onUpdateTask(task.id, {
+                      isMilestone: false,
+                      endDate: newEndDate,
+                    });
+                    setDaysInput('1');
+                  }
+                }}
+                disabled={readOnly}
+                className="mx-2 flex items-center justify-center shrink-0 transition-all hover:scale-110 active:scale-95"
+                title="Toggle Milestone"
+              >
+                <div className={`flex items-center justify-center w-3 h-3 rotate-45 rounded-[1.5px] transition-colors shadow-sm ${task.isMilestone ? 'bg-gray-900 text-white' : 'bg-gray-400'}`}>
+                  {task.isMilestone && <Check size={10} strokeWidth={4} className="-rotate-45" />}
                 </div>
-              </label>
+              </button>
               <label className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[9px] font-black text-gray-400 uppercase tracking-widest shrink-0">
                 <input
                   type="checkbox"
@@ -651,34 +649,32 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                       />
                       <span>Done</span>
                     </label>
-                    <label className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[9px] font-black text-gray-400 uppercase tracking-widest shrink-0">
-                      <input
-                        type="checkbox"
-                        checked={Boolean(task.isMilestone)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            onUpdateTask(task.id, {
-                              isMilestone: true,
-                              endDate: task.startDate,
-                            });
-                            setDaysInput('0');
-                          } else {
-                            const newEndDate = format(addBusinessDays(parseISO(task.startDate), 0), 'yyyy-MM-dd');
-                            onUpdateTask(task.id, {
-                              isMilestone: false,
-                              endDate: newEndDate,
-                            });
-                            setDaysInput('1');
-                          }
-                        }}
-                        disabled={readOnly}
-                        className="w-3 h-3 rounded border-gray-200 accent-gray-700"
-                      />
-                      <div className="flex items-center gap-1" title="Milestone">
-                        <span className="block h-2.5 w-2.5 rotate-45 rounded-[1px] bg-gray-900/50 ml-0.5" />
-                        <span>?</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!task.isMilestone) {
+                          onUpdateTask(task.id, {
+                            isMilestone: true,
+                            endDate: task.startDate,
+                          });
+                          setDaysInput('0');
+                        } else {
+                          const newEndDate = format(addBusinessDays(parseISO(task.startDate), 0), 'yyyy-MM-dd');
+                          onUpdateTask(task.id, {
+                            isMilestone: false,
+                            endDate: newEndDate,
+                          });
+                          setDaysInput('1');
+                        }
+                      }}
+                      disabled={readOnly}
+                      className="mx-2 flex items-center justify-center shrink-0 transition-all hover:scale-110 active:scale-95"
+                      title="Toggle Milestone"
+                    >
+                      <div className={`flex items-center justify-center w-3 h-3 rotate-45 rounded-[1.5px] transition-colors shadow-sm ${task.isMilestone ? 'bg-gray-900 text-white' : 'bg-gray-400'}`}>
+                        {task.isMilestone && <Check size={10} strokeWidth={4} className="-rotate-45" />}
                       </div>
-                    </label>
+                    </button>
                     <label className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[9px] font-black text-gray-400 uppercase tracking-widest shrink-0">
                       <input
                         type="checkbox"
