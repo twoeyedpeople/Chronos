@@ -145,15 +145,15 @@ const AdminDashboard: React.FC = () => {
     <div className="min-h-screen bg-gray-50 font-sans px-8 pt-8 pb-10">
       <div className="max-w-6xl mx-auto">
         <div className="flex items-start justify-between gap-6 mb-6">
-          <div className="flex items-start gap-4 min-w-0">
+          <div className="flex items-center gap-4 min-w-0">
             <div className="w-12 h-12 rounded-2xl bg-white border border-gray-100 flex items-center justify-center shadow-sm shrink-0">
               <img
                 src="/apple-touch-icon.png"
                 alt="Two-Eyed People"
-                className="w-8 h-8 object-contain rounded-md"
+                className="w-10 h-10 object-contain rounded-md"
               />
             </div>
-            <div className="min-w-0 pt-0.5">
+            <div className="min-w-0">
               <h1 className="text-[24px] leading-10 font-black text-gray-900 tracking-[-0.045em]">Chronos</h1>
               <p className="text-gray-500 font-medium uppercase text-[10px] tracking-[0.08em] -mt-1">Projects Dashboard</p>
             </div>
@@ -204,7 +204,7 @@ const AdminDashboard: React.FC = () => {
                       <h3 className="text-[16px] font-black text-[#C21A88] tracking-tight leading-tight mb-1 transition-colors truncate">
                         All Milestones
                       </h3>
-                      <div className="flex items-center gap-2 text-gray-400">
+                      <div className="flex items-center gap-2 text-[#C21A88]">
                         <User size={14} />
                         <span className="text-[13px] font-black uppercase tracking-normal truncate">Agency View</span>
                       </div>
@@ -255,7 +255,9 @@ const AdminDashboard: React.FC = () => {
                       }`}>
                         {project.name}
                       </h3>
-                      <div className="flex items-center gap-2 text-gray-400">
+                      <div className={`flex items-center gap-2 ${
+                        project.name === FEATURED_PROJECT_NAME ? 'text-[#1E8A49]' : 'text-gray-900 group-hover:text-[#C21A88]'
+                      }`}>
                         <User size={14} />
                         <span className="text-[13px] font-black uppercase tracking-normal truncate">{project.clientName}</span>
                       </div>
@@ -280,7 +282,7 @@ const AdminDashboard: React.FC = () => {
                 </div>
 
                 <div className={`mt-auto flex items-end justify-between pt-2 ${
-                  project.name === FEATURED_PROJECT_NAME ? 'border-t border-[#3DDA7B]/70' : 'border-t border-gray-50'
+                  project.name === FEATURED_PROJECT_NAME ? 'border-t border-[#3DDA7B]/35' : 'border-t border-gray-50'
                 }`}>
                   <div className="flex flex-col gap-1.5 text-gray-400">
                     {(() => {
