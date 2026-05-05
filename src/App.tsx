@@ -366,7 +366,10 @@ export default function App() {
         if (docSnap.exists()) {
           const remoteProject = withProjectId(docSnap.data() as Partial<Project>, docSnap.id);
           setProject(remoteProject);
-          setUndoStack([]);
+          setUndoStack((prev) => {
+            if (prev.length > 0 && prev[0].id === pId) return prev;
+            return [];
+          });
           setHasUnsavedChanges(false);
         } else {
           const localDraft = getLocalProjectDraft(pId);
