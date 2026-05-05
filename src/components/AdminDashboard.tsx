@@ -144,7 +144,7 @@ const AdminDashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 font-sans px-8 pt-8 pb-10">
       <div className="max-w-6xl mx-auto">
-        <div className="flex items-start justify-between gap-6 mb-6">
+        <div className="flex items-center justify-between gap-6 mb-6">
           <div className="flex items-center gap-4 min-w-0">
             <div className="w-12 h-12 rounded-2xl bg-white border border-gray-100 flex items-center justify-center shadow-sm shrink-0">
               <img
@@ -155,7 +155,7 @@ const AdminDashboard: React.FC = () => {
             </div>
             <div className="min-w-0">
               <h1 className="text-[24px] leading-10 font-black text-gray-900 tracking-[-0.045em]">Chronos</h1>
-              <p className="text-gray-500 font-medium uppercase text-[10px] tracking-[0.08em] -mt-1">Organisation Oracle</p>
+              <p className="text-gray-500 font-medium uppercase text-[10px] tracking-[0.08em] -mt-1">Organisational Oracle</p>
             </div>
           </div>
           
@@ -206,7 +206,7 @@ const AdminDashboard: React.FC = () => {
                       </h3>
                       <div className="flex items-center gap-2 text-[#C21A88]">
                         <User size={14} />
-                        <span className="text-[13px] font-black uppercase tracking-normal truncate">Agency View</span>
+                        <span className="text-[13px] font-black uppercase tracking-normal truncate">2-EP</span>
                       </div>
                     </div>
                   </div>
