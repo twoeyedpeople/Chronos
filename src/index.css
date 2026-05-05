@@ -1,6 +1,10 @@
 @import "tailwindcss";
 
 @layer base {
+  button {
+    cursor: pointer;
+  }
+  
   .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
     height: 6px;
