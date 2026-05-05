@@ -155,7 +155,7 @@ const AdminDashboard: React.FC = () => {
             </div>
             <div className="min-w-0">
               <h1 className="text-[24px] leading-10 font-black text-gray-900 tracking-[-0.045em]">Chronos</h1>
-              <p className="text-gray-500 font-medium uppercase text-[10px] tracking-[0.08em] -mt-1">Projects Dashboard</p>
+              <p className="text-gray-500 font-medium uppercase text-[10px] tracking-[0.08em] -mt-1">Organisation Oracle</p>
             </div>
           </div>
           

@@ -1162,26 +1162,8 @@ const ListView: React.FC<ListViewProps> = ({
 
           {flattenedTasks.length > 0 && (
             <div className="mx-8 pb-20 mt-[41px] -translate-y-[25px]">
-              {isGlobalMilestonesView ? (
-                <div className="flex items-center justify-between gap-6 min-h-[40px] px-2">
-                  <div className="flex items-center gap-4 min-w-0 flex-1">
-                    <img
-                      src="/mascot-circle.png"
-                      alt="Mascot"
-                      className="w-[62px] h-[62px] shrink-0 object-contain"
-                    />
-                    <p className="text-[#FFC2E8] font-black tracking-tight leading-[1.15] text-[24px] line-clamp-2 text-left">
-                      {globalMilestoneMessage}
-                    </p>
-                  </div>
-                  <img
-                    src="/twoeyedpeople-logo-black.png"
-                    alt="Two-Eyed People"
-                    className="h-10 w-auto shrink-0 object-contain"
-                  />
-                </div>
-              ) : (
-                <div className="bg-white border border-gray-100 rounded-[24px] px-6 py-3 shadow-sm overflow-hidden relative min-h-[66px]">
+              {!isGlobalMilestonesView && (
+                <div className="bg-white border border-gray-100 rounded-[24px] px-6 py-3 shadow-sm overflow-hidden relative min-h-[66px] mb-6">
                   <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 via-white to-blue-50/10 pointer-events-none" />
 
                   <div className="relative z-10 flex flex-col items-start gap-2 w-full">
@@ -1218,6 +1200,26 @@ const ListView: React.FC<ListViewProps> = ({
                       </div>
                     </div>
                   </div>
+                </div>
+              )}
+
+              {(isGlobalMilestonesView || readOnly) && (
+                <div className="flex items-center justify-between gap-6 min-h-[40px] px-2">
+                  <div className="flex items-center gap-4 min-w-0 flex-1">
+                    <img
+                      src="/mascot-circle.png"
+                      alt="Mascot"
+                      className="w-[62px] h-[62px] shrink-0 object-contain"
+                    />
+                    <p className="text-[#FFC2E8] font-black tracking-tight leading-[1.15] text-[24px] line-clamp-2 text-left">
+                      {globalMilestoneMessage}
+                    </p>
+                  </div>
+                  <img
+                    src="/twoeyedpeople-logo-black.png"
+                    alt="Two-Eyed People"
+                    className="h-10 w-auto shrink-0 object-contain"
+                  />
                 </div>
               )}
             </div>
