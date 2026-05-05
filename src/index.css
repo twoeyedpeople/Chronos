@@ -1,6 +1,15 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: "Playfair Display", serif;
+  --font-serif: "Playfair Display", serif;
+}
+
 @layer base {
+  html {
+    font-family: "Playfair Display", serif;
+  }
+  
   button {
     cursor: pointer;
   }
