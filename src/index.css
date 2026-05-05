@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+@theme {
+  --font-davinci: 'DaVinci', serif;
+  --font-arial: 'Arial', sans-serif;
+}
+
 @layer base {
   button {
     cursor: pointer;

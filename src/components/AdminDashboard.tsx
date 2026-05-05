@@ -154,7 +154,7 @@ const AdminDashboard: React.FC = () => {
               />
             </div>
             <div className="min-w-0">
-              <h1 className="text-[24px] leading-10 font-black text-gray-900 tracking-[-0.045em]">Chronos</h1>
+              <h1 className="text-[24px] leading-10 font-davinci font-normal text-gray-900 tracking-[-0.045em]">Chronos</h1>
               <p className="text-gray-500 font-medium uppercase text-[10px] tracking-[0.08em] -mt-1">Organisational Oracle</p>
             </div>
           </div>
@@ -201,12 +201,12 @@ const AdminDashboard: React.FC = () => {
                       <Calendar size={18} />
                     </div>
                     <div className="min-w-0 pt-0.5">
-                      <h3 className="text-[16px] font-black text-[#C21A88] tracking-tight leading-tight mb-1 transition-colors truncate">
+                      <h3 className="text-[16px] font-davinci font-normal text-[#C21A88] tracking-tight leading-tight mb-1 transition-colors truncate">
                         All Milestones
                       </h3>
                       <div className="flex items-center gap-2 text-[#C21A88]">
                         <User size={14} />
-                        <span className="text-[13px] font-black uppercase tracking-normal truncate">2-EP</span>
+                        <span className="text-[13px] font-arial font-medium uppercase tracking-normal truncate">2-EP</span>
                       </div>
                     </div>
                   </div>
@@ -250,7 +250,7 @@ const AdminDashboard: React.FC = () => {
                       <Folder size={18} />
                     </div>
                     <div className="min-w-0 pt-0.5">
-                      <h3 className={`text-[16px] font-black tracking-tight leading-tight mb-1 transition-colors truncate ${
+                      <h3 className={`text-[16px] font-davinci font-normal tracking-tight leading-tight mb-1 transition-colors truncate ${
                         project.name === FEATURED_PROJECT_NAME ? 'text-[#1E8A49]' : 'text-gray-900 group-hover:text-[#C21A88]'
                       }`}>
                         {project.name}
@@ -259,7 +259,7 @@ const AdminDashboard: React.FC = () => {
                         project.name === FEATURED_PROJECT_NAME ? 'text-[#1E8A49]' : 'text-gray-900 group-hover:text-[#C21A88]'
                       }`}>
                         <User size={14} />
-                        <span className="text-[13px] font-black uppercase tracking-normal truncate">{project.clientName}</span>
+                        <span className="text-[13px] font-arial font-medium uppercase tracking-normal truncate">{project.clientName}</span>
                       </div>
                     </div>
                   </div>
