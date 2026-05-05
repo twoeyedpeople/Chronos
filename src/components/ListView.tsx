@@ -57,7 +57,7 @@ const AssigneeDropdown: React.FC<{ task: Task, people: Person[], onAssign: (pers
           assignee 
             ? 'h-[20px] px-2 rounded-md border-transparent text-[9px] font-bold text-white shadow-sm hover:opacity-90' 
             : 'h-[20px] px-2 rounded-md border-gray-200 bg-white text-[9px] font-bold text-gray-400 hover:border-gray-300 hover:text-gray-500 uppercase'
-        }`}
+        } ${task.isDone ? 'opacity-50' : ''}`}
         style={assignee ? { backgroundColor: assignee.color } : {}}
       >
         {assignee ? assignee.name : 'ASSIGN'}
@@ -337,7 +337,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
               if (!assignee) return null;
               return (
                 <div 
-                  className="px-1.5 py-0.5 rounded text-[9px] font-bold text-white shrink-0 shadow-sm"
+                  className={`px-1.5 py-0.5 rounded text-[9px] font-bold text-white shrink-0 shadow-sm ${task.isDone ? 'opacity-50' : ''}`}
                   style={{ backgroundColor: assignee.color }}
                 >
                   {assignee.name}
