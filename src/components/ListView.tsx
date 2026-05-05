@@ -890,12 +890,12 @@ const ListView: React.FC<ListViewProps> = ({
   );
 
   useEffect(() => {
-    if (!isGlobalMilestonesView) return;
+    if (!isGlobalMilestonesView && !readOnly) return;
 
     const nextMessage =
       GLOBAL_MILESTONE_MESSAGES[Math.floor(Math.random() * GLOBAL_MILESTONE_MESSAGES.length)];
     setGlobalMilestoneMessage(nextMessage);
-  }, [isGlobalMilestonesView, refreshTick]);
+  }, [isGlobalMilestonesView, readOnly, refreshTick]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
