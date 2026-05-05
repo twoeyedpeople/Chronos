@@ -996,7 +996,7 @@ export default function App() {
         pdf.text(project.name, margin, margin + 10);
         pdf.setTextColor(156, 163, 175);
         pdf.setFontSize(10);
-        pdf.text(`${project.clientName.toUpperCase()} / ${subhead.toUpperCase()}`, margin, margin + 28);
+        pdf.text(`${project.clientName} / ${subhead.toUpperCase()}`, margin, margin + 28);
       };
 
       const listTop = margin + 48;

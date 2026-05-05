@@ -73,9 +73,7 @@ const Header: React.FC<HeaderProps> = ({
             value={projectName}
             onChange={(e) => onProjectNameChange(e.target.value)}
             readOnly={readOnly}
-            className={`font-black text-gray-900 bg-transparent border-none focus:ring-0 placeholder-gray-300 tracking-tight p-0 leading-none min-w-[150px] max-w-[240px] md:max-w-[320px] ${
-              projectName === 'Milestones' ? 'text-[22px] md:text-[25px]' : 'text-[15px] md:text-[16px]'
-            }`}
+            className="font-davinci font-normal text-[29px] leading-10 tracking-[-0.045em] text-gray-900 bg-transparent border-none focus:ring-0 placeholder-gray-300 p-0 min-w-[150px] max-w-[240px] md:max-w-[320px]"
             placeholder="Project Name..."
           />
           {(clientName || !readOnly) && (
@@ -84,7 +82,7 @@ const Header: React.FC<HeaderProps> = ({
               value={clientName}
               onChange={(e) => onClientNameChange(e.target.value)}
               readOnly={readOnly}
-              className="text-[12px] font-black text-gray-400 bg-transparent border-none focus:ring-0 placeholder-gray-200 uppercase tracking-normal p-0 leading-none min-w-[80px] max-w-[220px]"
+              className="text-[12px] font-arial font-medium text-gray-400 bg-transparent border-none focus:ring-0 placeholder-gray-200 tracking-normal p-0 leading-none min-w-[80px] max-w-[220px]"
               placeholder="Client..."
             />
           )}

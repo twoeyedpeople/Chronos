@@ -3,6 +3,7 @@
 @theme {
   --font-davinci: 'DaVinci', serif;
   --font-arial: 'Arial', sans-serif;
+  --font-sans: 'Arial', sans-serif;
 }
 
 @layer base {
