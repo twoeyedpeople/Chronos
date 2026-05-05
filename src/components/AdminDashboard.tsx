@@ -145,7 +145,7 @@ const AdminDashboard: React.FC = () => {
     <div className="min-h-screen bg-gray-50 font-sans px-8 pt-8 pb-10">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col gap-6 mb-8">
-          <div className="flex items-start justify-between">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-4 min-w-0">
               <div className="w-14 h-14 rounded-2xl bg-white border border-gray-100 flex items-center justify-center shrink-0">
                 <img
@@ -154,15 +154,15 @@ const AdminDashboard: React.FC = () => {
                   className="w-10 h-10 object-contain rounded-md"
                 />
               </div>
-              <div className="min-w-0">
-                <h1 className="text-[32px] leading-9 font-davinci font-normal text-gray-900 tracking-[-0.045em]">Chronos</h1>
-                <p className="text-gray-500 font-medium uppercase text-[11px] tracking-[0.08em] mt-0.5">Organisational Oracle</p>
+              <div className="min-w-0 flex flex-col -ml-1">
+                <h1 className="text-[36px] leading-[36px] font-davinci font-normal text-gray-900 tracking-[-0.045em] translate-y-[2px] -translate-x-[1.5px]">Chronos</h1>
+                <p className="text-gray-500 font-medium text-[13px] tracking-[0.08em] mt-0.5 -translate-y-[1px]">Organisational Oracle</p>
               </div>
             </div>
             <img 
               src="/twoeyedpeople-logo-black.png" 
               alt="Two-Eyed People" 
-              className="h-[22px] object-contain mt-1 shrink-0" 
+              className="h-[50px] w-auto object-contain object-right shrink-0 mt-[15px] translate-x-1" 
             />
           </div>
           
