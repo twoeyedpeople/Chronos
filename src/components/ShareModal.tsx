@@ -28,9 +28,9 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, projectUrl }) 
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           className="w-full max-w-md bg-white rounded-3xl overflow-hidden flex flex-col"
         >
-          <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-blue-50 to-indigo-50">
+          <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-[#FFC2E8]/20">
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-2xl bg-blue-500 flex items-center justify-center text-white">
+              <div className="w-10 h-10 rounded-2xl bg-[#FFC2E8] flex items-center justify-center text-[#C21A88]">
                 <Share2 size={20} />
               </div>
               <div>
@@ -60,7 +60,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, projectUrl }) 
                 <button 
                   onClick={copyToClipboard}
                   className={`p-2 rounded-xl transition-all ${
-                    copied ? 'bg-green-500 text-white' : 'hover:bg-white text-gray-400 hover:text-blue-500'
+                    copied ? 'bg-green-500 text-white' : 'hover:bg-white text-gray-400 hover:text-[#C21A88]'
                   }`}
                 >
                   {copied ? <Check size={16} /> : <Copy size={16} />}
@@ -73,7 +73,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, projectUrl }) 
                 href={projectUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full py-4 bg-gray-900 hover:bg-black text-white rounded-2xl font-davinci text-[16px] transition-all flex items-center justify-center gap-3"
+                className="w-full py-4 bg-[#FFC2E8] hover:bg-[#ffb0df] text-[#C21A88] rounded-2xl font-davinci font-bold text-[16px] transition-all flex items-center justify-center gap-3"
               >
                 <ExternalLink size={18} />
                 <span>Open in New Tab</span>
