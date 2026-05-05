@@ -82,7 +82,7 @@ const Header: React.FC<HeaderProps> = ({
               value={clientName}
               onChange={(e) => onClientNameChange(e.target.value)}
               readOnly={readOnly}
-              className="text-[14px] font-arial font-medium text-gray-400 bg-transparent border-none focus:ring-0 placeholder-gray-200 tracking-normal p-0 leading-tight min-w-[80px] max-w-[220px]"
+              className="-mt-1 text-[14px] font-arial font-medium text-gray-400 bg-transparent border-none focus:ring-0 placeholder-gray-200 tracking-normal p-0 leading-tight min-w-[80px] max-w-[220px]"
               placeholder="Client..."
             />
           )}
