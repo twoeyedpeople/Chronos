@@ -59,9 +59,9 @@ const Header: React.FC<HeaderProps> = ({
       <div className="flex items-center gap-4 md:gap-5 shrink-0">
         <div className="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center shrink-0">
           <img
-            src="/twoeyedpeople-icon.png"
+            src="/apple-touch-icon.png"
             alt="Two-Eyed People"
-            className="w-7 h-7 md:w-8 md:h-8 object-contain"
+            className="w-7 h-7 md:w-8 md:h-8 object-contain rounded-md"
           />
         </div>
 

@@ -148,9 +148,9 @@ const AdminDashboard: React.FC = () => {
           <div className="flex items-start gap-4 min-w-0">
             <div className="w-12 h-12 rounded-2xl bg-white border border-gray-100 flex items-center justify-center shadow-sm shrink-0">
               <img
-                src="/twoeyedpeople-icon.png"
+                src="/apple-touch-icon.png"
                 alt="Two-Eyed People"
-                className="w-8 h-8 object-contain"
+                className="w-8 h-8 object-contain rounded-md"
               />
             </div>
             <div className="min-w-0 pt-0.5">
@@ -172,7 +172,7 @@ const AdminDashboard: React.FC = () => {
               className="flex items-center gap-2 px-[18px] py-[10px] bg-[#FFC2E8] text-[#C21A88] rounded-xl font-black text-[15px] leading-4 shadow-sm hover:scale-[1.02] transition-all active:scale-95 shrink-0"
             >
               <Plus size={15} strokeWidth={3} />
-              <span className="uppercase tracking-tight">Spawn</span>
+              <span className="uppercase tracking-tight">Create</span>
             </button>
           </div>
         </div>
@@ -204,9 +204,9 @@ const AdminDashboard: React.FC = () => {
                       <h3 className="text-[16px] font-black text-[#C21A88] tracking-tight leading-tight mb-1 transition-colors truncate">
                         All Milestones
                       </h3>
-                      <div className="flex items-center gap-2 text-[#C21A88]">
-                        <User size={12} />
-                        <span className="text-[10px] font-black uppercase tracking-[0.18em] truncate">Agency View</span>
+                      <div className="flex items-center gap-2 text-gray-400">
+                        <User size={14} />
+                        <span className="text-[13px] font-black uppercase tracking-normal truncate">Agency View</span>
                       </div>
                     </div>
                   </div>
@@ -255,11 +255,9 @@ const AdminDashboard: React.FC = () => {
                       }`}>
                         {project.name}
                       </h3>
-                      <div className={`flex items-center gap-2 ${
-                        project.name === FEATURED_PROJECT_NAME ? 'text-[#1E8A49]' : 'text-gray-900 group-hover:text-[#C21A88]'
-                      }`}>
-                        <User size={12} />
-                        <span className="text-[10px] font-black uppercase tracking-[0.18em] truncate">{project.clientName}</span>
+                      <div className="flex items-center gap-2 text-gray-400">
+                        <User size={14} />
+                        <span className="text-[13px] font-black uppercase tracking-normal truncate">{project.clientName}</span>
                       </div>
                     </div>
                   </div>
