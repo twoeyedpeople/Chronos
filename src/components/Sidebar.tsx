@@ -334,7 +334,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Tasks</span>
             <button 
               onClick={() => onAddTask()}
-              className="p-1 hover:bg-white hover:text-blue-500 rounded-lg transition-all text-gray-400 shadow-xs"
+              className="p-1 hover:bg-white hover:text-blue-500 rounded-lg transition-all text-gray-400 "
             >
               <Plus size={12} />
             </button>
@@ -410,7 +410,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
           <DragOverlay dropAnimation={null}>
             {activeId ? (
-              <div className="bg-white shadow-xl rounded-lg border border-blue-100 p-2 flex items-center gap-2 opacity-90 scale-105">
+              <div className="bg-white  rounded-lg border border-blue-100 p-2 flex items-center gap-2 opacity-90 scale-105">
                 <GripVertical size={12} className="text-blue-500" />
                 <span className="text-[11px] font-bold text-gray-700">
                   {tasks.find(t => t.id === activeId)?.name || 'Moving...'}

@@ -162,7 +162,7 @@ const AdminDashboard: React.FC = () => {
             <img 
               src="/twoeyedpeople-logo-black.png" 
               alt="Two-Eyed People" 
-              className="h-[50px] w-auto object-contain object-right shrink-0 mt-[15px] translate-x-1" 
+              className="h-[45px] w-auto object-contain object-right shrink-0 mt-[15px] translate-x-1" 
             />
           </div>
           
@@ -182,11 +182,11 @@ const AdminDashboard: React.FC = () => {
               className="w-[39px] h-[39px] rounded-full border border-gray-100 bg-white text-gray-400 hover:text-[#C21A88] hover:border-[#FFC2E8] transition-all flex items-center justify-center shrink-0"
               title="Manage People"
             >
-              <User size={14} />
+              <User size={14} className="translate-y-[1px]" />
             </button>
             <button
               onClick={() => setIsModalOpen(true)}
-              className="flex items-center justify-center gap-1.5 px-4 h-[39px] bg-[#FFC2E8] text-[#C21A88] rounded-xl font-davinci text-[13px] hover:scale-[1.02] transition-all active:scale-95 shrink-0"
+              className="flex items-center justify-center gap-1.5 px-4 h-[39px] bg-[#FFC2E8] text-[#C21A88] rounded-xl font-arial font-bold text-[13px] hover:scale-[1.02] transition-all active:scale-95 shrink-0"
             >
               <Plus size={14} strokeWidth={3} />
               <span className="uppercase tracking-tight mt-0.5">Add</span>
@@ -207,7 +207,7 @@ const AdminDashboard: React.FC = () => {
                       <Calendar size={18} />
                     </div>
                     <div className="min-w-0 pt-0.5">
-                      <h3 className="text-[16px] font-davinci font-normal text-[#C21A88] tracking-tight leading-tight mb-1 transition-colors truncate">
+                      <h3 className="text-[16px] font-davinci font-normal text-[#C21A88] tracking-tight leading-tight mb-1 transition-colors truncate translate-y-[2px]">
                         All Milestones
                       </h3>
                       <div className="flex items-center gap-2 text-[#C21A88]">
@@ -264,7 +264,7 @@ const AdminDashboard: React.FC = () => {
                       <div className={`flex items-center gap-2 ${
                         project.name === FEATURED_PROJECT_NAME ? 'text-[#1E8A49]' : 'text-gray-900 group-hover:text-[#C21A88]'
                       }`}>
-                        <User size={14} />
+                        <User size={14} className="translate-y-[1px]" />
                         <span className="text-[13px] font-arial font-medium tracking-normal truncate">{project.clientName}</span>
                       </div>
                     </div>
@@ -372,14 +372,14 @@ const AdminDashboard: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="flex-1 px-6 py-4 bg-gray-100 text-gray-500 rounded-2xl font-bold text-sm hover:bg-gray-200 transition-all"
+                  className="flex-1 px-5 py-3 bg-gray-100 text-gray-500 rounded-xl font-arial font-bold text-[12px] hover:bg-gray-200 transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isCreating}
-                  className="flex-[2] px-6 py-4 bg-blue-500 text-white rounded-2xl font-davinci text-[16px] hover:scale-105 transition-all active:scale-95 disabled:opacity-50"
+                  className="flex-[2] px-5 py-3 bg-[#FFC2E8] text-[#C21A88] rounded-xl font-arial font-bold text-[13px] hover:bg-[#ffb0df] transition-all active:scale-95 disabled:opacity-50"
                 >
                   {isCreating ? 'Creating...' : 'Create Project'}
                 </button>

@@ -55,18 +55,18 @@ const AssigneeDropdown: React.FC<{ task: Task, people: Person[], onAssign: (pers
         disabled={readOnly}
         className={`flex items-center justify-center border transition-all ${
           assignee 
-            ? 'h-[20px] px-2 rounded-md border-transparent text-[9px] font-bold text-white shadow-sm hover:opacity-90' 
+            ? 'h-[20px] px-2 rounded-md border-transparent text-[9px] font-bold text-white  hover:opacity-90' 
             : 'h-[20px] px-2 rounded-md border-gray-200 bg-white text-[9px] font-bold text-gray-400 hover:border-gray-300 hover:text-gray-500 uppercase'
         }`}
         style={assignee ? { backgroundColor: task.isDone ? '#E8E8E8' : assignee.color } : {}}
       >
-        {assignee ? assignee.name : 'ASSIGN'}
+        <span className="translate-y-[1px] inline-block">{assignee ? assignee.name : 'ASSIGN'}</span>
       </button>
 
       {isOpen && !readOnly && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-          <div className="absolute top-full left-0 mt-1 w-32 bg-white rounded-lg shadow-xl border border-gray-100 z-50 py-1 overflow-hidden">
+          <div className="absolute top-full left-0 mt-1 w-32 bg-white rounded-lg  border border-gray-100 z-50 py-1 overflow-hidden">
             {people.map(person => (
               <button
                 key={person.id}
@@ -138,13 +138,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
   const taskDate = startOfDay(parseISO(task.startDate));
   const isThisWeek = taskDate <= thisWeekEnd;
   
-  const globalMilestoneDateNode = isGlobalMilestonesKioskView && isThisWeek ? (
-    <>
-      <span className="text-[130%]">{format(parseISO(task.startDate), 'EEE')}</span>, {format(parseISO(task.startDate), 'dd MMM yy')}
-    </>
-  ) : (
-    <>{globalMilestoneDateText}</>
-  );
+  const globalMilestoneDateNode = <>{globalMilestoneDateText}</>;
   const mobileStartDateText = format(parseISO(task.startDate), 'dd MMM yy');
   const mobileEndDateText = format(parseISO(task.endDate), 'dd MMM yy');
 
@@ -225,14 +219,16 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
       } ${isOver ? 'bg-blue-100/50 ring-2 ring-blue-500/20' : ''}`}
     >
       <div className={`hidden md:flex items-center px-4 ${isGlobalMilestonesKioskView ? 'h-12' : 'h-10'}`}>
-        <div className="w-8 shrink-0 flex items-center justify-center">
-          <div 
-            {...attributes} 
-            {...listeners}
-            className={`p-1 ${task.isDone ? '!text-[#E8E8E8]' : 'text-gray-300 hover:text-gray-500'} cursor-grab active:cursor-grabbing rounded transition-colors shrink-0`}
-          >
-            <GripVertical size={12} />
-          </div>
+        <div className={`${isGlobalMilestonesView ? 'w-[12px]' : 'w-8'} shrink-0 flex items-center justify-center`}>
+          {!readOnly && (
+            <div 
+              {...attributes} 
+              {...listeners}
+              className={`p-1 ${task.isDone ? '!text-[#E8E8E8]' : 'text-gray-300 hover:text-gray-500'} cursor-grab active:cursor-grabbing rounded transition-colors shrink-0`}
+            >
+              <GripVertical size={12} />
+            </div>
+          )}
         </div>
 
         <div className={`w-8 text-[9px] font-black ${task.isDone ? '!text-[#E8E8E8]' : 'text-gray-300'} shrink-0 text-center`}>
@@ -337,10 +333,10 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
               if (!assignee) return null;
               return (
                 <div 
-                  className={`px-1.5 py-0.5 rounded text-[9px] font-bold text-white shrink-0 shadow-sm`}
+                  className={`px-1.5 py-0.5 rounded text-[9px] font-bold text-white shrink-0 `}
                   style={{ backgroundColor: task.isDone ? '#E8E8E8' : assignee.color }}
                 >
-                  {assignee.name}
+                  <span className="translate-y-[1px] inline-block">{assignee.name}</span>
                 </div>
               );
             })()}
@@ -379,7 +375,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                 className="mx-2 flex items-center justify-center shrink-0 transition-all hover:scale-110 active:scale-95"
                 title="Toggle Milestone"
               >
-                <div className={`flex items-center justify-center w-3 h-3 rotate-45 rounded-[1.5px] transition-colors shadow-sm ${task.isMilestone ? 'bg-gray-900 text-white' : 'bg-gray-400'}`}>
+                <div className={`flex items-center justify-center w-3 h-3 rotate-45 rounded-[1.5px] transition-colors  ${task.isMilestone ? 'bg-gray-900 text-white' : 'bg-gray-400'}`}>
                   {task.isMilestone && <Check size={10} strokeWidth={4} className="-rotate-45" />}
                 </div>
               </button>
@@ -421,7 +417,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
           <>
             <div className={`${isGlobalMilestonesKioskView ? 'w-48' : 'w-32'} px-2 shrink-0`}>
               {isGlobalMilestonesView ? (
-                <div className={`${isGlobalMilestonesKioskView ? 'text-[14px]' : 'text-[11px]'} ${task.isDone ? '!text-[#E8E8E8]' : 'text-gray-600'} font-bold w-full tabular-nums whitespace-nowrap`}>
+                <div className={`${isGlobalMilestonesKioskView ? 'text-[14px]' : 'text-[13px]'} ${task.isDone ? '!text-[#E8E8E8]' : 'text-gray-600'} font-bold w-full tabular-nums whitespace-nowrap`}>
                   {globalMilestoneDateNode}
                 </div>
               ) : (
@@ -441,17 +437,15 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
             {!isGlobalMilestonesView && (
               <div className="w-20 px-2 shrink-0">
                 {readOnly ? (
-                  <div className="h-[30px] w-full rounded-lg border border-gray-100 bg-white flex items-center px-3 text-[11px] font-bold">
+                  <div className="h-[30px] w-full rounded-lg border border-gray-100 bg-white flex items-center px-3 font-bold justify-center">
                     {task.isMilestone ? (
-                      <span className="block w-full text-left">
-                        <span
-                          className={`ml-[2px] block h-2.5 w-2.5 rotate-45 rounded-[1px] ${
-                            task.isExternal ? 'bg-[#FFC2E8]' : 'bg-gray-900'
-                          }`}
-                        />
+                      <span className={`block w-full text-center leading-none mt-0.5 ${
+                        task.isExternal ? 'text-[#FFC2E8] text-[22px]' : 'text-gray-900 text-[22px]'
+                      }`}>
+                        ◆
                       </span>
                     ) : (
-                      <span className="block w-full text-left text-gray-600 tabular-nums">
+                      <span className="block w-full text-center text-gray-600 tabular-nums text-[11px]">
                         {days}
                       </span>
                     )}
@@ -474,12 +468,12 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                           e.currentTarget.blur();
                         }
                       }}
-                      className={`text-[11px] bg-white border border-gray-100 rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500/10 outline-none font-bold w-full ${
+                      className={`bg-white border border-gray-100 rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500/10 outline-none font-bold w-full text-center ${
                         task.isMilestone
                           ? task.isExternal
-                            ? 'text-[#FFC2E8] text-center'
-                            : 'text-gray-900 text-center'
-                          : 'text-gray-600 pr-6'
+                            ? 'text-[#FFC2E8] text-[22px] leading-none'
+                            : 'text-gray-900 text-[22px] leading-none'
+                          : 'text-gray-600 text-[11px]'
                       }`}
                       placeholder="0"
                     />
@@ -671,7 +665,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                       className="mx-2 flex items-center justify-center shrink-0 transition-all hover:scale-110 active:scale-95"
                       title="Toggle Milestone"
                     >
-                      <div className={`flex items-center justify-center w-3 h-3 rotate-45 rounded-[1.5px] transition-colors shadow-sm ${task.isMilestone ? 'bg-gray-900 text-white' : 'bg-gray-400'}`}>
+                      <div className={`flex items-center justify-center w-3 h-3 rotate-45 rounded-[1.5px] transition-colors  ${task.isMilestone ? 'bg-gray-900 text-white' : 'bg-gray-400'}`}>
                         {task.isMilestone && <Check size={10} strokeWidth={4} className="-rotate-45" />}
                       </div>
                     </button>
@@ -774,12 +768,12 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                               e.currentTarget.blur();
                             }
                           }}
-                          className={`text-[12px] bg-transparent border-none p-0 focus:ring-0 outline-none font-bold w-full ${
+                          className={`bg-transparent border-none p-0 focus:ring-0 outline-none font-bold w-full text-center ${
                             task.isMilestone
                               ? task.isExternal
-                                ? 'text-[#FFC2E8]'
-                                : 'text-gray-900'
-                              : 'text-gray-600'
+                                ? 'text-[#FFC2E8] text-[24px] leading-none'
+                                : 'text-gray-900 text-[24px] leading-none'
+                              : 'text-gray-600 text-[12px]'
                           }`}
                         />
                         {!task.isMilestone && (
@@ -1049,7 +1043,7 @@ const ListView: React.FC<ListViewProps> = ({
           {!readOnly && (
             <button
               onClick={() => onAddTask()}
-              className="p-1 text-gray-400 hover:text-blue-500 hover:bg-white rounded transition-all shadow-sm"
+              className="p-1 text-gray-400 hover:text-blue-500 hover:bg-white rounded transition-all "
               title="Add root task"
             >
               <Plus size={12} />
@@ -1083,7 +1077,7 @@ const ListView: React.FC<ListViewProps> = ({
         {!readOnly && (
           <button
             onClick={() => onAddTask()}
-            className="p-2 text-gray-400 hover:text-blue-500 hover:bg-white rounded-lg transition-all shadow-sm"
+            className="p-2 text-gray-400 hover:text-blue-500 hover:bg-white rounded-lg transition-all "
             title="Add root task"
           >
             <Plus size={14} />
@@ -1107,7 +1101,7 @@ const ListView: React.FC<ListViewProps> = ({
                   <p className="text-sm font-bold tracking-tight">No tasks found. Let's build something.</p>
                   <button
                     onClick={() => onAddTask()}
-                    className="px-8 py-3 bg-blue-500 text-white rounded-2xl text-sm font-black shadow-xl shadow-blue-200 hover:scale-105 transition-all active:scale-95"
+                    className="px-8 py-3 bg-blue-500 text-white rounded-2xl text-sm font-black   hover:scale-105 transition-all active:scale-95"
                   >
                     Add First Task
                   </button>
@@ -1118,7 +1112,7 @@ const ListView: React.FC<ListViewProps> = ({
                     globalMilestoneSections.map((section) => (
                       <div key={section.id} className="flex flex-col">
                         <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-y border-gray-100 px-4 py-2">
-                          <span className={`${isGlobalMilestonesKioskView ? 'text-[13px]' : 'text-[10px]'} font-black text-gray-400 uppercase tracking-[0.18em]`}>
+                          <span className={`${isGlobalMilestonesKioskView ? 'text-[16px]' : 'text-[13px]'} font-black text-gray-400 font-arial`}>
                             {section.label}
                           </span>
                         </div>
@@ -1181,41 +1175,36 @@ const ListView: React.FC<ListViewProps> = ({
           {flattenedTasks.length > 0 && (
             <div className="mx-8 pb-20 mt-[41px] -translate-y-[25px]">
               {!isGlobalMilestonesView && (
-                <div className="bg-white border border-gray-100 rounded-[24px] px-6 py-3 shadow-sm overflow-hidden relative min-h-[66px] mb-6">
-                  <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 via-white to-blue-50/10 pointer-events-none" />
+                <div className="bg-gray-50 border border-gray-100 rounded-[24px] px-6 py-4 overflow-hidden relative min-h-[66px] mb-6 flex items-center">
 
-                  <div className="relative z-10 flex flex-col items-start gap-2 w-full">
-                    <span className="text-[10px] font-black text-gray-500 uppercase leading-none text-left">SUMMARY</span>
+                  <div className="relative z-10 flex items-center gap-6 w-full">
+                    <div className="flex items-center gap-1.5 min-w-[102px]">
+                      <span className="text-[14px] font-medium text-gray-500">Working days:</span>
+                      <span className="text-[14px] font-black text-gray-900">{totalBusinessDays}</span>
+                    </div>
 
-                    <div className="flex items-center gap-4 w-full">
-                      <div className="flex items-baseline gap-1.5 min-w-[102px]">
-                        <span className="text-[15px] font-medium text-gray-500">Working days:</span>
-                        <span className="text-[15px] font-black text-gray-900">{totalBusinessDays}</span>
-                      </div>
-
-                      <div className="flex items-center gap-3 min-w-0">
-                        {tasks.length > 0 ? (
-                          <>
-                            <div className="min-w-[122px]">
-                              <div className="bg-gray-50/80 px-2.5 py-1.5 rounded-xl border border-gray-100 text-[10px] font-black text-gray-700 shadow-sm flex items-center gap-1.5 leading-none">
-                                <Calendar size={10} className="text-blue-400" />
-                                {format(new Date(Math.min(...tasks.map(t => parseISO(t.startDate).getTime()))), 'MMM dd, yyyy')}
-                              </div>
+                    <div className="flex items-center gap-3 min-w-0">
+                      {tasks.length > 0 ? (
+                        <>
+                          <div className="min-w-[122px]">
+                            <div className="bg-gray-50/80 px-3.5 py-2.5 rounded-xl border border-gray-100 text-[11px] font-black text-gray-700  flex items-center gap-2 leading-none">
+                              <Calendar size={11} className="text-blue-400" />
+                              {format(new Date(Math.min(...tasks.map(t => parseISO(t.startDate).getTime()))), 'MMM dd, yyyy')}
                             </div>
-                            <div className="flex items-center justify-center w-5 h-5 rounded-full bg-gray-50 border border-gray-100 shrink-0">
-                              <ChevronRight size={10} className="text-gray-300" />
+                          </div>
+                          <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-50 border border-gray-100 shrink-0">
+                            <ChevronRight size={14} className="text-gray-300" />
+                          </div>
+                          <div className="min-w-[122px]">
+                            <div className="bg-gray-50/80 px-3.5 py-2.5 rounded-xl border border-gray-100 text-[11px] font-black text-gray-700  flex items-center gap-2 leading-none">
+                              <Calendar size={11} className="text-red-400" />
+                              {format(new Date(Math.max(...tasks.map(t => parseISO(t.endDate).getTime()))), 'MMM dd, yyyy')}
                             </div>
-                            <div className="min-w-[122px]">
-                              <div className="bg-gray-50/80 px-2.5 py-1.5 rounded-xl border border-gray-100 text-[10px] font-black text-gray-700 shadow-sm flex items-center gap-1.5 leading-none">
-                                <Calendar size={10} className="text-red-400" />
-                                {format(new Date(Math.max(...tasks.map(t => parseISO(t.endDate).getTime()))), 'MMM dd, yyyy')}
-                              </div>
-                            </div>
-                          </>
-                        ) : (
-                          <span className="text-sm font-bold text-gray-300 italic">No timeline data available</span>
-                        )}
-                      </div>
+                          </div>
+                        </>
+                      ) : (
+                        <span className="text-[14px] font-bold text-gray-300 italic">No timeline data available</span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1229,7 +1218,7 @@ const ListView: React.FC<ListViewProps> = ({
                       alt="Mascot"
                       className="w-[62px] h-[62px] shrink-0 object-contain"
                     />
-                    <p className="text-[#FFC2E8] font-davinci font-normal tracking-[-0.02em] leading-[1.15] text-[26px] line-clamp-2 text-left -translate-y-[2px]">
+                    <p className="text-[#FFC3EE] font-davinci font-normal tracking-[-0.02em] leading-[1.15] text-[26px] line-clamp-2 text-left translate-y-[1px] -translate-x-[3px]">
                       {globalMilestoneMessage}
                     </p>
                   </div>
@@ -1245,7 +1234,7 @@ const ListView: React.FC<ListViewProps> = ({
 
           <DragOverlay dropAnimation={null}>
             {activeId ? (
-              <div className="bg-white shadow-2xl rounded-2xl border border-blue-100 p-4 flex items-center gap-4 opacity-90 scale-105">
+              <div className="bg-white  rounded-2xl border border-blue-100 p-4 flex items-center gap-4 opacity-90 scale-105">
                 <GripVertical size={16} className="text-blue-500" />
                 <span className="text-sm font-bold text-gray-800">
                   {tasks.find((t) => t.id === activeId)?.name || 'Moving task...'}

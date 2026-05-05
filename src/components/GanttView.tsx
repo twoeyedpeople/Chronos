@@ -373,7 +373,7 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
                   <motion.div
                     layoutId={task.id}
                     onMouseDown={(e) => handleMouseDown(e, task.id, 'move')}
-                    className={`absolute shadow-sm select-none rotate-45 ${
+                    className={`absolute select-none rotate-45 ${
                       readOnly ? 'cursor-default' : 'cursor-move'
                     } ${task.isExternal ? 'bg-[#FFC2E8]' : 'bg-gray-950'} ${isDraggingThis ? 'z-30 ring-4 ring-gray-900/10' : ''}`}
                     style={{ left, width, height: MILESTONE_SIZE }}
@@ -387,7 +387,7 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
                     <motion.div
                       layoutId={task.id}
                       onMouseDown={(e) => handleMouseDown(e, task.id, 'move')}
-                      className={`absolute h-4.5 rounded-full flex items-center justify-center px-1 shadow-xs select-none overflow-hidden ${
+                      className={`absolute h-4.5 rounded-full flex items-center justify-center px-1 select-none overflow-hidden ${
                         readOnly ? 'cursor-default' : 'cursor-move'
                       } ${
                         isDraggingThis
@@ -403,7 +403,7 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
                       animate={{ opacity: 1, x: 0 }}
                     >
                       {assignee && width > 40 && (
-                        <span className="text-[8px] font-bold text-white truncate z-10 pointer-events-none drop-shadow-sm px-1">
+                        <span className="text-[8px] font-bold text-white truncate z-10 pointer-events-none px-1 translate-y-[1px]">
                           {assignee.name}
                         </span>
                       )}

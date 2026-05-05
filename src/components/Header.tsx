@@ -57,8 +57,8 @@ const Header: React.FC<HeaderProps> = ({
   isKioskView,
 }) => {
   return (
-    <header className="h-20 px-4 md:px-8 bg-white/95 backdrop-blur-2xl border-b border-gray-100 flex items-center justify-between sticky top-0 z-50 shadow-sm gap-4 overflow-x-auto no-scrollbar">
-      <div className="flex items-center gap-4 md:gap-5 shrink-0">
+    <header className="h-20 px-4 md:px-8 bg-white/95 backdrop-blur-2xl border-b border-gray-100 flex items-center justify-between sticky top-0 z-50 overflow-x-auto no-scrollbar w-full">
+      <div className="flex items-center gap-4 md:gap-5 flex-1 min-w-0">
         <div className="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-white border border-gray-100 flex items-center justify-center shrink-0">
           <img
             src="/apple-touch-icon.png"
@@ -67,13 +67,13 @@ const Header: React.FC<HeaderProps> = ({
           />
         </div>
 
-        <div className="flex flex-col items-start justify-center gap-0 min-w-[170px] -mt-0.5 -ml-[15px]">
+        <div className="flex flex-col items-start justify-center gap-0 min-w-[170px] -mt-0.5 -ml-[13px]">
           <input
             type="text"
             value={projectName}
             onChange={(e) => onProjectNameChange(e.target.value)}
             readOnly={readOnly}
-            className="font-davinci font-normal text-[29px] leading-none tracking-[-0.045em] text-gray-900 bg-transparent border-none focus:ring-0 placeholder-gray-300 p-0 min-w-[150px] max-w-[240px] md:max-w-[320px]"
+            className="font-davinci font-normal text-[24px] leading-none tracking-[-0.045em] text-gray-900 bg-transparent border-none focus:ring-0 placeholder-gray-300 p-0 min-w-[150px] max-w-[240px] md:max-w-[320px]"
             placeholder="Project Name..."
           />
           {(clientName || !readOnly) && (
@@ -88,22 +88,25 @@ const Header: React.FC<HeaderProps> = ({
           )}
         </div>
 
+      </div>
+
+      <div className="flex items-center justify-center gap-4 md:gap-5 shrink-0 mx-4">
         <button
           onClick={onHome}
           disabled={isSaving}
-          className="w-9 h-9 rounded-full border border-gray-100 bg-gray-50/80 text-gray-400 hover:text-blue-600 hover:bg-white hover:shadow-sm transition-all flex items-center justify-center disabled:opacity-50 shrink-0"
+          className="w-9 h-9 rounded-full border border-gray-100 bg-gray-50/80 text-gray-400 hover:text-blue-600 hover:bg-white  transition-all flex items-center justify-center disabled:opacity-50 shrink-0"
           title="Save and return home"
         >
-          <Home size={15} />
+          <Home size={15} className="translate-y-[1px]" />
         </button>
 
         {!isMobile && !hideMainViewToggle && (
-          <div className="flex items-center gap-1 bg-gray-50 border border-gray-100 rounded-2xl p-1 shrink-0">
+          <div className="flex items-center gap-1 bg-gray-50 border border-gray-100 rounded-2xl p-1 shrink-0 h-[36px]">
             <button
               onClick={() => onMainViewModeChange('list')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all ${
+              className={`flex items-center justify-center gap-1.5 px-3 rounded-xl text-[11px] font-bold h-full transition-all ${
                 mainViewMode === 'list' 
-                  ? 'bg-white text-gray-800 shadow-sm' 
+                  ? 'bg-white text-gray-800 ' 
                   : 'text-gray-500 hover:text-gray-700'
               }`}
             >
@@ -112,9 +115,9 @@ const Header: React.FC<HeaderProps> = ({
             </button>
             <button
               onClick={() => onMainViewModeChange('gantt')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all ${
+              className={`flex items-center justify-center gap-1.5 px-3 rounded-xl text-[11px] font-bold h-full transition-all ${
                 mainViewMode === 'gantt' 
-                  ? 'bg-white text-blue-600 shadow-sm' 
+                  ? 'bg-white text-blue-600 ' 
                   : 'text-gray-500 hover:text-gray-700'
               }`}
             >
@@ -130,12 +133,12 @@ const Header: React.FC<HeaderProps> = ({
               onClick={() => onMainViewModeChange('people')}
               className={`w-9 h-9 rounded-full border border-gray-100 flex items-center justify-center transition-all shrink-0 ${
                 mainViewMode === 'people'
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'bg-gray-50/80 text-gray-400 hover:text-gray-700 hover:bg-white hover:shadow-sm'
+                  ? 'bg-white text-blue-600 '
+                  : 'bg-gray-50/80 text-gray-400 hover:text-gray-700 hover:bg-white '
               }`}
               title="Manage People"
             >
-              <User size={15} />
+              <User size={15} className="translate-y-[1px]" />
             </button>
             <button
               onClick={() => {
@@ -145,22 +148,22 @@ const Header: React.FC<HeaderProps> = ({
                   window.location.assign(`${window.location.origin}${window.location.pathname}?global=milestones`);
                 }
               }}
-              className="w-9 h-9 rounded-full border border-gray-100 flex items-center justify-center transition-all shrink-0 bg-gray-50/80 text-gray-400 hover:text-gray-700 hover:bg-white hover:shadow-sm"
+              className="w-9 h-9 rounded-full border border-gray-100 flex items-center justify-center transition-all shrink-0 bg-gray-50/80 text-gray-400 hover:text-gray-700 hover:bg-white "
               title="Milestone View"
             >
-              <div className="w-3.5 h-3.5 border-[1.5px] border-current rounded-[1.5px] rotate-45" />
+              <div className="w-3.5 h-3.5 border-[1.5px] border-current rounded-[1.5px] rotate-45 translate-y-[1px]" />
             </button>
           </div>
         )}
 
         {showFiltersButton && (
-          <>
+          <div className="flex items-center gap-1">
             <button
               onClick={onOpenFilters}
-              className="w-9 h-9 rounded-xl border border-gray-100 bg-gray-50 text-gray-500 hover:text-gray-800 hover:bg-white hover:shadow-sm transition-all flex items-center justify-center relative shrink-0"
+              className="w-9 h-9 rounded-xl border border-gray-100 bg-gray-50 text-gray-500 hover:text-gray-800 hover:bg-white  transition-all flex items-center justify-center relative shrink-0"
               title="Filters"
             >
-              <SlidersHorizontal size={15} />
+              <SlidersHorizontal size={15} className="translate-y-[1px]" />
             </button>
             <button
               onClick={() => {
@@ -174,16 +177,16 @@ const Header: React.FC<HeaderProps> = ({
                   }
                 }
               }}
-              className="w-9 h-9 rounded-xl border border-gray-100 bg-gray-50 text-gray-500 hover:text-gray-800 hover:bg-white hover:shadow-sm transition-all flex items-center justify-center relative shrink-0"
+              className="w-9 h-9 rounded-xl border border-gray-100 bg-gray-50 text-gray-500 hover:text-gray-800 hover:bg-white  transition-all flex items-center justify-center relative shrink-0"
               title={isKioskView ? "Exit Kiosk View" : "Kiosk View"}
             >
-              {isKioskView ? <ZoomOut size={15} /> : <ZoomIn size={15} />}
+              {isKioskView ? <ZoomOut size={15} className="translate-y-[1px]" /> : <ZoomIn size={15} className="translate-y-[1px]" />}
             </button>
-          </>
+          </div>
         )}
       </div>
 
-      <div className="flex items-center gap-3 md:gap-5 shrink-0">
+      <div className="flex items-center gap-3 md:gap-5 flex-1 min-w-0 justify-end shrink-0">
         {mainViewMode === 'gantt' && (
           <>
             <div className="flex items-center gap-0.5 bg-gray-50 p-0.5 rounded-full border border-gray-100">
@@ -193,7 +196,7 @@ const Header: React.FC<HeaderProps> = ({
                   onClick={() => onViewModeChange(mode)}
                   className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider transition-all ${
                     viewMode === mode 
-                      ? 'bg-white text-blue-600 shadow-xs' 
+                      ? 'bg-white text-blue-600 ' 
                       : 'text-gray-400 hover:text-gray-600'
                   }`}
                 >
@@ -230,7 +233,7 @@ const Header: React.FC<HeaderProps> = ({
               </span>
               <button
                 onClick={onDownloadPdf}
-                className="w-8 h-8 bg-[#FFC2E8] rounded-xl transition-all shadow-sm hover:shadow-md active:scale-95 shrink-0 flex items-center justify-center hover:opacity-90 overflow-hidden"
+                className="w-8 h-8 bg-[#FFC2E8] rounded-xl transition-all   active:scale-95 shrink-0 flex items-center justify-center hover:opacity-90 overflow-hidden"
                 title="Download PDF"
               >
                 <img 
@@ -263,7 +266,7 @@ const Header: React.FC<HeaderProps> = ({
             <button 
               onClick={onShare}
               disabled={isSaving}
-              className="flex items-center gap-2 px-4 py-2 bg-[#FFC2E8] hover:bg-[#ffb0df] text-[#C21A88] rounded-xl font-davinci text-[15px] transition-all shadow-lg hover:shadow-xl active:scale-95 disabled:opacity-50 whitespace-nowrap"
+              className="flex items-center gap-2 px-[14px] py-[7px] bg-[#FFC2E8] hover:bg-[#ffb0df] text-[#C21A88] rounded-xl font-arial font-bold uppercase tracking-tight text-[13px] transition-all active:scale-95 disabled:opacity-50 whitespace-nowrap"
             >
               {isSaving ? (
                 <div className="w-4 h-4 border-2 border-[#C21A88]/30 border-t-[#C21A88] rounded-full animate-spin" />

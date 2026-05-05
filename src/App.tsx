@@ -1302,12 +1302,12 @@ export default function App() {
             <div className="px-5 py-4 border-b border-gray-100 flex items-start justify-between gap-4">
               <div className="flex flex-col gap-1">
                 <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.18em]">Global Milestones</span>
-                <h2 className="text-lg font-black text-gray-900 tracking-tight">Filters</h2>
-                <p className="text-[12px] text-gray-500">Show or hide projects in this view.</p>
+                <h2 className="font-davinci font-normal text-[31px] leading-[31px] tracking-[-0.045em] text-gray-900 translate-y-[2px] -translate-x-[1.5px]">Filters</h2>
+                <p className="text-gray-500 font-medium text-[13px] tracking-[0.08em] mt-0.5 translate-y-[1px]">Show or hide projects in this view.</p>
               </div>
               <button
                 onClick={() => setIsFiltersOpen(false)}
-                className="h-9 px-3 rounded-xl border border-gray-200 text-[12px] font-bold text-gray-500 hover:text-gray-700 hover:border-gray-300 transition-all"
+                className="h-9 px-4 rounded-xl border border-gray-200 text-[12px] font-arial font-bold text-gray-500 hover:text-gray-700 hover:border-gray-300 transition-all"
               >
                 Done
               </button>
@@ -1321,18 +1321,16 @@ export default function App() {
                 <button
                   onClick={() => {
                     setSelectedMilestoneProjectIds([]);
-                    setSelectedMilestonePersonIds([]);
                   }}
-                  className="px-3 py-1.5 rounded-lg text-[12px] font-bold text-gray-500 hover:text-[#FF7119] hover:bg-[#FF7119]/10 transition-all"
+                  className="px-3 py-1.5 rounded-lg text-[12px] font-arial font-bold text-gray-500 hover:text-[#C21A88] hover:bg-[#FFC2E8]/30 transition-all"
                 >
                   Clear All
                 </button>
                 <button
                   onClick={() => {
                     setSelectedMilestoneProjectIds(milestoneFilterProjects.map((project) => project.id));
-                    setSelectedMilestonePersonIds(people.map(p => p.id));
                   }}
-                  className="px-3 py-1.5 rounded-lg bg-gray-950 text-white text-[12px] font-bold hover:bg-[#FF7119] transition-all"
+                  className="px-3 py-1.5 rounded-lg bg-[#FFC2E8] text-[#C21A88] text-[12px] font-arial font-bold hover:bg-[#ffb0df] transition-all active:scale-95"
                 >
                   Select All
                 </button>
@@ -1349,7 +1347,7 @@ export default function App() {
                     return (
                       <label
                         key={person.id}
-                        className="flex items-center gap-3 py-1.5 transition-all cursor-pointer hover:opacity-75"
+                        className="flex items-center gap-2.5 py-1.5 transition-all cursor-pointer hover:opacity-75"
                       >
                         <input
                           type="checkbox"
@@ -1362,11 +1360,11 @@ export default function App() {
                               return current.filter((id) => id !== person.id);
                             });
                           }}
-                          className="h-3.5 w-3.5 rounded border-gray-300 accent-[#FF7119] shrink-0"
+                          className="h-3.5 w-3.5 rounded border-gray-300 accent-[#FFC2E8] shrink-0"
                         />
                         <div className="flex items-center gap-2 min-w-0">
                           <div className="w-4 h-4 rounded-full shrink-0" style={{ backgroundColor: person.color }} />
-                          <div className="text-[13px] font-bold text-gray-900 truncate leading-tight">{person.name}</div>
+                          <div className="text-[13px] font-arial font-normal text-gray-900 truncate leading-tight">{person.name}</div>
                         </div>
                       </label>
                     );
@@ -1384,7 +1382,7 @@ export default function App() {
                     return (
                       <label
                         key={filterProject.id}
-                        className="flex items-center gap-3 py-1.5 transition-all cursor-pointer hover:opacity-75"
+                        className="flex items-center gap-2.5 py-1.5 transition-all cursor-pointer hover:opacity-75"
                       >
                         <input
                           type="checkbox"
@@ -1398,11 +1396,10 @@ export default function App() {
                               return current.filter((id) => id !== filterProject.id);
                             });
                           }}
-                          className="h-3.5 w-3.5 rounded border-gray-300 accent-[#FF7119] shrink-0"
+                          className="h-3.5 w-3.5 rounded border-gray-300 accent-[#FFC2E8] shrink-0"
                         />
                         <div className="flex items-center gap-2 min-w-0">
-                          <div className={`h-2.5 w-2.5 rounded-full shrink-0 transition-colors ${checked ? 'bg-[#FF7119]' : 'bg-gray-200'}`} />
-                          <div className="text-[13px] font-bold text-gray-900 truncate leading-tight">{filterProject.name}</div>
+                          <div className="text-[13px] font-arial font-normal text-gray-900 truncate leading-tight">{filterProject.name}</div>
                         </div>
                       </label>
                     );

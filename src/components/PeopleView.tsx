@@ -113,38 +113,38 @@ const PeopleView: React.FC<PeopleViewProps> = ({
 
   return (
     <div className="flex-1 flex flex-col bg-gray-50 h-screen overflow-hidden">
-      <header className="h-20 px-4 md:px-8 bg-white/95 backdrop-blur-2xl border-b border-gray-100 flex items-center justify-between sticky top-0 z-50 shadow-sm shrink-0">
+      <header className="py-6 px-4 md:px-8 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-4">
           <button
             onClick={onClose}
-            className="w-10 h-10 rounded-full border border-gray-100 bg-gray-50/80 text-gray-400 hover:text-blue-600 hover:bg-white hover:shadow-sm transition-all flex items-center justify-center shrink-0"
+            className="w-10 h-10 rounded-full border border-gray-100 bg-gray-50/80 text-gray-400 hover:text-blue-600 hover:bg-white  transition-all flex items-center justify-center shrink-0"
             title="Back to Dashboard"
           >
             <ArrowLeft size={18} />
           </button>
-          <div>
-            <h1 className="text-[29px] leading-10 font-davinci font-normal text-gray-900 tracking-[-0.045em]">People</h1>
-            <p className="text-gray-400 font-medium text-[11px] uppercase tracking-widest mt-0.5">Manage Team Resources</p>
+          <div className="min-w-0 flex flex-col -ml-1">
+            <h1 className="text-[36px] leading-[36px] font-davinci font-normal text-gray-900 tracking-[-0.045em] translate-y-[2px] -translate-x-[1.5px]">People</h1>
+            <p className="text-gray-500 font-medium text-[13px] tracking-[0.08em] mt-0.5 translate-y-[1px]">Manage Team Resources</p>
           </div>
         </div>
 
         <button
           onClick={openAddModal}
-          className="flex items-center gap-2 px-[18px] py-[10px] bg-[#FFC2E8] text-[#C21A88] rounded-xl font-black text-[15px] leading-4 shadow-sm hover:scale-[1.02] transition-all active:scale-95 shrink-0"
+          className="flex items-center justify-center gap-1.5 px-4 h-[39px] bg-[#FFC2E8] text-[#C21A88] rounded-xl font-arial font-bold text-[13px] hover:scale-[1.02] transition-all active:scale-95 shrink-0"
         >
-          <Plus size={15} strokeWidth={3} />
-          <span className="uppercase tracking-tight">Add Person</span>
+          <Plus size={14} strokeWidth={3} />
+          <span className="uppercase tracking-tight mt-0.5">Add</span>
         </button>
       </header>
 
       <main className="flex-1 overflow-y-auto p-4 md:p-8">
-        <div className="max-w-4xl">
+        <div className="w-full">
           {people.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-gray-400 font-bold text-sm">No people added yet.</p>
             </div>
           ) : (
-            <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+            <div className="bg-white border border-gray-100 rounded-2xl  overflow-hidden">
               <div className="grid grid-cols-[auto_1fr_auto] px-6 border-b border-gray-100 bg-gray-50/50">
                 <div className="w-16 py-3 pr-4 border-r border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center">Color</div>
                 <div className="pl-4 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center">Name</div>
@@ -154,9 +154,11 @@ const PeopleView: React.FC<PeopleViewProps> = ({
                 {people.map((person) => (
                   <div key={person.id} className="grid grid-cols-[auto_1fr_auto] px-6 hover:bg-gray-50/50 transition-colors group border-b border-gray-50 last:border-b-0">
                     <div className="w-16 py-4 pr-4 border-r border-gray-100 flex items-center">
-                      <div 
-                        className="w-5 h-5 rounded-full shadow-sm"
+                      <button 
+                        onClick={() => openEditModal(person)}
+                        className="w-5 h-5 rounded-full  cursor-pointer hover:scale-110 transition-transform active:scale-95"
                         style={{ backgroundColor: person.color }}
+                        title="Edit Person"
                       />
                     </div>
                     <div className="pl-4 py-4 font-bold text-gray-800 text-[15px] flex items-center">
