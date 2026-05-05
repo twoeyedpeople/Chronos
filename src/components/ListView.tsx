@@ -57,7 +57,7 @@ const AssigneeDropdown: React.FC<{ task: Task, people: Person[], onAssign: (pers
           assignee 
             ? 'h-[20px] px-2 rounded-md border-transparent text-[9px] font-bold text-white shadow-sm hover:opacity-90' 
             : 'h-[20px] px-2 rounded-md border-gray-200 bg-white text-[9px] font-bold text-gray-400 hover:border-gray-300 hover:text-gray-500 uppercase'
-        } ${task.isDone ? 'opacity-50' : ''}`}
+        } ${task.isDone ? 'opacity-30 grayscale' : ''}`}
         style={assignee ? { backgroundColor: assignee.color } : {}}
       >
         {assignee ? assignee.name : 'ASSIGN'}
@@ -306,7 +306,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                 } ${
                   isGlobalMilestonesKioskView ? 'text-[17px]' : 'text-[13px]'
                 } ${isFolder ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-800'} ${
-                  task.isDone ? 'opacity-50' : ''
+                  task.isDone ? 'opacity-30 !text-gray-400' : ''
                 }`}
                 title={task.sourceProjectId ? "Go to project timeline" : undefined}
               >
@@ -327,7 +327,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                 className={`bg-transparent border-none focus:ring-0 w-full truncate p-0 leading-tight ${
                   isGlobalMilestonesKioskView ? 'text-[17px]' : 'text-[13px]'
                 } ${isFolder ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-800'} ${
-                  task.isDone && !readOnly ? 'opacity-50' : ''
+                  task.isDone && !readOnly ? 'opacity-30 !text-gray-400' : ''
                 }`}
                 placeholder={isFolder ? "Folder name..." : "Task name..."}
               />
@@ -337,7 +337,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
               if (!assignee) return null;
               return (
                 <div 
-                  className={`px-1.5 py-0.5 rounded text-[9px] font-bold text-white shrink-0 shadow-sm ${task.isDone ? 'opacity-50' : ''}`}
+                  className={`px-1.5 py-0.5 rounded text-[9px] font-bold text-white shrink-0 shadow-sm ${task.isDone ? 'opacity-30 grayscale' : ''}`}
                   style={{ backgroundColor: assignee.color }}
                 >
                   {assignee.name}
@@ -634,7 +634,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                   }}
                   readOnly={readOnly}
                   className={`bg-transparent border-none focus:ring-0 text-[14px] w-full p-0 leading-tight ${isFolder ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-bold text-gray-800'} ${
-                    task.isDone && (!readOnly || isGlobalMilestonesView) ? 'opacity-50' : ''
+                    task.isDone && (!readOnly || isGlobalMilestonesView) ? 'opacity-30 !text-gray-400' : ''
                   }`}
                   placeholder={isFolder ? "Folder name..." : "Task name..."}
                 />

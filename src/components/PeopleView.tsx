@@ -54,13 +54,14 @@ const PeopleView: React.FC<PeopleViewProps> = ({
     });
   }, [people, customColors, onUpdatePerson]);
 
-  const handleAddCustomColor = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newColor = e.target.value.toUpperCase();
-    if (!customColors.includes(newColor) && !PRESET_COLORS.includes(newColor)) {
-      setCustomColors([...customColors, newColor]);
-      setColor(newColor);
-    } else {
-      setColor(newColor);
+  const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setColor(e.target.value.toUpperCase());
+  };
+
+  const handleColorCommit = (e: React.FocusEvent<HTMLInputElement>) => {
+    const finalColor = e.target.value.toUpperCase();
+    if (!customColors.includes(finalColor) && !PRESET_COLORS.includes(finalColor)) {
+      setCustomColors([...customColors, finalColor]);
     }
   };
 
@@ -264,7 +265,9 @@ const PeopleView: React.FC<PeopleViewProps> = ({
                       <input
                         type="color"
                         className="absolute opacity-0 w-full h-full cursor-pointer"
-                        onChange={handleAddCustomColor}
+                        value={color}
+                        onChange={handleColorChange}
+                        onBlur={handleColorCommit}
                       />
                     </label>
                   </div>
