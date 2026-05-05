@@ -228,7 +228,7 @@ const Header: React.FC<HeaderProps> = ({
                 <img 
                   src="/download-icon.png" 
                   alt="Download" 
-                  className="w-6 h-6 object-contain mix-blend-screen" 
+                  className="w-8 h-8 object-cover rounded-full scale-[0.75] mix-blend-screen" 
                 />
               </button>
             </>
