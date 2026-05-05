@@ -809,6 +809,14 @@ export default function App() {
     setIsShareOpen(false);
   };
 
+  const handleMilestonesClick = async (isKiosk?: boolean) => {
+    if (!isReadOnly) {
+      await persistProject();
+    }
+    const suffix = isKiosk ? 'milestones-kiosk' : 'milestones';
+    window.location.assign(`${window.location.origin}${window.location.pathname}?global=${suffix}`);
+  };
+
   const handleSave = async () => {
     if (isReadOnly) return;
     await persistProject();
@@ -1207,6 +1215,7 @@ export default function App() {
         onSave={handleSave}
         onShare={handleShare}
         onHome={handleHome}
+        onMilestonesClick={handleMilestonesClick}
         onUndo={handleUndo}
         onDownloadPdf={handleDownloadPdf}
         onOpenFilters={() => setIsFiltersOpen(true)}

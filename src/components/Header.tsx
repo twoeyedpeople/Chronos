@@ -10,6 +10,7 @@ interface HeaderProps {
   onSave: () => void;
   onShare: () => void;
   onHome: () => void;
+  onMilestonesClick?: (isKiosk?: boolean) => void;
   onUndo: () => void;
   onDownloadPdf: () => void;
   onOpenFilters?: () => void;
@@ -37,6 +38,7 @@ const Header: React.FC<HeaderProps> = ({
   onSave,
   onShare,
   onHome,
+  onMilestonesClick,
   onUndo,
   onDownloadPdf,
   onOpenFilters,
@@ -139,7 +141,11 @@ const Header: React.FC<HeaderProps> = ({
             </button>
             <button
               onClick={() => {
-                window.location.assign(`${window.location.origin}${window.location.pathname}?global=milestones`);
+                if (onMilestonesClick) {
+                  onMilestonesClick();
+                } else {
+                  window.location.assign(`${window.location.origin}${window.location.pathname}?global=milestones`);
+                }
               }}
               className="w-9 h-9 rounded-full border border-gray-100 flex items-center justify-center transition-all shrink-0 bg-gray-50/80 text-gray-400 hover:text-gray-700 hover:bg-white hover:shadow-sm"
               title="Milestone View"
@@ -160,10 +166,14 @@ const Header: React.FC<HeaderProps> = ({
             </button>
             <button
               onClick={() => {
-                if (isKioskView) {
-                  window.location.assign(`${window.location.origin}${window.location.pathname}?global=milestones`);
+                if (onMilestonesClick) {
+                  onMilestonesClick(isKioskView ? false : true);
                 } else {
-                  window.location.assign(`${window.location.origin}${window.location.pathname}?global=milestones-kiosk`);
+                  if (isKioskView) {
+                    window.location.assign(`${window.location.origin}${window.location.pathname}?global=milestones`);
+                  } else {
+                    window.location.assign(`${window.location.origin}${window.location.pathname}?global=milestones-kiosk`);
+                  }
                 }
               }}
               className="w-9 h-9 rounded-xl border border-gray-100 bg-gray-50 text-gray-500 hover:text-gray-800 hover:bg-white hover:shadow-sm transition-all flex items-center justify-center relative shrink-0"
