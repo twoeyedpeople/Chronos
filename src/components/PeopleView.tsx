@@ -33,13 +33,44 @@ const PeopleView: React.FC<PeopleViewProps> = ({
   const [name, setName] = useState('');
   const [color, setColor] = useState(PRESET_COLORS[0]);
 
+  const [customColors, setCustomColors] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('chronos_custom_colors');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem('chronos_custom_colors', JSON.stringify(customColors));
+  }, [customColors]);
+
   useEffect(() => {
     people.forEach((person, index) => {
-      if (!PRESET_COLORS.includes(person.color)) {
+      if (!PRESET_COLORS.includes(person.color) && !customColors.includes(person.color)) {
         onUpdatePerson(person.id, { color: PRESET_COLORS[index % PRESET_COLORS.length] });
       }
     });
-  }, [people, onUpdatePerson]);
+  }, [people, customColors, onUpdatePerson]);
+
+  const handleAddCustomColor = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newColor = e.target.value.toUpperCase();
+    if (!customColors.includes(newColor) && !PRESET_COLORS.includes(newColor)) {
+      setCustomColors([...customColors, newColor]);
+      setColor(newColor);
+    } else {
+      setColor(newColor);
+    }
+  };
+
+  const removeCustomColor = (e: React.MouseEvent, colorToRemove: string) => {
+    e.stopPropagation();
+    setCustomColors(customColors.filter(c => c !== colorToRemove));
+    if (color === colorToRemove) {
+      setColor(PRESET_COLORS[0]);
+    }
+  };
 
   const openAddModal = () => {
     setEditingPerson(null);
@@ -194,7 +225,7 @@ const PeopleView: React.FC<PeopleViewProps> = ({
                         key={presetColor}
                         type="button"
                         onClick={() => setColor(presetColor)}
-                        className={`w-10 h-10 rounded-xl transition-all ${
+                        className={`w-10 h-10 rounded-xl transition-all shrink-0 ${
                           color === presetColor
                             ? 'ring-4 ring-blue-500/20 scale-110 shadow-md'
                             : 'hover:scale-105 border border-gray-100/50 shadow-sm'
@@ -203,6 +234,39 @@ const PeopleView: React.FC<PeopleViewProps> = ({
                         title={presetColor}
                       />
                     ))}
+                    {customColors.map((customColor) => (
+                      <div key={customColor} className="relative group shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => setColor(customColor)}
+                          className={`w-10 h-10 rounded-xl transition-all ${
+                            color === customColor
+                              ? 'ring-4 ring-blue-500/20 scale-110 shadow-md'
+                              : 'hover:scale-105 border border-gray-100/50 shadow-sm'
+                          }`}
+                          style={{ backgroundColor: customColor }}
+                          title={customColor}
+                        />
+                        <button
+                          type="button"
+                          onClick={(e) => removeCustomColor(e, customColor)}
+                          className="absolute -top-2 -right-2 w-5 h-5 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 hover:border-red-200 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <X size={10} strokeWidth={3} />
+                        </button>
+                      </div>
+                    ))}
+                    <label
+                      className="relative w-10 h-10 rounded-xl border-2 border-dashed border-gray-200 text-gray-400 hover:text-blue-500 hover:border-blue-500 hover:bg-blue-50 transition-all flex items-center justify-center shrink-0 cursor-pointer overflow-hidden"
+                      title="Add Custom Color"
+                    >
+                      <Plus size={16} strokeWidth={3} />
+                      <input
+                        type="color"
+                        className="absolute opacity-0 w-full h-full cursor-pointer"
+                        onChange={handleAddCustomColor}
+                      />
+                    </label>
                   </div>
                 </div>
               </div>
