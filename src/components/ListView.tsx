@@ -1185,7 +1185,7 @@ const ListView: React.FC<ListViewProps> = ({
                   <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 via-white to-blue-50/10 pointer-events-none" />
 
                   <div className="relative z-10 flex flex-col items-start gap-2 w-full">
-                    <span className="text-[10px] font-black text-gray-500 uppercase tracking-[0.06em] leading-none text-left">Project Details</span>
+                    <span className="text-[10px] font-black text-gray-500 uppercase leading-none text-left">SUMMARY</span>
 
                     <div className="flex items-center gap-4 w-full">
                       <div className="flex items-baseline gap-1.5 min-w-[102px]">
