@@ -1218,7 +1218,7 @@ const ListView: React.FC<ListViewProps> = ({
                       alt="Mascot"
                       className="w-[62px] h-[62px] shrink-0 object-contain"
                     />
-                    <p className="text-[#FFC3EE] font-davinci font-normal tracking-[-0.02em] leading-[1.15] text-[26px] line-clamp-2 text-left translate-y-[1px] -translate-x-[3px]">
+                    <p className="text-[#C21A88] font-davinci font-normal tracking-[-0.02em] leading-[1.15] text-[26px] line-clamp-2 text-left translate-y-[1px] -translate-x-[3px]">
                       {globalMilestoneMessage}
                     </p>
                   </div>
