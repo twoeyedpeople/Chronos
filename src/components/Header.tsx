@@ -73,7 +73,7 @@ const Header: React.FC<HeaderProps> = ({
             value={projectName}
             onChange={(e) => onProjectNameChange(e.target.value)}
             readOnly={readOnly}
-            className="font-davinci font-normal text-[24px] leading-none tracking-[-0.045em] text-gray-900 bg-transparent border-none focus:ring-0 placeholder-gray-300 p-0 min-w-[150px] max-w-[240px] md:max-w-[320px]"
+            className="font-davinci font-normal text-[29px] leading-none tracking-[-0.045em] text-gray-900 bg-transparent border-none focus:ring-0 placeholder-gray-300 p-0 min-w-[150px] max-w-[240px] md:max-w-[320px]"
             placeholder="Project Name..."
           />
           {(clientName || !readOnly) && (
