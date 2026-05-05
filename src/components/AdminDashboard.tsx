@@ -144,48 +144,54 @@ const AdminDashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 font-sans px-8 pt-8 pb-10">
       <div className="max-w-6xl mx-auto">
-        <div className="flex items-center justify-between gap-6 mb-6">
-          <div className="flex items-center gap-4 min-w-0">
-            <div className="w-12 h-12 rounded-2xl bg-white border border-gray-100 flex items-center justify-center shadow-sm shrink-0">
-              <img
-                src="/apple-touch-icon.png"
-                alt="Two-Eyed People"
-                className="w-10 h-10 object-contain rounded-md"
-              />
+        <div className="flex flex-col gap-6 mb-8">
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-4 min-w-0">
+              <div className="w-14 h-14 rounded-2xl bg-white border border-gray-100 flex items-center justify-center shrink-0">
+                <img
+                  src="/apple-touch-icon.png"
+                  alt="Two-Eyed People"
+                  className="w-10 h-10 object-contain rounded-md"
+                />
+              </div>
+              <div className="min-w-0">
+                <h1 className="text-[32px] leading-9 font-davinci font-normal text-gray-900 tracking-[-0.045em]">Chronos</h1>
+                <p className="text-gray-500 font-medium uppercase text-[11px] tracking-[0.08em] mt-0.5">Organisational Oracle</p>
+              </div>
             </div>
-            <div className="min-w-0">
-              <h1 className="text-[29px] leading-10 font-davinci font-normal text-gray-900 tracking-[-0.045em]">Chronos</h1>
-              <p className="text-gray-500 font-medium uppercase text-[10px] tracking-[0.08em] -mt-1">Organisational Oracle</p>
-            </div>
+            <img 
+              src="/twoeyedpeople-logo-black.png" 
+              alt="Two-Eyed People" 
+              className="h-[22px] object-contain mt-1 shrink-0" 
+            />
           </div>
           
           <div className="flex items-center gap-3">
+            <div className="relative flex-1">
+              <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400" size={18} strokeWidth={2} />
+              <input
+                type="text"
+                placeholder="Search projects or clients..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full h-[52px] bg-white border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-sm font-medium text-gray-800 placeholder:text-slate-400 focus:ring-4 focus:ring-[#FFC2E8]/10 outline-none transition-all"
+              />
+            </div>
             <button
               onClick={() => navigateToProject(`${window.location.origin}${window.location.pathname}?view=people`)}
-              className="w-10 h-10 rounded-full border border-gray-100 bg-white text-gray-400 hover:text-blue-600 hover:shadow-sm transition-all flex items-center justify-center shrink-0"
+              className="w-[39px] h-[39px] rounded-full border border-gray-100 bg-white text-gray-400 hover:text-[#C21A88] hover:border-[#FFC2E8] transition-all flex items-center justify-center shrink-0"
               title="Manage People"
             >
-              <User size={18} />
+              <User size={14} />
             </button>
             <button
               onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-2 px-[18px] py-[10px] bg-[#FFC2E8] text-[#C21A88] rounded-xl font-davinci text-[15px] leading-4 shadow-sm hover:scale-[1.02] transition-all active:scale-95 shrink-0"
+              className="flex items-center justify-center gap-1.5 px-4 h-[39px] bg-[#FFC2E8] text-[#C21A88] rounded-xl font-davinci text-[13px] hover:scale-[1.02] transition-all active:scale-95 shrink-0"
             >
-              <Plus size={15} strokeWidth={3} />
-              <span className="uppercase tracking-tight">Add</span>
+              <Plus size={14} strokeWidth={3} />
+              <span className="uppercase tracking-tight mt-0.5">Add</span>
             </button>
           </div>
-        </div>
-
-        <div className="relative mb-6">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} strokeWidth={2} />
-          <input
-            type="text"
-            placeholder="Search projects or clients..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-[54px] bg-white border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-sm font-medium text-gray-800 placeholder:text-slate-400 focus:ring-4 focus:ring-[#FFC2E8]/5 outline-none transition-all shadow-sm"
-          />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -238,7 +244,7 @@ const AdminDashboard: React.FC = () => {
               className={`group border rounded-[24px] p-4 transition-all cursor-pointer relative overflow-hidden min-h-[146px] ${
                 project.name === FEATURED_PROJECT_NAME
                   ? 'bg-[#3DDA7B]/5 border-[#3DDA7B] hover:opacity-75'
-                  : 'bg-white border-gray-100 hover:shadow-2xl hover:shadow-[#FFC2E8]/20'
+                  : 'bg-white border-gray-100'
               }`}
             >
               <div className="flex flex-col gap-2 relative z-10 h-full">
@@ -333,8 +339,8 @@ const AdminDashboard: React.FC = () => {
             className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm"
             onClick={() => setIsModalOpen(false)}
           />
-          <div className="relative bg-white rounded-[32px] w-full max-w-md p-8 shadow-2xl animate-in fade-in zoom-in duration-200">
-            <h2 className="text-2xl font-black text-gray-900 tracking-tight mb-6">Create New Project</h2>
+          <div className="relative bg-white rounded-[32px] w-full max-w-md p-8 animate-in fade-in zoom-in duration-200">
+            <h2 className="text-[28px] leading-tight font-davinci font-normal text-gray-900 tracking-[-0.04em] mb-6">Create New Project</h2>
             
             <form onSubmit={handleCreateProject} className="flex flex-col gap-6">
               <div className="flex flex-col gap-2">
@@ -346,7 +352,7 @@ const AdminDashboard: React.FC = () => {
                   placeholder="e.g. Acme Corp"
                   value={newClientName}
                   onChange={(e) => setNewClientName(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 px-5 text-sm font-bold text-gray-800 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all"
+                  className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 px-5 text-sm font-medium text-gray-800 placeholder:text-slate-400 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all"
                 />
               </div>
 
@@ -358,7 +364,7 @@ const AdminDashboard: React.FC = () => {
                   placeholder="e.g. Q2 Marketing Campaign"
                   value={newProjectName}
                   onChange={(e) => setNewProjectName(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 px-5 text-sm font-bold text-gray-800 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all"
+                  className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 px-5 text-sm font-medium text-gray-800 placeholder:text-slate-400 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all"
                 />
               </div>
 
@@ -366,14 +372,14 @@ const AdminDashboard: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="flex-1 px-6 py-4 bg-gray-100 text-gray-500 rounded-2xl font-black text-sm hover:bg-gray-200 transition-all"
+                  className="flex-1 px-6 py-4 bg-gray-100 text-gray-500 rounded-2xl font-bold text-sm hover:bg-gray-200 transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isCreating}
-                  className="flex-[2] px-6 py-4 bg-blue-500 text-white rounded-2xl font-black text-sm shadow-xl shadow-blue-200 hover:scale-105 transition-all active:scale-95 disabled:opacity-50"
+                  className="flex-[2] px-6 py-4 bg-blue-500 text-white rounded-2xl font-davinci text-[16px] hover:scale-105 transition-all active:scale-95 disabled:opacity-50"
                 >
                   {isCreating ? 'Creating...' : 'Create Project'}
                 </button>
@@ -389,12 +395,12 @@ const AdminDashboard: React.FC = () => {
             className="absolute inset-0 bg-gray-900/60 backdrop-blur-md"
             onClick={() => setProjectToDelete(null)}
           />
-          <div className="relative bg-white rounded-[32px] w-full max-w-md p-8 shadow-2xl animate-in fade-in zoom-in duration-200">
+          <div className="relative bg-white rounded-[32px] w-full max-w-md p-8 animate-in fade-in zoom-in duration-200">
             <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center text-red-500 mb-6">
               <Trash2 size={32} />
             </div>
 
-            <h2 className="text-2xl font-black text-gray-900 tracking-tight mb-2">Delete Project?</h2>
+            <h2 className="text-[28px] leading-tight font-davinci font-normal text-gray-900 tracking-[-0.04em] mb-2">Delete Project?</h2>
             <p className="text-gray-500 font-medium mb-8">
               Are you sure you want to delete <span className="text-gray-900 font-bold">"{projectToDelete.name}"</span>? This action cannot be undone.
             </p>
@@ -402,13 +408,13 @@ const AdminDashboard: React.FC = () => {
             <div className="flex gap-3">
               <button
                 onClick={() => setProjectToDelete(null)}
-                className="flex-1 px-6 py-4 bg-gray-100 text-gray-500 rounded-2xl font-black text-sm hover:bg-gray-200 transition-all"
+                className="flex-1 px-6 py-4 bg-gray-100 text-gray-500 rounded-2xl font-bold text-sm hover:bg-gray-200 transition-all"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDeleteProject}
-                className="flex-1 px-6 py-4 bg-red-500 text-white rounded-2xl font-black text-sm shadow-xl shadow-red-200 hover:scale-105 transition-all active:scale-95"
+                className="flex-1 px-6 py-4 bg-red-500 text-white rounded-2xl font-davinci text-[16px] hover:scale-105 transition-all active:scale-95"
               >
                 Delete Project
               </button>
@@ -423,8 +429,8 @@ const AdminDashboard: React.FC = () => {
             className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm"
             onClick={() => setProjectToEdit(null)}
           />
-          <div className="relative bg-white rounded-[32px] w-full max-w-md p-8 shadow-2xl animate-in fade-in zoom-in duration-200">
-            <h2 className="text-2xl font-black text-gray-900 tracking-tight mb-6">Edit Project</h2>
+          <div className="relative bg-white rounded-[32px] w-full max-w-md p-8 animate-in fade-in zoom-in duration-200">
+            <h2 className="text-[28px] leading-tight font-davinci font-normal text-gray-900 tracking-[-0.04em] mb-6">Edit Project</h2>
 
             <form onSubmit={handleUpdateProject} className="flex flex-col gap-6">
               <div className="flex flex-col gap-2">
@@ -435,7 +441,7 @@ const AdminDashboard: React.FC = () => {
                   required
                   value={newClientName}
                   onChange={(e) => setNewClientName(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 px-5 text-sm font-bold text-gray-800 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all"
+                  className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 px-5 text-sm font-medium text-gray-800 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all"
                 />
               </div>
 
@@ -446,7 +452,7 @@ const AdminDashboard: React.FC = () => {
                   required
                   value={newProjectName}
                   onChange={(e) => setNewProjectName(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 px-5 text-sm font-bold text-gray-800 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all"
+                  className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 px-5 text-sm font-medium text-gray-800 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all"
                 />
               </div>
 
@@ -454,14 +460,14 @@ const AdminDashboard: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setProjectToEdit(null)}
-                  className="flex-1 px-6 py-4 bg-gray-100 text-gray-500 rounded-2xl font-black text-sm hover:bg-gray-200 transition-all"
+                  className="flex-1 px-6 py-4 bg-gray-100 text-gray-500 rounded-2xl font-bold text-sm hover:bg-gray-200 transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isUpdating}
-                  className="flex-[2] px-6 py-4 bg-blue-500 text-white rounded-2xl font-black text-sm shadow-xl shadow-blue-200 hover:scale-105 transition-all active:scale-95 disabled:opacity-50"
+                  className="flex-[2] px-6 py-4 bg-blue-500 text-white rounded-2xl font-davinci text-[16px] hover:scale-105 transition-all active:scale-95 disabled:opacity-50"
                 >
                   {isUpdating ? 'Saving...' : 'Save Changes'}
                 </button>

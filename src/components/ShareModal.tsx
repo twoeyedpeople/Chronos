@@ -26,16 +26,16 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, projectUrl }) 
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col"
+          className="w-full max-w-md bg-white rounded-3xl overflow-hidden flex flex-col"
         >
           <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-blue-50 to-indigo-50">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-blue-500 flex items-center justify-center text-white shadow-lg shadow-blue-200">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-2xl bg-blue-500 flex items-center justify-center text-white">
                 <Share2 size={20} />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-gray-900">Share Timeline</h3>
-                <p className="text-xs text-gray-500 font-medium">Anyone with the link can view</p>
+                <h3 className="text-[24px] leading-none font-davinci font-normal text-gray-900 tracking-[-0.03em]">Share Timeline</h3>
+                <p className="text-[11px] text-gray-500 font-medium uppercase tracking-widest mt-1">Anyone with the link can view</p>
               </div>
             </div>
             <button 
@@ -48,7 +48,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, projectUrl }) 
 
           <div className="p-8 space-y-6">
             <div className="space-y-3">
-              <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Project Link</label>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Project Link</label>
               <div className="flex items-center gap-2 p-3 bg-gray-50 border border-gray-100 rounded-2xl">
                 <Globe size={16} className="text-gray-400 shrink-0" />
                 <input
@@ -73,7 +73,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, projectUrl }) 
                 href={projectUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full py-4 bg-gray-900 hover:bg-black text-white rounded-2xl font-bold text-sm transition-all shadow-xl hover:shadow-2xl flex items-center justify-center gap-3"
+                className="w-full py-4 bg-gray-900 hover:bg-black text-white rounded-2xl font-davinci text-[16px] transition-all flex items-center justify-center gap-3"
               >
                 <ExternalLink size={18} />
                 <span>Open in New Tab</span>

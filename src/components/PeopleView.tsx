@@ -188,9 +188,9 @@ const PeopleView: React.FC<PeopleViewProps> = ({
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-[32px] w-full max-w-md shadow-2xl overflow-hidden relative">
+          <div className="bg-white rounded-[32px] w-full max-w-md overflow-hidden relative">
             <div className="flex items-center justify-between p-6 border-b border-gray-100">
-              <h2 className="text-[18px] font-black text-gray-900 tracking-tight">
+              <h2 className="text-[28px] leading-tight font-davinci font-normal text-gray-900 tracking-[-0.04em]">
                 {editingPerson ? 'Edit Person' : 'Add New Person'}
               </h2>
               <button
@@ -203,21 +203,21 @@ const PeopleView: React.FC<PeopleViewProps> = ({
             <form onSubmit={handleSubmit} className="p-6">
               <div className="space-y-5">
                 <div>
-                  <label className="block text-[11px] font-black text-gray-500 uppercase tracking-widest mb-2">
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
                     Name
                   </label>
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold text-gray-800 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
+                    className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-medium text-gray-800 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all"
                     placeholder="E.g. David"
                     autoFocus
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-black text-gray-500 uppercase tracking-widest mb-2">
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
                     Color
                   </label>
                   <div className="flex items-center gap-3 flex-wrap">
@@ -228,8 +228,8 @@ const PeopleView: React.FC<PeopleViewProps> = ({
                         onClick={() => setColor(presetColor)}
                         className={`w-10 h-10 rounded-xl transition-all shrink-0 ${
                           color === presetColor
-                            ? 'ring-4 ring-blue-500/20 scale-110 shadow-md'
-                            : 'hover:scale-105 border border-gray-100/50 shadow-sm'
+                            ? 'ring-4 ring-blue-500/20 scale-110'
+                            : 'hover:scale-105 border border-gray-100/50'
                         }`}
                         style={{ backgroundColor: presetColor }}
                         title={presetColor}
@@ -242,8 +242,8 @@ const PeopleView: React.FC<PeopleViewProps> = ({
                           onClick={() => setColor(customColor)}
                           className={`w-10 h-10 rounded-xl transition-all ${
                             color === customColor
-                              ? 'ring-4 ring-blue-500/20 scale-110 shadow-md'
-                              : 'hover:scale-105 border border-gray-100/50 shadow-sm'
+                              ? 'ring-4 ring-blue-500/20 scale-110'
+                              : 'hover:scale-105 border border-gray-100/50'
                           }`}
                           style={{ backgroundColor: customColor }}
                           title={customColor}
@@ -251,7 +251,7 @@ const PeopleView: React.FC<PeopleViewProps> = ({
                         <button
                           type="button"
                           onClick={(e) => removeCustomColor(e, customColor)}
-                          className="absolute -top-2 -right-2 w-5 h-5 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 hover:border-red-200 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="absolute -top-2 -right-2 w-5 h-5 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 hover:border-red-200 opacity-0 group-hover:opacity-100 transition-opacity"
                         >
                           <X size={10} strokeWidth={3} />
                         </button>
@@ -276,7 +276,7 @@ const PeopleView: React.FC<PeopleViewProps> = ({
               <div className="mt-8">
                 <button
                   type="submit"
-                  className="w-full py-4 bg-gray-900 text-white rounded-xl font-black text-[15px] hover:bg-black shadow-lg hover:shadow-xl transition-all active:scale-[0.98]"
+                  className="w-full py-4 bg-gray-900 text-white rounded-xl font-davinci text-[16px] hover:bg-black transition-all active:scale-[0.98]"
                 >
                   {editingPerson ? 'Save Changes' : 'Add Person'}
                 </button>
