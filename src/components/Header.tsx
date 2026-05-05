@@ -57,36 +57,54 @@ const Header: React.FC<HeaderProps> = ({
   isKioskView,
 }) => {
   return (
-    <header className="h-20 px-4 md:px-8 bg-white/95 backdrop-blur-2xl border-b border-gray-100 flex items-center justify-between sticky top-0 z-50 overflow-x-auto no-scrollbar w-full">
+    <header className={`px-4 md:px-8 bg-white/95 backdrop-blur-2xl border-b border-gray-100 flex items-center justify-between sticky top-0 z-50 overflow-x-auto no-scrollbar w-full ${showFiltersButton ? 'h-[105px]' : 'h-20'}`}>
       <div className="flex items-center gap-4 md:gap-5 flex-1 min-w-0">
-        <div className="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-white border border-gray-100 flex items-center justify-center shrink-0">
-          <img
-            src="/apple-touch-icon.png"
-            alt="Two-Eyed People"
-            className="w-7 h-7 md:w-8 md:h-8 object-contain rounded-md"
-          />
-        </div>
+        {showFiltersButton ? (
+          <div className="flex items-center gap-4 min-w-0">
+            <div className="w-14 h-14 rounded-[20px] bg-white border border-gray-100 flex items-center justify-center shrink-0 shadow-sm">
+              <img
+                src="/apple-touch-icon.png"
+                alt="Two-Eyed People"
+                className="w-10 h-10 object-contain rounded-md"
+              />
+            </div>
+            <div className="min-w-0 flex flex-col -ml-1">
+              <h1 className="text-[36px] leading-[36px] font-davinci font-normal text-gray-900 tracking-[-0.045em] translate-y-[2px] -translate-x-[1.5px]">Chronos</h1>
+              <p className="text-gray-500 font-medium text-[13px] tracking-normal mt-0.5 -translate-y-[1px]">Organisational Oracle</p>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-white border border-gray-100 flex items-center justify-center shrink-0">
+              <img
+                src="/apple-touch-icon.png"
+                alt="Two-Eyed People"
+                className="w-7 h-7 md:w-8 md:h-8 object-contain rounded-md"
+              />
+            </div>
 
-        <div className="flex flex-col items-start justify-center gap-0 min-w-[170px] -mt-0.5 -ml-[13px]">
-          <input
-            type="text"
-            value={projectName}
-            onChange={(e) => onProjectNameChange(e.target.value)}
-            readOnly={readOnly}
-            className="font-davinci font-normal text-[24px] leading-none tracking-[-0.045em] text-gray-900 bg-transparent border-none focus:ring-0 placeholder-gray-300 p-0 min-w-[150px] max-w-[240px] md:max-w-[320px]"
-            placeholder="Project Name..."
-          />
-          {(clientName || !readOnly) && (
-            <input
-              type="text"
-              value={clientName}
-              onChange={(e) => onClientNameChange(e.target.value)}
-              readOnly={readOnly}
-              className="-mt-0.5 text-[14px] font-arial font-medium text-gray-400 bg-transparent border-none focus:ring-0 placeholder-gray-200 tracking-normal p-0 leading-tight min-w-[80px] max-w-[220px]"
-              placeholder="Client..."
-            />
-          )}
-        </div>
+            <div className="flex flex-col items-start justify-center gap-0 min-w-[170px] -mt-0.5 -ml-[13px]">
+              <input
+                type="text"
+                value={projectName}
+                onChange={(e) => onProjectNameChange(e.target.value)}
+                readOnly={readOnly}
+                className="font-davinci font-normal text-[24px] leading-none tracking-[-0.045em] text-gray-900 bg-transparent border-none focus:ring-0 placeholder-gray-300 p-0 min-w-[150px] max-w-[240px] md:max-w-[320px]"
+                placeholder="Project Name..."
+              />
+              {(clientName || !readOnly) && (
+                <input
+                  type="text"
+                  value={clientName}
+                  onChange={(e) => onClientNameChange(e.target.value)}
+                  readOnly={readOnly}
+                  className="-mt-0.5 text-[14px] font-arial font-medium text-gray-400 bg-transparent border-none focus:ring-0 placeholder-gray-200 tracking-normal p-0 leading-tight min-w-[80px] max-w-[220px]"
+                  placeholder="Client..."
+                />
+              )}
+            </div>
+          </>
+        )}
 
       </div>
 
