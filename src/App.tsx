@@ -696,6 +696,10 @@ export default function App() {
     applyProjectChange((prev) => ({ ...prev, clientName, updatedAt: Date.now() }));
   };
 
+  const updatePartnerName = (partnerName: string) => {
+    applyProjectChange((prev) => ({ ...prev, partnerName, updatedAt: Date.now() }));
+  };
+
   const moveTask = (id: string, newParentId: string | null | undefined, insertBeforeId?: string) => {
     const normalizedParentId = newParentId === undefined ? null : newParentId;
     
@@ -990,7 +994,11 @@ export default function App() {
 
       const drawPageHeading = (subhead: string) => {
         const headingName = isGlobalMilestonesView ? 'Chronos' : project.name;
-        const headingSub = isGlobalMilestonesView ? 'The Organisational Oracle' : project.clientName;
+        const headingSub = isGlobalMilestonesView 
+          ? 'The Organisational Oracle' 
+          : (project.partnerName && project.partnerName !== project.clientName 
+              ? `${project.partnerName} & ${project.clientName}` 
+              : project.clientName);
 
         pdf.setTextColor(17, 24, 39);
         pdf.setFont('helvetica', 'bold');
@@ -1222,8 +1230,10 @@ export default function App() {
       <Header 
         projectName={project.name}
         clientName={project.clientName}
+        partnerName={project.partnerName}
         onProjectNameChange={updateProjectName}
         onClientNameChange={updateClientName}
+        onPartnerNameChange={updatePartnerName}
         onSave={handleSave}
         onShare={handleShare}
         onHome={handleHome}

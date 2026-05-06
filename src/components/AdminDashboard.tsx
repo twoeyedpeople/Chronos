@@ -17,7 +17,8 @@ const AdminDashboard: React.FC = () => {
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<{ id: string, name: string } | null>(null);
-  const [projectToEdit, setProjectToEdit] = useState<{ id: string, name: string, clientName: string } | null>(null);
+  const [newPartnerName, setNewPartnerName] = useState('');
+  const [projectToEdit, setProjectToEdit] = useState<{ id: string, name: string, clientName: string, partnerName?: string } | null>(null);
 
   useEffect(() => {
     const q = query(collection(db, 'projects'), orderBy('updatedAt', 'desc'));
@@ -46,6 +47,7 @@ const AdminDashboard: React.FC = () => {
         id: projectRef.id,
         name: newProjectName,
         clientName: newClientName,
+        partnerName: newPartnerName,
         tasks: [],
         createdAt: Date.now(),
         updatedAt: Date.now(),
@@ -87,9 +89,11 @@ const AdminDashboard: React.FC = () => {
       id: project.id,
       name: project.name,
       clientName: project.clientName,
+      partnerName: project.partnerName,
     });
     setNewProjectName(project.name);
     setNewClientName(project.clientName);
+    setNewPartnerName(project.partnerName || '');
   };
 
   const handleUpdateProject = async (e: React.FormEvent) => {
@@ -101,6 +105,7 @@ const AdminDashboard: React.FC = () => {
       await updateDoc(doc(db, 'projects', projectToEdit.id), {
         name: newProjectName,
         clientName: newClientName,
+        partnerName: newPartnerName,
         updatedAt: Date.now(),
       });
       setProjectToEdit(null);
@@ -116,7 +121,8 @@ const AdminDashboard: React.FC = () => {
   const filteredProjects = projects
     .filter(p => 
       p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.clientName.toLowerCase().includes(searchQuery.toLowerCase())
+      p.clientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (p.partnerName && p.partnerName.toLowerCase().includes(searchQuery.toLowerCase()))
     )
     .sort((a, b) => {
       const aFeatured = a.name === FEATURED_PROJECT_NAME ? 0 : 1;
@@ -265,7 +271,11 @@ const AdminDashboard: React.FC = () => {
                         project.name === FEATURED_PROJECT_NAME ? 'text-[#1E8A49]' : 'text-gray-900 group-hover:text-[#C21A88]'
                       }`}>
                         <User size={14} className="translate-y-[1px]" />
-                        <span className="text-[13px] font-arial font-medium tracking-normal truncate">{project.clientName}</span>
+                        <span className="text-[13px] font-arial font-medium tracking-normal truncate">
+                          {project.partnerName && project.partnerName !== project.clientName 
+                            ? `${project.partnerName} & ${project.clientName}` 
+                            : project.clientName}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -344,9 +354,19 @@ const AdminDashboard: React.FC = () => {
             
             <form onSubmit={handleCreateProject} className="flex flex-col gap-6">
               <div className="flex flex-col gap-2">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Partner</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Agency XYZ"
+                  value={newPartnerName}
+                  onChange={(e) => setNewPartnerName(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 px-5 text-sm font-medium text-gray-800 placeholder:text-slate-400 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all"
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Client Name</label>
                 <input
-                  autoFocus
                   type="text"
                   required
                   placeholder="e.g. Acme Corp"
@@ -434,9 +454,19 @@ const AdminDashboard: React.FC = () => {
 
             <form onSubmit={handleUpdateProject} className="flex flex-col gap-6">
               <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Client Name</label>
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Partner</label>
                 <input
                   autoFocus
+                  type="text"
+                  value={newPartnerName}
+                  onChange={(e) => setNewPartnerName(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 px-5 text-sm font-medium text-gray-800 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all"
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Client Name</label>
+                <input
                   type="text"
                   required
                   value={newClientName}

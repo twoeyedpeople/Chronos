@@ -23,6 +23,7 @@ export interface Project {
   id: string;
   name: string;
   clientName: string;
+  partnerName?: string;
   tasks: Task[];
   createdAt: number;
   updatedAt: number;
