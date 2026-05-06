@@ -70,7 +70,7 @@ const Header: React.FC<HeaderProps> = ({
             </div>
             <div className="min-w-0 flex flex-col -ml-1">
               <h1 className="text-[36px] leading-[36px] font-davinci font-normal text-gray-900 tracking-[-0.045em] translate-y-[2px] -translate-x-[1.5px]">Chronos</h1>
-              <p className="text-gray-500 font-medium text-[13px] tracking-normal mt-0.5 -translate-y-[1px]">Organisational Oracle</p>
+              <p className="text-gray-500 font-medium text-[13px] tracking-normal mt-0.5 -translate-y-[1px]">The Organisational Oracle</p>
             </div>
           </div>
         ) : (

@@ -344,12 +344,12 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
         style={{ width: totalWidth > 0 ? Math.max(totalWidth, 800) : '100%' }}
       >
         {/* Month Row */}
-        <div className="flex flex-1 border-b border-gray-50">
+        <div className="flex flex-1 border-b border-gray-100">
           {viewMode === 'day'
             ? slotMetrics.map((slot) => (
                 <div
                   key={slot.key}
-                  className="border-r border-gray-50 flex items-center justify-center px-1 text-[10px] font-bold text-gray-500 shrink-0 whitespace-nowrap"
+                  className="border-r border-gray-100 flex items-center justify-center px-1 text-[10px] font-bold text-gray-500 shrink-0 whitespace-nowrap"
                   style={{ width: slot.width }}
                 >
                   {format(slot.start, 'MMM')}
@@ -358,7 +358,7 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
             : monthHeaderSegments.map((segment) => (
                 <div
                   key={segment.key}
-                  className="border-r border-gray-50 flex items-center justify-center px-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 shrink-0"
+                  className="border-r border-gray-100 flex items-center justify-center px-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 shrink-0"
                   style={{ width: segment.width }}
                 >
                   {segment.label}
@@ -392,7 +392,7 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
             return (
               <div
                 key={slot.key || i}
-                className={`border-r border-gray-50 flex items-center justify-center text-[10px] font-bold uppercase tracking-normal shrink-0 transition-colors ${
+                className={`border-r border-gray-100 flex items-center justify-center text-[10px] font-bold uppercase tracking-normal shrink-0 transition-colors ${
                   weekendColumn ? 'bg-gray-100/30 text-gray-400' : 'text-gray-400'
                 }`}
                 style={{ width: slot.width }}
@@ -413,7 +413,7 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
             return (
               <div
                 key={slot.key || i}
-                className={`h-full border-r border-gray-50/50 ${
+                className={`h-full border-r border-gray-100 ${
                   i === 0 ? 'border-l border-l-gray-300 z-10' : ''
                 } ${weekendColumn ? 'bg-gray-50/40' : ''}`}
                 style={{ width: slot.width }}

@@ -990,7 +990,7 @@ export default function App() {
 
       const drawPageHeading = (subhead: string) => {
         const headingName = isGlobalMilestonesView ? 'Chronos' : project.name;
-        const headingSub = isGlobalMilestonesView ? 'Organisational Oracle' : project.clientName;
+        const headingSub = isGlobalMilestonesView ? 'The Organisational Oracle' : project.clientName;
 
         pdf.setTextColor(17, 24, 39);
         pdf.setFont('helvetica', 'bold');
