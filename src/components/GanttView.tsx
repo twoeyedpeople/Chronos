@@ -280,11 +280,21 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
       }));
     }
 
-    return slotMetrics.map((slot) => ({
-      key: slot.key,
-      label: format(slot.start, 'MMM yy'),
-      width: slot.width,
-    }));
+    const segments: { key: string; label: string; width: number }[] = [];
+    slotMetrics.forEach((slot) => {
+      const label = format(addDays(slot.start, 3), 'MMM yy'); // Use middle of the week for month detection
+      const last = segments[segments.length - 1];
+      if (last && last.label === label) {
+        last.width += slot.width;
+      } else {
+        segments.push({
+          key: slot.key,
+          label,
+          width: slot.width,
+        });
+      }
+    });
+    return segments;
   }, [slotMetrics, viewMode]);
 
   const displayRows = useMemo(() => {
@@ -310,15 +320,14 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
 
         const dependencyPosition = getTaskPosition(dependencyRow.task);
         const taskPosition = getTaskPosition(task);
-        const startX = dependencyPosition.left + dependencyPosition.width;
+        const startX = Math.max(dependencyPosition.left, dependencyPosition.left + dependencyPosition.width - 12);
+        const startY = 8 + dependencyRow.index * 32 + 25;
         const endX = taskPosition.left;
-        const startY = 8 + dependencyRow.index * 32 + 16;
         const endY = 8 + index * 32 + 16;
-        const midX = startX + Math.max(12, (endX - startX) / 2);
 
         return {
           id: `${dependencyRow.task.id}-${task.id}`,
-          path: `M ${startX} ${startY} H ${midX} V ${endY} H ${endX}`,
+          path: `M ${startX} ${startY} V ${endY} H ${endX}`,
         };
       })
       .filter((line): line is { id: string; path: string } => Boolean(line));
@@ -330,9 +339,12 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
       className="flex-1 overflow-auto bg-white relative border-l border-gray-100"
     >
       {/* Header */}
-      <div className="sticky top-0 z-40 bg-white border-b border-gray-100 flex flex-col shadow-sm">
+      <div 
+        className="sticky top-0 z-40 bg-white border-b border-gray-100 flex flex-col shadow-sm h-16"
+        style={{ width: totalWidth > 0 ? Math.max(totalWidth, 800) : '100%' }}
+      >
         {/* Month Row */}
-        <div className="flex h-[23px] border-b border-gray-50">
+        <div className="flex flex-1 border-b border-gray-50">
           {viewMode === 'day'
             ? slotMetrics.map((slot) => (
                 <div
@@ -354,7 +366,7 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
               ))}
         </div>
         {/* Day/Week Row */}
-        <div className="flex h-[23px]">
+        <div className="flex flex-1">
           {slotMetrics.map((slot, i) => {
             let label: React.ReactNode = '';
             if (viewMode === 'day') {
@@ -475,7 +487,7 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
                   <motion.div
                     layoutId={task.id}
                     onMouseDown={(e) => handleMouseDown(e, task.id, 'move')}
-                    className={`absolute select-none rotate-45 ${
+                    className={`absolute top-1/2 -translate-y-1/2 select-none rotate-45 ${
                       readOnly ? 'cursor-default' : 'cursor-move'
                     } ${task.isExternal ? 'bg-[#FFC2E8]' : 'bg-gray-950'} ${isDraggingThis ? 'z-30 ring-4 ring-gray-900/10' : ''}`}
                     style={{ left, width, height: MILESTONE_SIZE }}
@@ -489,7 +501,7 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
                     <motion.div
                       layoutId={task.id}
                       onMouseDown={(e) => handleMouseDown(e, task.id, 'move')}
-                      className={`absolute h-4.5 rounded-full flex items-center justify-center px-1 select-none overflow-hidden ${
+                      className={`absolute top-1/2 -translate-y-1/2 h-4.5 rounded-full flex items-center justify-center px-1 select-none overflow-hidden ${
                         readOnly ? 'cursor-default' : 'cursor-move'
                       } ${
                         isDraggingThis
