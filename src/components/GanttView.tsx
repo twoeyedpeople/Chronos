@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { Task, ViewMode, Person } from '../types';
-import { format, addDays, differenceInDays, startOfDay, isWithinInterval, parseISO, startOfWeek, endOfWeek, eachDayOfInterval, eachWeekOfInterval, startOfMonth, endOfMonth, eachMonthOfInterval, isWeekend, addBusinessDays, differenceInBusinessDays, addWeeks } from 'date-fns';
+import { format, addDays, differenceInDays, startOfDay, parseISO, startOfWeek, endOfWeek, eachDayOfInterval, eachWeekOfInterval, startOfMonth, endOfMonth, eachMonthOfInterval, addBusinessDays, addWeeks } from 'date-fns';
 import { motion } from 'motion/react';
 
 
@@ -27,6 +27,11 @@ interface DragState {
 }
 
 const MILESTONE_SIZE = 14;
+const BASE_COLUMN_WIDTH: Record<ViewMode, number> = {
+  day: 58,
+  week: 132,
+  month: 172,
+};
 
 const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, onUpdateTask, readOnly, showProjectName, refreshTick, people = [] }) => {
   const [dragState, setDragState] = useState<DragState | null>(null);
@@ -103,7 +108,7 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
     return { minDate: start, maxDate: end };
   }, [tasks, viewMode]);
 
-  const dayWidth = 40 * zoom;
+  const columnWidth = BASE_COLUMN_WIDTH[viewMode] * zoom;
 
   const timeSlots = useMemo(() => {
     if (viewMode === 'day') {
@@ -115,29 +120,72 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
     }
   }, [minDate, maxDate, viewMode]);
 
+  const slotMetrics = useMemo(() => {
+    let left = 0;
+
+    return timeSlots.map((date) => {
+      const start =
+        viewMode === 'day'
+          ? startOfDay(date)
+          : viewMode === 'week'
+            ? startOfWeek(date, { weekStartsOn: 1 })
+            : startOfMonth(date);
+      const endExclusive =
+        viewMode === 'day'
+          ? addDays(start, 1)
+          : viewMode === 'week'
+            ? addDays(start, 7)
+            : addDays(endOfMonth(start), 1);
+      const daysInSlot = Math.max(1, differenceInDays(endExclusive, start));
+      const width = columnWidth;
+      const metric = {
+        key: start.toISOString(),
+        start,
+        endExclusive,
+        left,
+        width,
+        daysInSlot,
+        dayUnitWidth: width / daysInSlot,
+      };
+
+      left += width;
+      return metric;
+    });
+  }, [timeSlots, viewMode, columnWidth]);
+
   const totalWidth = useMemo(() => {
-    if (viewMode === 'day') {
-      return timeSlots.length * dayWidth;
-    } else if (viewMode === 'week') {
-      return timeSlots.length * 7 * dayWidth;
-    } else {
-      return timeSlots.reduce((acc, date) => {
-        const days = differenceInDays(addDays(endOfMonth(date), 1), startOfMonth(date));
-        return acc + days * dayWidth;
-      }, 0);
+    const lastSlot = slotMetrics[slotMetrics.length - 1];
+    return lastSlot ? lastSlot.left + lastSlot.width : 0;
+  }, [slotMetrics]);
+
+  const getDateOffset = (date: Date) => {
+    const day = startOfDay(date);
+    const matchingSlot = slotMetrics.find((slot) => day >= slot.start && day < slot.endExclusive);
+
+    if (matchingSlot) {
+      const daysFromSlotStart = differenceInDays(day, matchingSlot.start);
+      return matchingSlot.left + daysFromSlotStart * matchingSlot.dayUnitWidth;
     }
-  }, [timeSlots, viewMode, dayWidth]);
+
+    if (day < minDate) return 0;
+    return totalWidth;
+  };
+
+  const getDisplayDayWidth = (date: Date) => {
+    const day = startOfDay(date);
+    const matchingSlot = slotMetrics.find((slot) => day >= slot.start && day < slot.endExclusive);
+    return matchingSlot?.dayUnitWidth ?? columnWidth;
+  };
 
   const getTaskPosition = (task: Task) => {
     const start = parseISO(task.startDate);
     const end = parseISO(task.endDate);
-    const left = differenceInDays(start, minDate) * dayWidth;
+    const left = getDateOffset(start);
     if (task.isMilestone) {
-      return { left: left + dayWidth / 2 - MILESTONE_SIZE / 2, width: MILESTONE_SIZE };
+      return { left: left + getDisplayDayWidth(start) / 2 - MILESTONE_SIZE / 2, width: MILESTONE_SIZE };
     }
 
-    // Task width should be (days + 1) * dayWidth to cover the full end day column
-    const width = (differenceInDays(end, start) + 1) * dayWidth;
+    const width = Math.max(8, getDateOffset(addDays(end, 1)) - left);
     return { left, width };
   };
 
@@ -168,7 +216,13 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
       if (!dragState) return;
 
       const deltaX = e.clientX - dragState.startX;
-      const daysDelta = Math.round(deltaX / dayWidth);
+      const dragUnitWidth =
+        viewMode === 'day'
+          ? columnWidth
+          : viewMode === 'week'
+            ? columnWidth / 7
+            : columnWidth / 30;
+      const daysDelta = Math.round(deltaX / dragUnitWidth);
 
       if (daysDelta !== 0) {
         const task = tasks.find(t => t.id === dragState.taskId);
@@ -207,52 +261,68 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [dragState, dayWidth, tasks, onUpdateTask]);
+  }, [dragState, columnWidth, viewMode, tasks, onUpdateTask]);
 
   useEffect(() => {
     if (containerRef.current) {
       const today = startOfDay(new Date());
-      const daysFromMin = differenceInDays(today, minDate);
-      const scrollLeft = daysFromMin * dayWidth - 100; // Offset by 100px to show a bit of the past
+      const scrollLeft = getDateOffset(today) - 100; // Offset by 100px to show a bit of the past
       containerRef.current.scrollLeft = Math.max(0, scrollLeft);
     }
-  }, [minDate, dayWidth]);
+  }, [minDate, totalWidth]);
 
   const monthHeaderSegments = useMemo(() => {
     if (viewMode === 'month') {
-      return eachMonthOfInterval({ start: minDate, end: maxDate }).map((month) => {
-        const monthStart = startOfMonth(month);
-        const monthEnd = endOfMonth(month);
-        const displayStart = monthStart < minDate ? minDate : monthStart;
-        const displayEnd = monthEnd > maxDate ? maxDate : monthEnd;
-        const daysInSegment = differenceInDays(addDays(displayEnd, 1), displayStart);
-
-        return {
-          key: month.toISOString(),
-          label: format(month, 'MMMM yyyy'),
-          width: daysInSegment * dayWidth,
-        };
-      });
+      return slotMetrics.map((slot) => ({
+        key: slot.key,
+        label: format(slot.start, 'yyyy'),
+        width: slot.width,
+      }));
     }
 
-    const weekStarts = eachWeekOfInterval(
-      { start: minDate, end: maxDate },
-      { weekStartsOn: 1 },
-    );
+    return slotMetrics.map((slot) => ({
+      key: slot.key,
+      label: format(slot.start, 'MMM yy'),
+      width: slot.width,
+    }));
+  }, [slotMetrics, viewMode]);
 
-    return weekStarts.map((weekStart) => {
-      const visibleStart = weekStart < minDate ? minDate : weekStart;
-      const visibleEnd = addDays(weekStart, 6) > maxDate ? maxDate : addDays(weekStart, 6);
-      const daysInSegment = differenceInDays(addDays(visibleEnd, 1), visibleStart);
-      const labelDate = addDays(weekStart, 3);
+  const displayRows = useMemo(() => {
+    return isGlobalMilestonesView && globalMilestoneSections
+      ? globalMilestoneSections.flatMap((section) => [
+          { kind: 'divider' as const, id: section.id, label: section.label },
+          ...section.items.map((task) => ({ kind: 'task' as const, task })),
+        ])
+      : tasks.map((task) => ({ kind: 'task' as const, task }));
+  }, [globalMilestoneSections, isGlobalMilestonesView, tasks]);
 
-      return {
-        key: weekStart.toISOString(),
-        label: format(labelDate, 'MMMM yyyy'),
-        width: daysInSegment * dayWidth,
-      };
-    });
-  }, [minDate, maxDate, viewMode, dayWidth]);
+  const dependencyLines = useMemo(() => {
+    const taskRows = displayRows
+      .map((row, index) => (row.kind === 'task' ? { task: row.task, index } : null))
+      .filter((row): row is { task: Task; index: number } => Boolean(row));
+
+    return taskRows
+      .map(({ task, index }) => {
+        if (!task.dependencyId) return null;
+
+        const dependencyRow = taskRows.find((row) => row.task.id === task.dependencyId);
+        if (!dependencyRow) return null;
+
+        const dependencyPosition = getTaskPosition(dependencyRow.task);
+        const taskPosition = getTaskPosition(task);
+        const startX = dependencyPosition.left + dependencyPosition.width;
+        const endX = taskPosition.left;
+        const startY = 8 + dependencyRow.index * 32 + 16;
+        const endY = 8 + index * 32 + 16;
+        const midX = startX + Math.max(12, (endX - startX) / 2);
+
+        return {
+          id: `${dependencyRow.task.id}-${task.id}`,
+          path: `M ${startX} ${startY} H ${midX} V ${endY} H ${endX}`,
+        };
+      })
+      .filter((line): line is { id: string; path: string } => Boolean(line));
+  }, [displayRows, getTaskPosition]);
 
   return (
     <div 
@@ -260,45 +330,60 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
       className="flex-1 overflow-auto bg-white relative border-l border-gray-100"
     >
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-gray-100 flex flex-col">
+      <div className="sticky top-0 z-40 bg-white border-b border-gray-100 flex flex-col shadow-sm">
         {/* Month Row */}
-        <div className="flex h-8 border-b border-gray-50">
-          {monthHeaderSegments.map((segment) => (
-            <div
-              key={segment.key}
-              className="border-r border-gray-50 flex items-center justify-center px-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 shrink-0"
-              style={{ width: segment.width }}
-            >
-              {segment.label}
-            </div>
-          ))}
+        <div className="flex h-[23px] border-b border-gray-50">
+          {viewMode === 'day'
+            ? slotMetrics.map((slot) => (
+                <div
+                  key={slot.key}
+                  className="border-r border-gray-50 flex items-center justify-center px-1 text-[10px] font-bold text-gray-500 shrink-0 whitespace-nowrap"
+                  style={{ width: slot.width }}
+                >
+                  {format(slot.start, 'MMM')}
+                </div>
+              ))
+            : monthHeaderSegments.map((segment) => (
+                <div
+                  key={segment.key}
+                  className="border-r border-gray-50 flex items-center justify-center px-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 shrink-0"
+                  style={{ width: segment.width }}
+                >
+                  {segment.label}
+                </div>
+              ))}
         </div>
         {/* Day/Week Row */}
-        <div className="flex h-8">
-          {timeSlots.map((date, i) => {
-            let label = '';
-            let width = dayWidth;
+        <div className="flex h-[23px]">
+          {slotMetrics.map((slot, i) => {
+            let label: React.ReactNode = '';
             if (viewMode === 'day') {
-              label = format(date, 'dd');
+              label = (
+                <span className="inline-flex items-center justify-center gap-1 whitespace-nowrap leading-none">
+                  <span className="text-[9px]">{format(slot.start, 'EEE')}</span>
+                  <span>{format(slot.start, 'dd')}</span>
+                </span>
+              );
             } else if (viewMode === 'week') {
-              const monday = startOfWeek(date, { weekStartsOn: 1 });
-              label = `WK ${format(monday, 'w')} (${format(monday, 'dd MMM')})`;
-              width = 7 * dayWidth;
+              label = (
+                <span className="flex flex-col items-center leading-none gap-0.5">
+                  <span className="text-[8px]">Week {format(slot.start, 'w')}</span>
+                  <span>{format(slot.start, 'dd MMM')}</span>
+                </span>
+              );
             } else {
-              label = format(date, 'MMM yyyy');
-              const daysInMonth = differenceInDays(addDays(endOfMonth(date), 1), startOfMonth(date));
-              width = daysInMonth * dayWidth;
+              label = format(slot.start, 'MMMM');
             }
 
-            const isWeekend = viewMode === 'day' && (format(date, 'i') === '6' || format(date, 'i') === '7');
+            const weekendColumn = viewMode === 'day' && (format(slot.start, 'i') === '6' || format(slot.start, 'i') === '7');
 
             return (
               <div
-                key={i}
-                className={`border-r border-gray-50 flex items-center justify-center text-[9px] font-bold uppercase tracking-wider shrink-0 transition-colors ${
-                  isWeekend ? 'bg-gray-100/30 text-gray-400' : 'text-gray-400'
+                key={slot.key || i}
+                className={`border-r border-gray-50 flex items-center justify-center text-[10px] font-bold uppercase tracking-normal shrink-0 transition-colors ${
+                  weekendColumn ? 'bg-gray-100/30 text-gray-400' : 'text-gray-400'
                 }`}
-                style={{ width }}
+                style={{ width: slot.width }}
               >
                 {label}
               </div>
@@ -311,16 +396,15 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
       <div className="relative" style={{ width: totalWidth, minHeight: 'calc(100% - 4rem)' }}>
         {/* Grid Lines */}
         <div className="absolute inset-0 pointer-events-none flex">
-          {eachDayOfInterval({ start: minDate, end: maxDate }).map((date, i) => {
-            const isWeekend = format(date, 'i') === '6' || format(date, 'i') === '7';
-            const isMonday = format(date, 'i') === '1';
+          {slotMetrics.map((slot, i) => {
+            const weekendColumn = viewMode === 'day' && (format(slot.start, 'i') === '6' || format(slot.start, 'i') === '7');
             return (
               <div
-                key={i}
+                key={slot.key || i}
                 className={`h-full border-r border-gray-50/50 ${
-                  isMonday ? 'border-l border-l-gray-300 z-10' : ''
-                } ${isWeekend ? 'bg-gray-50/40' : ''}`}
-                style={{ width: dayWidth }}
+                  i === 0 ? 'border-l border-l-gray-300 z-10' : ''
+                } ${weekendColumn ? 'bg-gray-50/40' : ''}`}
+                style={{ width: slot.width }}
               />
             );
           })}
@@ -329,17 +413,35 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
         {/* Today Line */}
         <div
           className="absolute top-0 bottom-0 w-px bg-red-400 z-10"
-          style={{ left: differenceInDays(startOfDay(new Date()), minDate) * dayWidth }}
+          style={{ left: getDateOffset(startOfDay(new Date())) }}
         >
           <div className="w-2 h-2 rounded-full bg-red-400 -ml-[3.5px] mt-[-4px]" />
         </div>
 
+        {dependencyLines.length > 0 && (
+          <svg
+            className="absolute inset-0 pointer-events-none z-10 overflow-visible"
+            width={totalWidth}
+            height="100%"
+          >
+            {dependencyLines.map((line) => (
+              <path
+                key={line.id}
+                d={line.path}
+                fill="none"
+                stroke="#94A3B8"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeDasharray="3 3"
+              />
+            ))}
+          </svg>
+        )}
+
         {/* Tasks */}
         <div className="relative pt-2 pb-20 w-full">
-        {(isGlobalMilestonesView && globalMilestoneSections
-          ? globalMilestoneSections.flatMap((section) => [{ kind: 'divider' as const, id: section.id, label: section.label }, ...section.items.map((task) => ({ kind: 'task' as const, task }))])
-          : tasks.map((task) => ({ kind: 'task' as const, task }))
-        ).map((row) => {
+        {displayRows.map((row) => {
           if (row.kind === 'divider') {
             return (
               <div key={row.id} className="h-8 flex items-center border-y border-gray-100 bg-white/95 backdrop-blur-sm">
