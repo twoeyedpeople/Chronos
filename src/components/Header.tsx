@@ -108,7 +108,7 @@ const Header: React.FC<HeaderProps> = ({
 
       </div>
 
-      <div className="flex items-center justify-center gap-4 md:gap-5 shrink-0 mx-4">
+      <div className="flex items-center justify-center gap-3 md:gap-4 shrink-0 mx-4">
         <button
           onClick={onHome}
           disabled={isSaving}
@@ -146,7 +146,7 @@ const Header: React.FC<HeaderProps> = ({
         )}
 
         {!isMobile && !hideMainViewToggle && !readOnly && (
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-3 md:gap-4">
             <button
               onClick={() => onMainViewModeChange('people')}
               className={`w-9 h-9 rounded-full border border-gray-100 flex items-center justify-center transition-all shrink-0 ${
@@ -175,7 +175,7 @@ const Header: React.FC<HeaderProps> = ({
         )}
 
         {showFiltersButton && (
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-3 md:gap-4">
             <button
               onClick={onOpenFilters}
               className="w-9 h-9 rounded-xl border border-gray-100 bg-gray-50 text-gray-500 hover:text-gray-800 hover:bg-white  transition-all flex items-center justify-center relative shrink-0"
