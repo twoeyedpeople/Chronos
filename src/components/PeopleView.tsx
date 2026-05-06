@@ -133,7 +133,7 @@ const PeopleView: React.FC<PeopleViewProps> = ({
           className="flex items-center justify-center gap-1.5 px-4 h-[39px] bg-[#FFC2E8] text-[#C21A88] rounded-xl font-arial font-bold text-[13px] hover:scale-[1.02] transition-all active:scale-95 shrink-0"
         >
           <Plus size={14} strokeWidth={3} />
-          <span className="uppercase tracking-tight mt-0.5">Add</span>
+          <span className="uppercase tracking-tight mt-0.5">New</span>
         </button>
       </header>
 
