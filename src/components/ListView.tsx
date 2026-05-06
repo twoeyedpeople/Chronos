@@ -823,6 +823,77 @@ interface ListViewProps {
   people: Person[];
 }
 
+const GLOBAL_MILESTONE_MESSAGES = [
+  'The deadlines are humming softly in the walls.',
+  'A brave milestone has entered the chat.',
+  'Somewhere, a producer just whispered "on track."',
+  'Tiny calendar goblins are moving things into place.',
+  'This timeline has opinions and several dramatic reveals.',
+  'Progress is real, even when it looks suspiciously elegant.',
+  'The future is colour-coded and mildly theatrical.',
+  'A milestone is just a secret with a date attached.',
+  'The agency machine purrs, blinks, and requests snacks.',
+  'Everything is unfolding exactly as mysteriously intended.',
+  'Momentum has put on a nice jacket today.',
+  'Several important things are happening, probably on purpose.',
+  'A wild deliverable has appeared in the tall grass.',
+  'The coffee machine is dispensing pure motivation today.',
+  'Do not startle the timeline, it is easily frightened.',
+  'A single tear of joy was just shed over a spreadsheet.',
+  'Please ensure all deadlines remain in their upright and locked positions.',
+  'We are currently operating at maximum whimsy.',
+  'Hold on, we are realigning the chakras of this Gantt chart.',
+  'The strategic objective is currently wearing sunglasses.',
+  'Just another day of turning caffeine into deliverables.',
+  'Warning: approaching dangerous levels of synergy.',
+  'A wild client approval is rumoured to be nearby.',
+  'The pixels have unionised, but negotiations are going well.',
+  'This milestone was brought to you by sheer willpower.',
+  'Hold tight, we are downloading more time from the internet.',
+  'Nobody panic, but a task was just completed on schedule.',
+  'The timeline demands tribute in the form of completed tasks.',
+  'The algorithm is pleased with your recent life choices.',
+  'The Gantt chart is currently undergoing a spiritual awakening.',
+  'A stray keyframe was just safely returned to its timeline.',
+  'We\'ve temporarily replaced the PM with a magic 8-ball.',
+  'The brief has been successfully deciphered by our top scholars.',
+  'A rogue post-it note has declared itself the new project manager.',
+  'Currently manifesting a flawless deployment.',
+  'Please do not feed the creeping scope.',
+  'The design team is performing a ritual to summon white space.',
+  'The timeline is behaving surprisingly well today. Don\'t jinx it.',
+  'We are carefully carrying the deliverables across a tightrope.',
+  'The font weights are currently locked in a delicate debate.',
+  'A developer is quietly bargaining with an API.',
+  'The strategy deck has achieved self-awareness.',
+  'Pouring one out for the features left on the cutting room floor.',
+  'The hex codes are aligned. The stars have spoken.',
+  'The wireframes are slowly transforming into reality.',
+  'We are politely asking the cache to clear itself.',
+  'A mysterious force is nudging the pixels exactly one pixel left.',
+  'The moodboard has started to dictate our lunch choices.',
+  'A wild typo was narrowly avoided by sheer intuition.',
+  'We are currently translating \'make it pop\' into actionable steps.',
+  'The deadline is approaching, but we are walking casually.',
+  'A rare moment of perfect synergy was just recorded.',
+  'The project files are whispering secrets to each other at night.'
+];
+
+let shuffledMessages: string[] = [];
+let messageIndex = 0;
+
+function getNextMotivationalMessage() {
+  if (shuffledMessages.length === 0 || messageIndex >= shuffledMessages.length) {
+    shuffledMessages = [...GLOBAL_MILESTONE_MESSAGES];
+    for (let i = shuffledMessages.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffledMessages[i], shuffledMessages[j]] = [shuffledMessages[j], shuffledMessages[i]];
+    }
+    messageIndex = 0;
+  }
+  return shuffledMessages[messageIndex++];
+}
+
 const ListView: React.FC<ListViewProps> = ({
   tasks,
   expandedTasks,
@@ -837,76 +908,20 @@ const ListView: React.FC<ListViewProps> = ({
   isKioskView,
   people,
 }) => {
-  const GLOBAL_MILESTONE_MESSAGES = [
-    'The deadlines are humming softly in the walls.',
-    'A brave milestone has entered the chat.',
-    'Somewhere, a producer just whispered "on track."',
-    'Tiny calendar goblins are moving things into place.',
-    'This timeline has opinions and several dramatic reveals.',
-    'Progress is real, even when it looks suspiciously elegant.',
-    'The future is colour-coded and mildly theatrical.',
-    'A milestone is just a secret with a date attached.',
-    'The agency machine purrs, blinks, and requests snacks.',
-    'Everything is unfolding exactly as mysteriously intended.',
-    'Momentum has put on a nice jacket today.',
-    'Several important things are happening, probably on purpose.',
-    'A wild deliverable has appeared in the tall grass.',
-    'The coffee machine is dispensing pure motivation today.',
-    'Do not startle the timeline, it is easily frightened.',
-    'A single tear of joy was just shed over a spreadsheet.',
-    'Please ensure all deadlines remain in their upright and locked positions.',
-    'We are currently operating at maximum whimsy.',
-    'Hold on, we are realigning the chakras of this Gantt chart.',
-    'The strategic objective is currently wearing sunglasses.',
-    'Just another day of turning caffeine into deliverables.',
-    'Warning: approaching dangerous levels of synergy.',
-    'A wild client approval is rumoured to be nearby.',
-    'The pixels have unionised, but negotiations are going well.',
-    'This milestone was brought to you by sheer willpower.',
-    'Hold tight, we are downloading more time from the internet.',
-    'Nobody panic, but a task was just completed on schedule.',
-    'The timeline demands tribute in the form of completed tasks.',
-    'The algorithm is pleased with your recent life choices.',
-    'The Gantt chart is currently undergoing a spiritual awakening.',
-    'A stray keyframe was just safely returned to its timeline.',
-    'We\'ve temporarily replaced the PM with a magic 8-ball.',
-    'The brief has been successfully deciphered by our top scholars.',
-    'A rogue post-it note has declared itself the new project manager.',
-    'Currently manifesting a flawless deployment.',
-    'Please do not feed the creeping scope.',
-    'The design team is performing a ritual to summon white space.',
-    'The timeline is behaving surprisingly well today. Don\'t jinx it.',
-    'We are carefully carrying the deliverables across a tightrope.',
-    'The font weights are currently locked in a delicate debate.',
-    'A developer is quietly bargaining with an API.',
-    'The strategy deck has achieved self-awareness.',
-    'Pouring one out for the features left on the cutting room floor.',
-    'The hex codes are aligned. The stars have spoken.',
-    'The wireframes are slowly transforming into reality.',
-    'We are politely asking the cache to clear itself.',
-    'A mysterious force is nudging the pixels exactly one pixel left.',
-    'The moodboard has started to dictate our lunch choices.',
-    'A wild typo was narrowly avoided by sheer intuition.',
-    'We are currently translating \'make it pop\' into actionable steps.',
-    'The deadline is approaching, but we are walking casually.',
-    'A rare moment of perfect synergy was just recorded.',
-    'The project files are whispering secrets to each other at night.'
-  ];
+
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
   const isGlobalMilestonesView = Boolean(readOnly && showProjectName);
   const isGlobalMilestonesKioskView = Boolean(isGlobalMilestonesView && isKioskView);
   const NEST_DRAG_THRESHOLD = 28;
   const [globalMilestoneMessage, setGlobalMilestoneMessage] = useState(
-    GLOBAL_MILESTONE_MESSAGES[0],
+    getNextMotivationalMessage()
   );
 
   useEffect(() => {
     if (!isGlobalMilestonesView && !readOnly) return;
 
-    const nextMessage =
-      GLOBAL_MILESTONE_MESSAGES[Math.floor(Math.random() * GLOBAL_MILESTONE_MESSAGES.length)];
-    setGlobalMilestoneMessage(nextMessage);
+    setGlobalMilestoneMessage(getNextMotivationalMessage());
   }, [isGlobalMilestonesView, readOnly, refreshTick]);
 
   const sensors = useSensors(
