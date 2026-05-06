@@ -61,20 +61,20 @@ const Header: React.FC<HeaderProps> = ({
   isKioskView,
 }) => {
   return (
-    <header className={`px-4 md:px-8 bg-white/95 backdrop-blur-2xl border-b border-gray-100 flex items-center justify-between sticky top-0 z-50 overflow-x-auto no-scrollbar w-full ${showFiltersButton ? 'h-[105px]' : 'h-20'}`}>
+    <header className={`px-4 md:px-8 bg-white/95 backdrop-blur-2xl border-b border-gray-100 flex items-center justify-between sticky top-0 z-50 overflow-x-auto no-scrollbar w-full ${showFiltersButton ? 'h-[95px]' : 'h-20'}`}>
       <div className="flex items-center gap-4 md:gap-5 flex-1 min-w-0">
         {showFiltersButton ? (
-          <div className="flex items-center gap-4 min-w-0">
-            <div className="w-14 h-14 rounded-[20px] bg-white border border-gray-100 flex items-center justify-center shrink-0 shadow-sm">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-11 h-11 rounded-2xl bg-white border border-gray-100 flex items-center justify-center shrink-0 shadow-sm">
               <img
                 src="/apple-touch-icon.png"
                 alt="Two-Eyed People"
-                className="w-10 h-10 object-contain rounded-md"
+                className="w-8 h-8 object-contain rounded-md"
               />
             </div>
-            <div className="min-w-0 flex flex-col -ml-1">
-              <h1 className="text-[36px] leading-[36px] font-davinci font-normal text-gray-900 tracking-[-0.045em] translate-y-[2px] -translate-x-[1.5px]">Chronos</h1>
-              <p className="text-gray-500 font-medium text-[13px] tracking-normal mt-0.5 -translate-y-[1px]">The Organisational Oracle</p>
+            <div className="min-w-0 flex flex-col -ml-[3px]">
+              <h1 className="text-[29px] leading-[29px] font-davinci font-normal text-gray-900 tracking-[-0.045em] translate-y-[2px] -translate-x-[1px]">Chronos</h1>
+              <p className="text-gray-500 font-medium text-[10.5px] tracking-normal mt-0.5 -translate-y-[1px]">The Organisational Oracle</p>
             </div>
           </div>
         ) : (

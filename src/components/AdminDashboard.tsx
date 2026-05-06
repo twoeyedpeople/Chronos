@@ -150,25 +150,25 @@ const AdminDashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 font-sans px-8 pt-8 pb-10">
       <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col gap-6 mb-8">
+        <div className="flex flex-col gap-3.5 mb-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4 min-w-0">
-              <div className="w-14 h-14 rounded-2xl bg-white border border-gray-100 flex items-center justify-center shrink-0">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-11 h-11 rounded-2xl bg-white border border-gray-100 flex items-center justify-center shrink-0">
                 <img
                   src="/apple-touch-icon.png"
                   alt="Two-Eyed People"
-                  className="w-10 h-10 object-contain rounded-md"
+                  className="w-8 h-8 object-contain rounded-md"
                 />
               </div>
-              <div className="min-w-0 flex flex-col -ml-1">
-                <h1 className="text-[36px] leading-[36px] font-davinci font-normal text-gray-900 tracking-[-0.045em] translate-y-[2px] -translate-x-[1.5px]">Chronos</h1>
-                <p className="text-gray-500 font-medium text-[13px] tracking-normal mt-0.5 -translate-y-[1px]">The Organisational Oracle</p>
+              <div className="min-w-0 flex flex-col -ml-[3px]">
+                <h1 className="text-[29px] leading-[29px] font-davinci font-normal text-gray-900 tracking-[-0.045em] translate-y-[2px] -translate-x-[1px]">Chronos</h1>
+                <p className="text-gray-500 font-medium text-[10.5px] tracking-normal mt-0.5 -translate-y-[1px]">The Organisational Oracle</p>
               </div>
             </div>
             <img 
               src="/twoeyedpeople-logo-black.png" 
               alt="Two-Eyed People" 
-              className="h-[45px] w-auto object-contain object-right shrink-0 mt-[15px] translate-x-1" 
+              className="h-[38px] w-auto object-contain object-right shrink-0 mt-[15px] translate-x-1" 
             />
           </div>
           
