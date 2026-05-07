@@ -1135,72 +1135,72 @@ export default function App() {
     );
   }
 
-  if (!projectId && !isGlobalMilestonesView && mainViewMode !== 'people') {
-    if (dashboardGateEnabled && !isDashboardUnlocked) {
-      return (
-        <div className="min-h-screen bg-gray-50 font-sans flex items-center justify-center p-6">
-          <div className="w-full max-w-md bg-white border border-gray-100 rounded-[32px] shadow-xl shadow-gray-200/40 p-8 flex flex-col gap-6">
-            <div className="flex flex-col gap-2">
-              <img
-                src="https://twoeyedpeople.com/img/2EP_Logotype.svg"
-                alt="Two-Eyed People"
-                className="h-6 w-fit opacity-80"
-                referrerPolicy="no-referrer"
+  if (!isReadOnly && dashboardGateEnabled && !isDashboardUnlocked) {
+    return (
+      <div className="min-h-screen bg-gray-50 font-sans flex items-center justify-center p-6">
+        <div className="w-full max-w-md bg-white border border-gray-100 rounded-[32px] shadow-xl shadow-gray-200/40 p-8 flex flex-col gap-6">
+          <div className="flex flex-col gap-2">
+            <img
+              src="https://twoeyedpeople.com/img/2EP_Logotype.svg"
+              alt="Two-Eyed People"
+              className="h-6 w-fit opacity-80"
+              referrerPolicy="no-referrer"
+            />
+            <h1 className="text-3xl font-black text-gray-900 tracking-tight">Halt! Turn back, or present the sacred key.</h1>
+            <div className="flex flex-col gap-3 text-sm text-gray-500 leading-relaxed">
+              <p>Behind this lock sits a collection of secret timelines, mysterious builds and ongoing Two-Eyed People operations.</p>
+              <p>Some of it is real. Some of it is… less explainable.</p>
+              <p className="font-black uppercase tracking-[0.14em] text-gray-700">Enter at your own risk</p>
+            </div>
+          </div>
+
+          <form
+            className="flex flex-col gap-3"
+            onSubmit={(event) => {
+              event.preventDefault();
+              if (dashboardPasswordInput === dashboardPassword) {
+                window.sessionStorage.setItem(DASHBOARD_SESSION_KEY, 'true');
+                setIsDashboardUnlocked(true);
+                setDashboardPasswordError('');
+                setDashboardPasswordInput('');
+                return;
+              }
+
+              setDashboardPasswordError('That password did not match.');
+            }}
+          >
+            <div className="flex flex-col gap-1.5">
+              <input
+                autoFocus
+                type="password"
+                value={dashboardPasswordInput}
+                onChange={(event) => {
+                  setDashboardPasswordInput(event.target.value);
+                  if (dashboardPasswordError) {
+                    setDashboardPasswordError('');
+                  }
+                }}
+                className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 px-5 text-sm font-bold text-gray-800 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all"
+                placeholder="Enter password"
               />
-              <h1 className="text-3xl font-black text-gray-900 tracking-tight">Halt! Turn back, or present the sacred key.</h1>
-              <div className="flex flex-col gap-3 text-sm text-gray-500 leading-relaxed">
-                <p>Behind this lock sits a collection of secret timelines, mysterious builds and ongoing Two-Eyed People operations.</p>
-                <p>Some of it is real. Some of it is… less explainable.</p>
-                <p className="font-black uppercase tracking-[0.14em] text-gray-700">Enter at your own risk</p>
-              </div>
+              {dashboardPasswordError && (
+                <p className="text-sm font-medium text-red-500">{dashboardPasswordError}</p>
+              )}
             </div>
 
-            <form
-              className="flex flex-col gap-3"
-              onSubmit={(event) => {
-                event.preventDefault();
-                if (dashboardPasswordInput === dashboardPassword) {
-                  window.sessionStorage.setItem(DASHBOARD_SESSION_KEY, 'true');
-                  setIsDashboardUnlocked(true);
-                  setDashboardPasswordError('');
-                  setDashboardPasswordInput('');
-                  return;
-                }
-
-                setDashboardPasswordError('That password did not match.');
-              }}
+            <button
+              type="submit"
+              className="w-full px-6 py-4 bg-gray-950 text-white rounded-2xl font-black text-sm shadow-xl shadow-gray-200 hover:bg-black transition-all active:scale-[0.99]"
             >
-              <div className="flex flex-col gap-1.5">
-                <input
-                  autoFocus
-                  type="password"
-                  value={dashboardPasswordInput}
-                  onChange={(event) => {
-                    setDashboardPasswordInput(event.target.value);
-                    if (dashboardPasswordError) {
-                      setDashboardPasswordError('');
-                    }
-                  }}
-                  className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 px-5 text-sm font-bold text-gray-800 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all"
-                  placeholder="Enter password"
-                />
-                {dashboardPasswordError && (
-                  <p className="text-sm font-medium text-red-500">{dashboardPasswordError}</p>
-                )}
-              </div>
-
-              <button
-                type="submit"
-                className="w-full px-6 py-4 bg-gray-950 text-white rounded-2xl font-black text-sm shadow-xl shadow-gray-200 hover:bg-black transition-all active:scale-[0.99]"
-              >
-                Unlock Dashboard
-              </button>
-            </form>
-          </div>
+              Unlock Dashboard
+            </button>
+          </form>
         </div>
-      );
-    }
+      </div>
+    );
+  }
 
+  if (!projectId && !isGlobalMilestonesView && mainViewMode !== 'people') {
     return <AdminDashboard />;
   }
 

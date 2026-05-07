@@ -121,7 +121,7 @@ const Header: React.FC<HeaderProps> = ({
       </div>
 
       <div className="flex items-center justify-center gap-3 md:gap-4 shrink-0 mx-4">
-        {!readOnly && (
+        {(!readOnly || showFiltersButton) && (
           <button
             onClick={onHome}
             disabled={isSaving}
@@ -159,7 +159,7 @@ const Header: React.FC<HeaderProps> = ({
           </div>
         )}
 
-        {!isMobile && !hideMainViewToggle && !readOnly && (
+        {!isMobile && !hideMainViewToggle && (!readOnly || showFiltersButton) && (
           <div className="flex items-center gap-3 md:gap-4">
             <button
               onClick={() => onMainViewModeChange('people')}
