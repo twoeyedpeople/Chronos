@@ -468,12 +468,12 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                           e.currentTarget.blur();
                         }
                       }}
-                      className={`bg-white border border-gray-100 rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500/10 outline-none font-bold w-full text-center ${
+                      className={`bg-white border border-gray-100 rounded-lg px-2 focus:ring-2 focus:ring-blue-500/10 outline-none font-bold w-full text-center h-[26px] ${
                         task.isMilestone
                           ? task.isExternal
-                            ? 'text-[#FFC2E8] text-[22px] leading-none'
-                            : 'text-gray-900 text-[22px] leading-none'
-                          : 'text-gray-600 text-[11px]'
+                            ? 'text-[#FFC2E8] text-[22px] leading-none py-0'
+                            : 'text-gray-900 text-[22px] leading-none py-0'
+                          : 'text-gray-600 text-[11px] py-1'
                       }`}
                       placeholder="0"
                     />
@@ -922,6 +922,12 @@ const ListView: React.FC<ListViewProps> = ({
     if (!isGlobalMilestonesView && !readOnly) return;
 
     setGlobalMilestoneMessage(getNextMotivationalMessage());
+
+    const interval = window.setInterval(() => {
+      setGlobalMilestoneMessage(getNextMotivationalMessage());
+    }, 60_000);
+
+    return () => window.clearInterval(interval);
   }, [isGlobalMilestonesView, readOnly, refreshTick]);
 
   const sensors = useSensors(

@@ -457,10 +457,10 @@ export default function App() {
 
       if (snapshot.empty && peopleData.length === 0) {
         const defaults = [
-          { id: uuidv4(), name: 'David', color: '#3B82F6', createdAt: Date.now() },
-          { id: uuidv4(), name: 'Erik', color: '#10B981', createdAt: Date.now() + 1 },
-          { id: uuidv4(), name: 'Josh', color: '#F59E0B', createdAt: Date.now() + 2 },
-          { id: uuidv4(), name: 'Alice', color: '#8B5CF6', createdAt: Date.now() + 3 },
+          { id: 'default-david', name: 'David', color: '#3B82F6', createdAt: Date.now() },
+          { id: 'default-erik', name: 'Erik', color: '#10B981', createdAt: Date.now() + 1 },
+          { id: 'default-josh', name: 'Josh', color: '#F59E0B', createdAt: Date.now() + 2 },
+          { id: 'default-alice', name: 'Alice', color: '#8B5CF6', createdAt: Date.now() + 3 },
         ];
         defaults.forEach(person => setDoc(doc(db, 'people', person.id), person));
       }
