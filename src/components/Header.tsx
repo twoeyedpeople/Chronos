@@ -97,7 +97,7 @@ const Header: React.FC<HeaderProps> = ({
                 placeholder="Project Name..."
               />
               {(clientName || partnerName || !readOnly) && (
-                <div className="flex items-center gap-1 -mt-0.5">
+                <div className="flex items-center gap-1 -mt-0.5 translate-y-[2px]">
                   {partnerName && partnerName !== clientName && (
                     <>
                       <span className="text-[12px] font-arial font-medium text-gray-400">{partnerName}</span>
@@ -121,14 +121,16 @@ const Header: React.FC<HeaderProps> = ({
       </div>
 
       <div className="flex items-center justify-center gap-3 md:gap-4 shrink-0 mx-4">
-        <button
-          onClick={onHome}
-          disabled={isSaving}
-          className="w-9 h-9 rounded-full border border-gray-100 bg-gray-50/80 text-gray-400 hover:text-blue-600 hover:bg-white  transition-all flex items-center justify-center disabled:opacity-50 shrink-0"
-          title="Save and return home"
-        >
-          <Home size={15} className="translate-y-[1px]" />
-        </button>
+        {!readOnly && (
+          <button
+            onClick={onHome}
+            disabled={isSaving}
+            className="w-9 h-9 rounded-full border border-gray-100 bg-gray-50/80 text-gray-400 hover:text-blue-600 hover:bg-white  transition-all flex items-center justify-center disabled:opacity-50 shrink-0"
+            title="Save and return home"
+          >
+            <Home size={15} className="translate-y-[1px]" />
+          </button>
+        )}
 
         {!isMobile && !hideMainViewToggle && (
           <div className="flex items-center gap-1 bg-gray-50 border border-gray-100 rounded-2xl p-1 shrink-0 h-[36px]">
