@@ -666,6 +666,58 @@ export default function App() {
   };
 
   const deleteTask = (id: string) => {
+    if (isGlobalMilestonesView) {
+      const globalTask = project.tasks.find((task) => task.id === id);
+      const sourceProjectId = globalTask?.sourceProjectId;
+      const sourceTaskId = id.includes('::') ? id.split('::')[1] : id;
+
+      if (!globalTask || !sourceProjectId) {
+        return;
+      }
+
+      setProject((prev) => ({
+        ...prev,
+        tasks: prev.tasks.filter((task) => task.id !== id),
+      }));
+
+      void (async () => {
+        try {
+          const sourceProjectRef = doc(db, 'projects', sourceProjectId);
+          const sourceSnapshot = await getDocFromServer(sourceProjectRef);
+
+          if (!sourceSnapshot.exists()) {
+            throw new Error(`Source project ${sourceProjectId} not found`);
+          }
+
+          const sourceProject = withProjectId(sourceSnapshot.data() as Partial<Project>, sourceSnapshot.id);
+          
+          const getDescendantIds = (parentId: string, tasks: Task[]): string[] => {
+            const children = tasks.filter(t => t.parentId === parentId);
+            return children.reduce((acc, child) => [...acc, child.id, ...getDescendantIds(child.id, tasks)], [] as string[]);
+          };
+          const deletedIds = new Set([sourceTaskId, ...getDescendantIds(sourceTaskId, sourceProject.tasks)]);
+          
+          let updatedTasks = sourceProject.tasks
+            .filter(t => !deletedIds.has(t.id))
+            .map(t => t.dependencyId && deletedIds.has(t.dependencyId) ? { ...t, dependencyId: undefined } : t);
+
+          const deletedTask = sourceProject.tasks.find((task) => task.id === sourceTaskId);
+          updatedTasks = rollupTaskDates(updatedTasks, deletedTask?.parentId);
+
+          const safeTasks = JSON.parse(JSON.stringify(updatedTasks));
+          await updateDoc(sourceProjectRef, {
+            tasks: safeTasks,
+            updatedAt: Date.now(),
+          });
+        } catch (error) {
+          handleFirestoreError(error, OperationType.UPDATE, `projects/${sourceProjectId}`);
+          window.alert('That milestone could not be deleted right now. Please try again.');
+        }
+      })();
+
+      return;
+    }
+
     applyProjectChange((prev) => {
       const getDescendantIds = (parentId: string): string[] => {
         const children = prev.tasks.filter(t => t.parentId === parentId);

@@ -524,21 +524,19 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
           </div>
         )}
 
-        {!isGlobalMilestonesView && (
-          <div className="w-24 px-2 shrink-0 text-right">
-            {!readOnly && (
-              <div className="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button
-                  onClick={() => onDeleteTask(task.id)}
-                  className="p-1.5 hover:bg-red-50 hover:text-red-500 rounded-lg transition-all"
-                  title="Delete task"
-                >
-                  <Trash2 size={14} />
-                </button>
-              </div>
-            )}
-          </div>
-        )}
+        <div className="w-24 px-2 shrink-0 text-right">
+          {(!readOnly || isGlobalMilestonesView) && (
+            <div className="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button
+                onClick={() => onDeleteTask(task.id)}
+                className="p-1.5 hover:bg-red-50 hover:text-red-500 rounded-lg transition-all"
+                title="Delete task"
+              >
+                <Trash2 size={14} />
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="md:hidden px-3 py-3">
@@ -683,7 +681,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                 )}
               </div>
 
-              {!readOnly && (
+              {(!readOnly || isGlobalMilestonesView) && (
                 <button
                   onClick={() => onDeleteTask(task.id)}
                   className="p-1.5 hover:bg-red-50 hover:text-red-500 rounded-lg transition-all shrink-0"
