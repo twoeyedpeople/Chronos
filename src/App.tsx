@@ -956,7 +956,13 @@ export default function App() {
       }
 
       if (selectedMilestonePersonIds.length > 0) {
-        personMatch = !!task.assigneeId && selectedMilestonePersonIds.includes(task.assigneeId);
+        const taskAssigneeIds =
+          task.assigneeIds && task.assigneeIds.length > 0
+            ? task.assigneeIds
+            : task.assigneeId
+              ? [task.assigneeId]
+              : [];
+        personMatch = taskAssigneeIds.some((assigneeId) => selectedMilestonePersonIds.includes(assigneeId));
       }
 
       return projectMatch && personMatch;

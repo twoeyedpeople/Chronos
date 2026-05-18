@@ -33,6 +33,53 @@ const BASE_COLUMN_WIDTH: Record<ViewMode, number> = {
   month: 172,
 };
 
+const getTaskAssigneeIds = (task: Task) => {
+  const ids = task.assigneeIds?.filter(Boolean) ?? [];
+  if (ids.length > 0) {
+    return Array.from(new Set(ids));
+  }
+  return task.assigneeId ? [task.assigneeId] : [];
+};
+
+const getTaskAssignees = (task: Task, people: Person[]) => {
+  const assigneeIds = getTaskAssigneeIds(task);
+  return assigneeIds
+    .map((id) => people.find((person) => person.id === id))
+    .filter((person): person is Person => Boolean(person));
+};
+
+const AssigneeMarks: React.FC<{ assignees: Person[]; isDone?: boolean; compact?: boolean }> = ({ assignees, isDone, compact }) => {
+  if (assignees.length === 0) return null;
+
+  if (assignees.length === 1) {
+    const [assignee] = assignees;
+    return (
+      <span
+        className={`${compact ? 'h-4 px-1.5 text-[8px]' : 'h-5 px-2 text-[9px]'} inline-flex items-center rounded-md font-bold text-white shrink-0`}
+        style={{ backgroundColor: isDone ? '#E8E8E8' : assignee.color }}
+        title={assignee.name}
+      >
+        <span className="translate-y-[1px] truncate max-w-20">{assignee.name}</span>
+      </span>
+    );
+  }
+
+  return (
+    <span className="inline-flex items-center gap-1 shrink-0">
+      {assignees.map((assignee) => (
+        <span
+          key={assignee.id}
+          className={`${compact ? 'h-4 w-4 text-[8px]' : 'h-5 w-5 text-[10px]'} inline-flex items-center justify-center rounded-md font-black text-white uppercase shrink-0`}
+          style={{ backgroundColor: isDone ? '#E8E8E8' : assignee.color }}
+          title={assignee.name}
+        >
+          {assignee.name.trim().charAt(0) || '?'}
+        </span>
+      ))}
+    </span>
+  );
+};
+
 const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, onUpdateTask, readOnly, showProjectName, refreshTick, people = [] }) => {
   const [dragState, setDragState] = useState<DragState | null>(null);
   const [previewDelta, setPreviewDelta] = useState(0);
@@ -468,6 +515,8 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
           let { left, width } = getTaskPosition(task);
           const isDraggingThis = dragState?.taskId === task.id;
           const isMilestone = Boolean(task.isMilestone);
+          const assignees = getTaskAssignees(task, people);
+          const primaryAssignee = assignees.length === 1 ? assignees[0] : null;
 
           if (isDraggingThis) {
             if (dragState.type === 'move') {
@@ -496,7 +545,6 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
                     title={`${task.name} milestone`}
                   />
                 ) : (() => {
-                  const assignee = people.find(p => p.id === task.assigneeId);
                   return (
                     <motion.div
                       layoutId={task.id}
@@ -505,20 +553,20 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
                         readOnly ? 'cursor-default' : 'cursor-move'
                       } ${
                         isDraggingThis
-                          ? task.isExternal ? 'bg-[#FFC2E8]/20 border border-[#FFC2E8] z-30' : (assignee ? 'z-30 opacity-90' : 'bg-[#5F7CFF] z-30')
-                          : task.isExternal ? 'bg-[#FFC2E8]/20 border border-[#FFC2E8]' : (assignee ? 'border border-black/10' : 'bg-[#5F7CFF]/20 border border-[#5F7CFF]/30')
+                          ? task.isExternal ? 'bg-[#FFC2E8]/20 border border-[#FFC2E8] z-30' : (primaryAssignee ? 'z-30 opacity-90' : 'bg-[#5F7CFF] z-30')
+                          : task.isExternal ? 'bg-[#FFC2E8]/20 border border-[#FFC2E8]' : (primaryAssignee ? 'border border-black/10' : 'bg-[#5F7CFF]/20 border border-[#5F7CFF]/30')
                       }`}
                       style={{ 
                         left, 
                         width, 
-                        ...(assignee ? { backgroundColor: assignee.color } : {}) 
+                        ...(primaryAssignee ? { backgroundColor: primaryAssignee.color } : {}) 
                       }}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                     >
-                      {assignee && width > 40 && (
-                        <span className="text-[8px] font-bold text-white truncate z-10 pointer-events-none px-1 translate-y-[1px]">
-                          {assignee.name}
+                      {assignees.length > 0 && width > 40 && (
+                        <span className="z-10 pointer-events-none">
+                          <AssigneeMarks assignees={assignees} isDone={task.isDone} compact />
                         </span>
                       )}
                       {/* Resize Handles */}
@@ -541,12 +589,13 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
               {/* Permanent Label to the right as requested */}
               {!isDraggingThis && (
                 <div 
-                  className={`absolute text-[10px] whitespace-nowrap ${parentIds.has(task.id) ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-arial font-medium text-gray-800'} ${
+                  className={`absolute flex items-center gap-1.5 text-[10px] whitespace-nowrap ${parentIds.has(task.id) ? 'font-black text-gray-900 uppercase tracking-tight' : 'font-arial font-medium text-gray-800'} ${
                     task.isDone && isGlobalMilestonesView ? 'opacity-50' : ''
                   }`}
                   style={{ left: parentIds.has(task.id) ? 12 : left + width + 8 }}
                 >
-                  {task.name}
+                  <span>{task.name}</span>
+                  {!parentIds.has(task.id) && <AssigneeMarks assignees={assignees} isDone={task.isDone} compact />}
                 </div>
               )}
             </div>

@@ -44,45 +44,110 @@ interface SortableTaskRowProps {
   people: Person[];
 }
 
-const AssigneeDropdown: React.FC<{ task: Task, people: Person[], onAssign: (personId: string | null) => void, readOnly?: boolean }> = ({ task, people, onAssign, readOnly }) => {
+const getTaskAssigneeIds = (task: Task) => {
+  const ids = task.assigneeIds?.filter(Boolean) ?? [];
+  if (ids.length > 0) {
+    return Array.from(new Set(ids));
+  }
+  return task.assigneeId ? [task.assigneeId] : [];
+};
+
+const getTaskAssignees = (task: Task, people: Person[]) => {
+  const assigneeIds = getTaskAssigneeIds(task);
+  return assigneeIds
+    .map((id) => people.find((person) => person.id === id))
+    .filter((person): person is Person => Boolean(person));
+};
+
+const AssigneePills: React.FC<{ assignees: Person[]; isDone?: boolean; compact?: boolean }> = ({ assignees, isDone, compact }) => {
+  if (assignees.length === 0) return null;
+
+  if (assignees.length === 1) {
+    const [assignee] = assignees;
+    return (
+      <div
+        className={`${compact ? 'h-[18px] px-1.5 text-[8px]' : 'h-[20px] px-2 text-[9px]'} inline-flex items-center rounded-md font-bold text-white shrink-0`}
+        style={{ backgroundColor: isDone ? '#E8E8E8' : assignee.color }}
+        title={assignee.name}
+      >
+        <span className="translate-y-[1px] inline-block truncate max-w-24">{assignee.name}</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-1 shrink-0">
+      {assignees.map((assignee) => (
+        <div
+          key={assignee.id}
+          className={`${compact ? 'h-[18px] w-[18px] text-[9px]' : 'h-[20px] w-[20px] text-[10px]'} inline-flex items-center justify-center rounded-md font-black text-white uppercase shrink-0`}
+          style={{ backgroundColor: isDone ? '#E8E8E8' : assignee.color }}
+          title={assignee.name}
+        >
+          {assignee.name.trim().charAt(0) || '?'}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const AssigneeDropdown: React.FC<{ task: Task, people: Person[], onAssign: (personIds: string[]) => void, readOnly?: boolean }> = ({ task, people, onAssign, readOnly }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const assignee = people.find(p => p.id === task.assigneeId);
+  const selectedIds = getTaskAssigneeIds(task);
+  const assignees = getTaskAssignees(task, people);
+  const hasAssignees = assignees.length > 0;
+
+  const togglePerson = (personId: string) => {
+    if (selectedIds.includes(personId)) {
+      onAssign(selectedIds.filter((id) => id !== personId));
+      return;
+    }
+    onAssign([...selectedIds, personId]);
+  };
 
   return (
     <div className="relative flex items-center">
       <button 
         onClick={() => !readOnly && setIsOpen(!isOpen)}
         disabled={readOnly}
-        className={`flex items-center justify-center border transition-all ${
-          assignee 
-            ? 'h-[20px] px-2 rounded-md border-transparent text-[9px] font-bold text-white  hover:opacity-90' 
+        className={`flex items-center justify-center border transition-all min-w-[64px] ${
+          hasAssignees
+            ? 'min-h-[24px] px-1.5 rounded-lg border-gray-100 bg-white hover:border-gray-200' 
             : 'h-[20px] px-2 rounded-md border-gray-200 bg-white text-[9px] font-bold text-gray-400 hover:border-gray-300 hover:text-gray-500 uppercase'
         }`}
-        style={assignee ? { backgroundColor: task.isDone ? '#E8E8E8' : assignee.color } : {}}
       >
-        <span className="translate-y-[1px] inline-block">{assignee ? assignee.name : 'ASSIGN'}</span>
+        {hasAssignees ? (
+          <AssigneePills assignees={assignees} isDone={task.isDone} compact />
+        ) : (
+          <span className="translate-y-[1px] inline-block">ASSIGN</span>
+        )}
       </button>
 
       {isOpen && !readOnly && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-          <div className="absolute top-full left-0 mt-1 w-32 bg-white rounded-lg  border border-gray-100 z-50 py-1 overflow-hidden">
+          <div className="absolute top-full left-0 mt-1 w-44 bg-white rounded-xl border border-gray-100 z-50 p-1.5 shadow-xl shadow-gray-900/10">
             {people.map(person => (
-              <button
+              <label
                 key={person.id}
-                onClick={() => { onAssign(person.id); setIsOpen(false); }}
-                className="w-full text-left px-3 py-1.5 text-[11px] font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors"
+                className="w-full text-left px-2.5 py-2 text-[11px] font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors rounded-lg cursor-pointer"
               >
-                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: person.color }} />
-                {person.name}
-              </button>
+                <input
+                  type="checkbox"
+                  checked={selectedIds.includes(person.id)}
+                  onChange={() => togglePerson(person.id)}
+                  className="w-3 h-3 rounded border-gray-200 accent-[#5F7CFF]"
+                />
+                <div className="w-3 h-3 rounded-[3px]" style={{ backgroundColor: person.color }} />
+                <span className="truncate">{person.name}</span>
+              </label>
             ))}
-            {task.assigneeId && (
+            {selectedIds.length > 0 && (
               <>
                 <div className="h-px bg-gray-100 my-1" />
                 <button
-                  onClick={() => { onAssign(null); setIsOpen(false); }}
-                  className="w-full text-left px-3 py-1.5 text-[11px] font-bold text-red-500 hover:bg-red-50 transition-colors"
+                  onClick={() => onAssign([])}
+                  className="w-full text-left px-2.5 py-2 text-[11px] font-bold text-red-500 hover:bg-red-50 transition-colors rounded-lg"
                 >
                   Clear
                 </button>
@@ -141,6 +206,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
   const globalMilestoneDateNode = <>{globalMilestoneDateText}</>;
   const mobileStartDateText = format(parseISO(task.startDate), 'dd MMM yy');
   const mobileEndDateText = format(parseISO(task.endDate), 'dd MMM yy');
+  const assignees = getTaskAssignees(task, people);
 
   useEffect(() => {
     setDaysInput(task.isMilestone ? '◆' : String(days));
@@ -328,18 +394,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                 placeholder={isFolder ? "Folder name..." : "Task name..."}
               />
             )}
-            {isGlobalMilestonesView && task.assigneeId && (() => {
-              const assignee = people.find(p => p.id === task.assigneeId);
-              if (!assignee) return null;
-              return (
-                <div 
-                  className={`px-1.5 py-0.5 rounded text-[9px] font-bold text-white shrink-0 `}
-                  style={{ backgroundColor: task.isDone ? '#E8E8E8' : assignee.color }}
-                >
-                  <span className="translate-y-[1px] inline-block">{assignee.name}</span>
-                </div>
-              );
-            })()}
+            {isGlobalMilestonesView && <AssigneePills assignees={assignees} isDone={task.isDone} />}
           </div>
           {!isFolder && !readOnly && (
             <>
@@ -407,7 +462,10 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
             <AssigneeDropdown 
               task={task} 
               people={people} 
-              onAssign={(personId) => onUpdateTask(task.id, { assigneeId: personId || undefined })} 
+              onAssign={(personIds) => onUpdateTask(task.id, {
+                assigneeIds: personIds.length > 0 ? personIds : undefined,
+                assigneeId: personIds[0] || undefined,
+              })} 
               readOnly={readOnly} 
             />
           </div>
@@ -628,6 +686,24 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                   }`}
                   placeholder={isFolder ? "Folder name..." : "Task name..."}
                 />
+
+                {!isFolder && (
+                  <div className="mt-1.5 flex items-center gap-1.5">
+                    {!readOnly ? (
+                      <AssigneeDropdown
+                        task={task}
+                        people={people}
+                        onAssign={(personIds) => onUpdateTask(task.id, {
+                          assigneeIds: personIds.length > 0 ? personIds : undefined,
+                          assigneeId: personIds[0] || undefined,
+                        })}
+                        readOnly={readOnly}
+                      />
+                    ) : (
+                      <AssigneePills assignees={assignees} isDone={task.isDone} compact />
+                    )}
+                  </div>
+                )}
 
                 {!isFolder && !readOnly && (
                   <div className="flex flex-wrap gap-2 mt-2">
