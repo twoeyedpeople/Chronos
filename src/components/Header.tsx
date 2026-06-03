@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, RotateCcw, Share2, ZoomIn, ZoomOut, LayoutList, GanttChart, Download, SlidersHorizontal, User, Search } from 'lucide-react';
+import { Home, RotateCcw, Share2, ZoomIn, ZoomOut, LayoutList, GanttChart, SlidersHorizontal, User, Search } from 'lucide-react';
 import { MainViewMode, ViewMode } from '../types';
 
 interface HeaderProps {
@@ -262,20 +262,30 @@ const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center gap-2">
           {readOnly && (
             <>
-              <span className="text-[9px] font-black text-gray-400 uppercase tracking-[0.18em] whitespace-nowrap">
-                View Only
-              </span>
-              <button
-                onClick={onDownloadPdf}
-                className="w-8 h-8 bg-[#FFC2E8] rounded-xl transition-all   active:scale-95 shrink-0 flex items-center justify-center hover:opacity-90 overflow-hidden"
-                title="Download PDF"
-              >
-                <img 
-                  src="/download-icon.png" 
-                  alt="Download" 
-                  className="w-8 h-8 object-cover rounded-full scale-[0.75] mix-blend-screen" 
+              {!showFiltersButton && (
+                <span className="text-[9px] font-black text-gray-400 uppercase tracking-[0.18em] whitespace-nowrap">
+                  View Only
+                </span>
+              )}
+              {showFiltersButton ? (
+                <img
+                  src="/twoeyedpeople-logo-black.png"
+                  alt="Two-Eyed People"
+                  className="h-[38px] w-auto object-contain object-right shrink-0 mt-[15px] translate-x-1"
                 />
-              </button>
+              ) : (
+                <button
+                  onClick={onDownloadPdf}
+                  className="w-8 h-8 bg-[#FFC2E8] rounded-xl transition-all   active:scale-95 shrink-0 flex items-center justify-center hover:opacity-90 overflow-hidden"
+                  title="Download PDF"
+                >
+                  <img
+                    src="/download-icon.png"
+                    alt="Download"
+                    className="w-8 h-8 object-cover rounded-full scale-[0.75] mix-blend-screen"
+                  />
+                </button>
+              )}
             </>
           )}
           {!readOnly && (

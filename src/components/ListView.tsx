@@ -1317,11 +1317,13 @@ const ListView: React.FC<ListViewProps> = ({
                       {globalMilestoneMessage}
                     </p>
                   </div>
-                  <img
-                    src="/twoeyedpeople-logo-black.png"
-                    alt="Two-Eyed People"
-                    className="h-10 w-auto shrink-0 object-contain"
-                  />
+                  {!isGlobalMilestonesView && (
+                    <img
+                      src="/twoeyedpeople-logo-black.png"
+                      alt="Two-Eyed People"
+                      className="h-10 w-auto shrink-0 object-contain"
+                    />
+                  )}
                 </div>
               )}
             </div>
