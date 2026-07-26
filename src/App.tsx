@@ -143,7 +143,7 @@ function buildGlobalMilestonesProject(projects: Project[]): Project {
           dependencyId: undefined,
           dependencyType: undefined,
           startDate: task.startDate,
-          endDate: task.startDate,
+          endDate: task.endDate,
           sourceProjectId: project.id,
           sourceProjectName: project.name,
           sourceClientName: project.clientName,
@@ -151,7 +151,7 @@ function buildGlobalMilestonesProject(projects: Project[]): Project {
         })),
     )
     .sort((a, b) => {
-      const dateDiff = parseISO(a.startDate).getTime() - parseISO(b.startDate).getTime();
+      const dateDiff = parseISO(a.endDate).getTime() - parseISO(b.endDate).getTime();
       if (dateDiff !== 0) return dateDiff;
 
       const projectDiff = (a.sourceProjectName || '').localeCompare(b.sourceProjectName || '');
@@ -1136,7 +1136,7 @@ export default function App() {
           ? [
               String(index + 1),
               taskLabel,
-              format(parseISO(task.startDate), 'dd MMM yyyy'),
+              format(parseISO(task.endDate), 'dd MMM yyyy'),
             ]
           : [
               String(index + 1),

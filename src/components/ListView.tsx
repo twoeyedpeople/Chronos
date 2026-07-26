@@ -197,10 +197,10 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
   const [daysInput, setDaysInput] = useState(task.isMilestone ? '◆' : String(days));
   const isGlobalMilestonesView = Boolean(readOnly && showProjectName);
   const isGlobalMilestonesKioskView = Boolean(isGlobalMilestonesView && isKioskView);
-  const globalMilestoneDateText = format(parseISO(task.startDate), 'EEE, dd MMM yy');
+  const globalMilestoneDateText = format(parseISO(task.endDate), 'EEE, dd MMM yy');
   const now = startOfDay(new Date());
   const thisWeekEnd = endOfWeek(now, { weekStartsOn: 1 });
-  const taskDate = startOfDay(parseISO(task.startDate));
+  const taskDate = startOfDay(parseISO(task.endDate));
   const isThisWeek = taskDate <= thisWeekEnd;
   
   const globalMilestoneDateNode = <>{globalMilestoneDateText}</>;
@@ -1053,7 +1053,7 @@ const ListView: React.FC<ListViewProps> = ({
     ];
 
     flattenedTasks.forEach((entry) => {
-      const taskDate = startOfDay(parseISO(entry.task.startDate));
+      const taskDate = startOfDay(parseISO(entry.task.endDate));
 
       if (taskDate <= thisWeekEnd) {
         buckets[0].items.push(entry);

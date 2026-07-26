@@ -70,7 +70,7 @@ const SortableSidebarRow: React.FC<SortableSidebarRowProps> = ({
     transition,
   };
   const isGlobalMilestonesView = Boolean(readOnly && showProjectName);
-  const taskStartDate = format(parseISO(task.startDate), isGlobalMilestonesView ? 'EEE, dd MMM yy' : 'dd MMM yyyy');
+  const taskStartDate = format(parseISO(isGlobalMilestonesView ? task.endDate : task.startDate), isGlobalMilestonesView ? 'EEE, dd MMM yy' : 'dd MMM yyyy');
   const taskEndDate = format(parseISO(task.endDate), 'dd MMM yyyy');
   const canToggleDoneFromDot = isGlobalMilestonesView && !hasSubtasks;
 
@@ -295,7 +295,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     ];
 
     flattenedTasks.forEach((entry) => {
-      const taskDate = startOfDay(parseISO(entry.task.startDate));
+      const taskDate = startOfDay(parseISO(entry.task.endDate));
 
       if (taskDate <= thisWeekEnd) {
         buckets[0].items.push(entry);
