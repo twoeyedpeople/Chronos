@@ -285,7 +285,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
       } ${isOver ? 'bg-blue-100/50 ring-2 ring-blue-500/20' : ''}`}
     >
       <div className={`hidden md:flex items-center px-4 ${isGlobalMilestonesKioskView ? 'h-12' : 'h-10'}`}>
-        <div className={`${isGlobalMilestonesView ? 'w-[12px]' : 'w-8'} shrink-0 flex items-center justify-center`}>
+        <div className="w-8 shrink-0 flex items-center justify-center">
           {!readOnly && (
             <div 
               {...attributes} 
