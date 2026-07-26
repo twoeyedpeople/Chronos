@@ -475,7 +475,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
           <>
             <div className={`${isGlobalMilestonesKioskView ? 'w-48' : 'w-32'} px-2 shrink-0`}>
               {isGlobalMilestonesView ? (
-                <div className={`${isGlobalMilestonesKioskView ? 'text-[14px]' : 'text-[13px]'} ${task.isDone ? '!text-[#E8E8E8]' : 'text-gray-600'} font-bold w-full tabular-nums whitespace-nowrap`}>
+                <div className={`${isGlobalMilestonesKioskView ? 'text-[14px]' : 'text-[13px]'} ${task.isDone ? '!text-[#E8E8E8]' : 'text-gray-600'} font-bold w-full tabular-nums whitespace-nowrap text-right`}>
                   {globalMilestoneDateNode}
                 </div>
               ) : (
@@ -772,7 +772,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
               <div className={`mt-3 ${readOnly ? '' : isGlobalMilestonesView ? 'grid grid-cols-1' : 'grid grid-cols-2'} ${readOnly ? '' : 'gap-2'}`}>
                 {readOnly ? (
                   isGlobalMilestonesView ? (
-                    <div className="text-[12px] font-bold text-gray-600 tabular-nums leading-tight">
+                    <div className="text-[12px] font-bold text-gray-600 tabular-nums leading-tight text-right">
                       {globalMilestoneDateNode}
                     </div>
                   ) : (

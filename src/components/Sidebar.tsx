@@ -165,7 +165,7 @@ const SortableSidebarRow: React.FC<SortableSidebarRowProps> = ({
       {readOnly && (
         <>
           {isGlobalMilestonesView ? (
-            <div className="w-28 shrink-0 px-2 text-[9px] font-bold text-gray-500 tabular-nums">
+            <div className="w-28 shrink-0 px-2 text-right text-[9px] font-bold text-gray-500 tabular-nums">
               {taskStartDate}
             </div>
           ) : (
