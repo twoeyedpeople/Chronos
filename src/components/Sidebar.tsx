@@ -165,7 +165,7 @@ const SortableSidebarRow: React.FC<SortableSidebarRowProps> = ({
       {readOnly && (
         <>
           {isGlobalMilestonesView ? (
-            <div className="w-28 shrink-0 px-2 text-right text-[9px] font-bold text-gray-500 tabular-nums">
+            <div className="w-28 shrink-0 px-2 text-center text-[9px] font-bold text-gray-500 tabular-nums">
               {taskStartDate}
             </div>
           ) : (
@@ -321,7 +321,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               {showProjectName ? 'Project / Milestone' : 'Tasks'}
             </span>
             {isGlobalMilestonesView ? (
-              <span className="w-28 px-2 text-[8px] font-black text-gray-400 uppercase tracking-widest">Date</span>
+              <span className="w-28 px-2 text-center text-[8px] font-black text-gray-400 uppercase tracking-widest">Date</span>
             ) : (
               <>
                 <span className="w-24 px-2 text-[8px] font-black text-gray-400 uppercase tracking-widest">Start</span>

@@ -475,7 +475,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
           <>
             <div className={`${isGlobalMilestonesKioskView ? 'w-48' : 'w-32'} px-2 shrink-0`}>
               {isGlobalMilestonesView ? (
-                <div className={`${isGlobalMilestonesKioskView ? 'text-[14px]' : 'text-[13px]'} ${task.isDone ? '!text-[#E8E8E8]' : 'text-gray-600'} font-bold w-full tabular-nums whitespace-nowrap text-right`}>
+                <div className={`${isGlobalMilestonesKioskView ? 'text-[14px]' : 'text-[13px]'} ${task.isDone ? '!text-[#E8E8E8]' : 'text-gray-600'} font-bold w-full tabular-nums whitespace-nowrap text-center`}>
                   {globalMilestoneDateNode}
                 </div>
               ) : (
@@ -772,7 +772,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
               <div className={`mt-3 ${readOnly ? '' : isGlobalMilestonesView ? 'grid grid-cols-1' : 'grid grid-cols-2'} ${readOnly ? '' : 'gap-2'}`}>
                 {readOnly ? (
                   isGlobalMilestonesView ? (
-                    <div className="text-[12px] font-bold text-gray-600 tabular-nums leading-tight text-right">
+                    <div className="ml-auto w-48 text-center text-[12px] font-bold text-gray-600 tabular-nums leading-tight">
                       {globalMilestoneDateNode}
                     </div>
                   ) : (
@@ -1148,7 +1148,7 @@ const ListView: React.FC<ListViewProps> = ({
         {!isGlobalMilestonesView && (
           <div className="w-24 px-2 text-[9px] font-black text-gray-400 uppercase tracking-widest">Assignee</div>
         )}
-        <div className={`${isGlobalMilestonesKioskView ? 'w-48' : 'w-32'} px-2 text-[9px] font-black text-gray-400 uppercase tracking-widest`}>
+        <div className={`${isGlobalMilestonesKioskView ? 'w-48' : 'w-32'} px-2 text-[9px] font-black text-gray-400 uppercase tracking-widest ${isGlobalMilestonesView ? 'text-center' : ''}`}>
           {isGlobalMilestonesView ? 'Date' : 'Start Date'}
         </div>
         {!isGlobalMilestonesView && (
