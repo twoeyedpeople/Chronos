@@ -280,7 +280,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
     <div
       ref={setNodeRef}
       style={style}
-      className={`group border-b border-gray-100 transition-all ${
+      className={`group relative border-b border-gray-100 transition-all ${
         isDragging ? 'opacity-50 bg-blue-50/50 z-50' : task.isExternal ? 'bg-[#FFC2E8]/20 hover:bg-[#ffedf9]' : 'bg-white hover:bg-gray-50/80'
       } ${isOver ? 'bg-blue-100/50 ring-2 ring-blue-500/20' : ''}`}
     >
@@ -582,8 +582,24 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
           </div>
         )}
 
-        <div className="w-24 px-2 shrink-0 text-right">
-          {(!readOnly || isGlobalMilestonesView) && (
+        {!isGlobalMilestonesView && (
+          <div className="w-24 px-2 shrink-0 text-right">
+            {!readOnly && (
+              <div className="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                  onClick={() => onDeleteTask(task.id)}
+                  className="p-1.5 hover:bg-red-50 hover:text-red-500 rounded-lg transition-all"
+                  title="Delete task"
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {isGlobalMilestonesView && (
+          <div className="absolute right-4 top-1/2 -translate-y-1/2">
             <div className="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
               <button
                 onClick={() => onDeleteTask(task.id)}
@@ -593,8 +609,8 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                 <Trash2 size={14} />
               </button>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       <div className="md:hidden px-3 py-3">
