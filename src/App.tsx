@@ -1132,6 +1132,8 @@ export default function App() {
         const taskLabel = isGlobalMilestonesView && task.sourceProjectName
           ? `${task.sourceProjectName} / ${task.name}`
           : task.name;
+        const taskDays = Math.max(1, differenceInBusinessDays(parseISO(task.endDate), parseISO(task.startDate)) + 1);
+        const showsMilestoneDiamond = Boolean(task.isMilestone && taskDays === 1);
         const values = isGlobalMilestonesView
           ? [
               String(index + 1),
@@ -1142,7 +1144,7 @@ export default function App() {
               String(index + 1),
               taskLabel,
               format(parseISO(task.startDate), 'dd MMM yyyy'),
-              task.isMilestone ? '◆' : String(differenceInBusinessDays(parseISO(task.endDate), parseISO(task.startDate)) + 1),
+              showsMilestoneDiamond ? '◆' : String(taskDays),
               format(parseISO(task.endDate), 'dd MMM yyyy'),
             ];
 
@@ -1150,7 +1152,7 @@ export default function App() {
           const col = listColumns[valueIndex];
           const textY = y + listRowHeight * 0.68;
           if (col.key === 'id' || col.key === 'days') {
-            if (col.key === 'days' && task.isMilestone) {
+            if (col.key === 'days' && showsMilestoneDiamond) {
               drawDiamond(
                 colX + col.width / 2,
                 y + listRowHeight / 2 + 0.5,

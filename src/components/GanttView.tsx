@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { Task, ViewMode, Person } from '../types';
-import { format, addDays, differenceInDays, startOfDay, parseISO, startOfWeek, endOfWeek, eachDayOfInterval, eachWeekOfInterval, startOfMonth, endOfMonth, eachMonthOfInterval, addBusinessDays, addWeeks } from 'date-fns';
+import { format, addDays, differenceInDays, differenceInBusinessDays, startOfDay, parseISO, startOfWeek, endOfWeek, eachDayOfInterval, eachWeekOfInterval, startOfMonth, endOfMonth, eachMonthOfInterval, addBusinessDays, addWeeks } from 'date-fns';
 import { motion } from 'motion/react';
 
 
@@ -32,6 +32,12 @@ const BASE_COLUMN_WIDTH: Record<ViewMode, number> = {
   week: 132,
   month: 172,
 };
+
+const getTaskBusinessDayDuration = (task: Task) =>
+  Math.max(1, differenceInBusinessDays(parseISO(task.endDate), parseISO(task.startDate)) + 1);
+
+const showsMilestoneDiamond = (task: Task) =>
+  Boolean(task.isMilestone && getTaskBusinessDayDuration(task) === 1);
 
 const getTaskAssigneeIds = (task: Task) => {
   const ids = task.assigneeIds?.filter(Boolean) ?? [];
@@ -228,7 +234,7 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
     const start = parseISO(task.startDate);
     const end = parseISO(task.endDate);
     const left = getDateOffset(start);
-    if (task.isMilestone) {
+    if (showsMilestoneDiamond(task)) {
       return { left: left + getDisplayDayWidth(start) / 2 - MILESTONE_SIZE / 2, width: MILESTONE_SIZE };
     }
 
@@ -281,15 +287,15 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
               startDate: format(newStart, 'yyyy-MM-dd'),
               endDate: format(newEnd, 'yyyy-MM-dd')
             });
-          } else if (!task.isMilestone && dragState.type === 'resize-start') {
+          } else if (!showsMilestoneDiamond(task) && dragState.type === 'resize-start') {
             const newStart = addBusinessDays(parseISO(task.startDate), daysDelta);
             if (newStart <= parseISO(task.endDate)) {
               onUpdateTask(task.id, { startDate: format(newStart, 'yyyy-MM-dd') });
             }
-          } else if (!task.isMilestone && dragState.type === 'resize-end') {
+          } else if (!showsMilestoneDiamond(task) && dragState.type === 'resize-end') {
             const newEnd = addBusinessDays(parseISO(task.endDate), daysDelta);
             if (newEnd >= parseISO(task.startDate)) {
-              onUpdateTask(task.id, { endDate: format(newEnd, 'yyyy-MM-dd'), isMilestone: false });
+              onUpdateTask(task.id, { endDate: format(newEnd, 'yyyy-MM-dd') });
             }
           }
         }
@@ -514,17 +520,17 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
           const task = row.task;
           let { left, width } = getTaskPosition(task);
           const isDraggingThis = dragState?.taskId === task.id;
-          const isMilestone = Boolean(task.isMilestone);
+          const shouldShowMilestoneDiamond = showsMilestoneDiamond(task);
           const assignees = getTaskAssignees(task, people);
           const primaryAssignee = assignees.length === 1 ? assignees[0] : null;
 
           if (isDraggingThis) {
             if (dragState.type === 'move') {
               left += previewDelta;
-            } else if (!isMilestone && dragState.type === 'resize-start') {
+            } else if (!shouldShowMilestoneDiamond && dragState.type === 'resize-start') {
               left += previewDelta;
               width -= previewDelta;
-            } else if (!isMilestone && dragState.type === 'resize-end') {
+            } else if (!shouldShowMilestoneDiamond && dragState.type === 'resize-end') {
               width += previewDelta;
             }
           }
@@ -532,7 +538,7 @@ const GanttView: React.FC<GanttViewProps> = ({ tasks, allTasks, viewMode, zoom, 
           return (
             <div key={task.id} className="h-8 flex items-center relative group">
               {!parentIds.has(task.id) && (
-                isMilestone ? (
+                shouldShowMilestoneDiamond ? (
                   <motion.div
                     layoutId={task.id}
                     onMouseDown={(e) => handleMouseDown(e, task.id, 'move')}

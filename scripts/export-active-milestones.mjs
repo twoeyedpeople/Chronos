@@ -138,7 +138,7 @@ function buildMilestoneRows(projects, people) {
           clientName: project.clientName,
           partnerName: project.partnerName,
           name: task.name ?? 'Untitled Milestone',
-          date: task.startDate,
+          date: task.endDate,
           isDone: Boolean(task.isDone),
           assignees: getAssigneeNames(task, peopleById),
           updatedAt: project.updatedAt,

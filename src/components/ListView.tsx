@@ -193,8 +193,9 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
     transition,
   };
 
-  const days = task.isMilestone ? 0 : differenceInBusinessDays(parseISO(task.endDate), parseISO(task.startDate)) + 1;
-  const [daysInput, setDaysInput] = useState(task.isMilestone ? '◆' : String(days));
+  const days = Math.max(1, differenceInBusinessDays(parseISO(task.endDate), parseISO(task.startDate)) + 1);
+  const showsMilestoneDiamond = Boolean(task.isMilestone && days === 1);
+  const [daysInput, setDaysInput] = useState(showsMilestoneDiamond ? '◆' : String(days));
   const isGlobalMilestonesView = Boolean(readOnly && showProjectName);
   const isGlobalMilestonesKioskView = Boolean(isGlobalMilestonesView && isKioskView);
   const globalMilestoneDateText = format(parseISO(task.endDate), 'EEE, dd MMM yy');
@@ -209,18 +210,13 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
   const assignees = getTaskAssignees(task, people);
 
   useEffect(() => {
-    setDaysInput(task.isMilestone ? '◆' : String(days));
-  }, [days, task.isMilestone]);
+    setDaysInput(showsMilestoneDiamond ? '◆' : String(days));
+  }, [days, showsMilestoneDiamond]);
 
   const isFolder = hasSubtasks;
   const canToggleDoneFromDot = isGlobalMilestonesView && !isFolder;
 
   const handleDaysChange = (val: string) => {
-    if (task.isMilestone && (val === '' || /^\d*$/.test(val))) {
-      setDaysInput(val);
-      return;
-    }
-
     if (val === '') {
       setDaysInput('');
       return;
@@ -234,14 +230,14 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
   };
 
   const commitDaysChange = () => {
-    if (task.isMilestone && (daysInput.trim() === '' || daysInput === '◆')) {
+    if (showsMilestoneDiamond && (daysInput.trim() === '' || daysInput === '◆')) {
       setDaysInput('◆');
       return;
     }
 
     const numDays = parseInt(daysInput, 10);
     if (Number.isNaN(numDays) || numDays < 0) {
-      setDaysInput(task.isMilestone ? '◆' : String(days));
+      setDaysInput(showsMilestoneDiamond ? '◆' : String(days));
       return;
     }
 
@@ -255,7 +251,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
     }
 
     const newEndDate = format(addBusinessDays(parseISO(task.startDate), numDays - 1), 'yyyy-MM-dd');
-    onUpdateTask(task.id, { endDate: newEndDate, isMilestone: false });
+    onUpdateTask(task.id, { endDate: newEndDate });
   };
 
   const handleDependencyChange = (val: string) => {
@@ -411,20 +407,9 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
               <button
                 type="button"
                 onClick={() => {
-                  if (!task.isMilestone) {
-                    onUpdateTask(task.id, {
-                      isMilestone: true,
-                      endDate: task.startDate,
-                    });
-                    setDaysInput('0');
-                  } else {
-                    const newEndDate = format(addBusinessDays(parseISO(task.startDate), 0), 'yyyy-MM-dd');
-                    onUpdateTask(task.id, {
-                      isMilestone: false,
-                      endDate: newEndDate,
-                    });
-                    setDaysInput('1');
-                  }
+                  const nextIsMilestone = !task.isMilestone;
+                  onUpdateTask(task.id, { isMilestone: nextIsMilestone });
+                  setDaysInput(nextIsMilestone && days === 1 ? '◆' : String(days));
                 }}
                 disabled={readOnly}
                 className="mx-2 flex items-center justify-center shrink-0 transition-all hover:scale-110 active:scale-95"
@@ -484,7 +469,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                   value={task.startDate}
                   onChange={(e) => onUpdateTask(task.id, {
                     startDate: e.target.value,
-                    ...(task.isMilestone ? { endDate: e.target.value } : {}),
+                    ...(showsMilestoneDiamond ? { endDate: e.target.value } : {}),
                   })}
                   disabled={readOnly}
                   className={`text-[11px] bg-white border rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500/10 outline-none font-bold w-full ${task.isDone ? '!text-[#E8E8E8] border-[#E8E8E8]' : 'text-gray-600 border-gray-100'}`}
@@ -496,7 +481,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
               <div className="w-20 px-2 shrink-0">
                 {readOnly ? (
                   <div className="h-[30px] w-full rounded-lg border border-gray-100 bg-white flex items-center px-3 font-bold justify-center">
-                    {task.isMilestone ? (
+                    {showsMilestoneDiamond ? (
                       <span className={`block w-full text-center leading-none mt-0.5 ${
                         task.isExternal ? 'text-[#FFC2E8] text-[22px]' : 'text-gray-900 text-[22px]'
                       }`}>
@@ -515,7 +500,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                       value={daysInput}
                       onChange={(e) => handleDaysChange(e.target.value)}
                       onFocus={(e) => {
-                        if (task.isMilestone && e.currentTarget.value === '◆') {
+                        if (showsMilestoneDiamond && e.currentTarget.value === '◆') {
                           e.currentTarget.select();
                         }
                       }}
@@ -527,7 +512,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                         }
                       }}
                       className={`bg-white border border-gray-100 rounded-lg px-2 focus:ring-2 focus:ring-blue-500/10 outline-none font-bold w-full text-center h-[26px] ${
-                        task.isMilestone
+                        showsMilestoneDiamond
                           ? task.isExternal
                             ? 'text-[#FFC2E8] text-[22px] leading-none py-0'
                             : 'text-gray-900 text-[22px] leading-none py-0'
@@ -535,7 +520,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                       }`}
                       placeholder="0"
                     />
-                    {!task.isMilestone && (
+                    {!showsMilestoneDiamond && (
                       <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] text-gray-300 font-bold uppercase pointer-events-none">d</span>
                     )}
                   </div>
@@ -736,20 +721,9 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                     <button
                       type="button"
                       onClick={() => {
-                        if (!task.isMilestone) {
-                          onUpdateTask(task.id, {
-                            isMilestone: true,
-                            endDate: task.startDate,
-                          });
-                          setDaysInput('0');
-                        } else {
-                          const newEndDate = format(addBusinessDays(parseISO(task.startDate), 0), 'yyyy-MM-dd');
-                          onUpdateTask(task.id, {
-                            isMilestone: false,
-                            endDate: newEndDate,
-                          });
-                          setDaysInput('1');
-                        }
+                        const nextIsMilestone = !task.isMilestone;
+                        onUpdateTask(task.id, { isMilestone: nextIsMilestone });
+                        setDaysInput(nextIsMilestone && days === 1 ? '◆' : String(days));
                       }}
                       disabled={readOnly}
                       className="mx-2 flex items-center justify-center shrink-0 transition-all hover:scale-110 active:scale-95"
@@ -795,7 +769,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                     <div className="flex items-center gap-2 text-[12px] font-bold text-gray-600 tabular-nums leading-tight whitespace-nowrap overflow-x-auto no-scrollbar">
                       <span className="shrink-0">{mobileStartDateText}</span>
                       <span className="text-gray-300">•</span>
-                      {task.isMilestone ? (
+                      {showsMilestoneDiamond ? (
                         <span className="inline-flex items-center h-3.5 shrink-0">
                           <span
                             className={`block h-2.5 w-2.5 rotate-45 rounded-[1px] ${
@@ -826,7 +800,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                         value={task.startDate}
                         onChange={(e) => onUpdateTask(task.id, {
                           startDate: e.target.value,
-                          ...(task.isMilestone ? { endDate: e.target.value } : {}),
+                          ...(showsMilestoneDiamond ? { endDate: e.target.value } : {}),
                         })}
                         className="text-[12px] bg-transparent border-none p-0 focus:ring-0 outline-none text-gray-600 font-bold w-full"
                       />
@@ -848,7 +822,7 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                           value={daysInput}
                           onChange={(e) => handleDaysChange(e.target.value)}
                           onFocus={(e) => {
-                            if (task.isMilestone && e.currentTarget.value === '◆') {
+                            if (showsMilestoneDiamond && e.currentTarget.value === '◆') {
                               e.currentTarget.select();
                             }
                           }}
@@ -859,14 +833,14 @@ const SortableTaskRow: React.FC<SortableTaskRowProps> = ({
                             }
                           }}
                           className={`bg-transparent border-none p-0 focus:ring-0 outline-none font-bold w-full text-center ${
-                            task.isMilestone
+                            showsMilestoneDiamond
                               ? task.isExternal
                                 ? 'text-[#FFC2E8] text-[24px] leading-none'
                                 : 'text-gray-900 text-[24px] leading-none'
                               : 'text-gray-600 text-[12px]'
                           }`}
                         />
-                        {!task.isMilestone && (
+                        {!showsMilestoneDiamond && (
                           <span className="absolute right-0 top-1/2 -translate-y-1/2 text-[9px] text-gray-300 font-bold uppercase pointer-events-none">d</span>
                         )}
                       </div>
@@ -1134,8 +1108,9 @@ const ListView: React.FC<ListViewProps> = ({
     const parentIds = new Set(tasks.map(t => t.parentId).filter(Boolean));
     return tasks.reduce((acc, task) => {
       if (parentIds.has(task.id)) return acc;
-      if (task.isMilestone) return acc;
-      return acc + (differenceInBusinessDays(parseISO(task.endDate), parseISO(task.startDate)) + 1);
+      const taskDays = Math.max(1, differenceInBusinessDays(parseISO(task.endDate), parseISO(task.startDate)) + 1);
+      if (task.isMilestone && taskDays === 1) return acc;
+      return acc + taskDays;
     }, 0);
   }, [tasks]);
 
